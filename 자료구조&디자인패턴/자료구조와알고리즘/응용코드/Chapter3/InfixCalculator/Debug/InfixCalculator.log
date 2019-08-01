@@ -1,0 +1,11 @@
+﻿  InfixCalculator.cpp
+c:\users\e-01\desktop\chapter8\infixcalculator\infixcalculator.cpp(11): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\string.h(132): note: 'strcpy' 선언을 참조하십시오.
+  infixCalculatorMain.cpp
+  InfixToPostfix.cpp
+c:\users\e-01\desktop\chapter8\infixcalculator\infixtopostfix.cpp(88): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\string.h(132): note: 'strcpy' 선언을 참조하십시오.
+  ListBaseStack.cpp
+  PostCalculator.cpp
+  코드를 생성하고 있습니다...
+  InfixCalculator.vcxproj -> C:\Users\E-01\Desktop\Chapter8\Debug\InfixCalculator.exe

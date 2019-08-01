@@ -1,0 +1,10 @@
+﻿  ChainedTableMain.cpp
+  DLinkedList.cpp
+  Person.cpp
+c:\users\c-01\desktop\ncs 프로그래밍 강연 자료\1_게임 자료구조와 알고리즘\게임자료구조와 알고리즘\강의용코드\chapter11\chainedtable\person.cpp(23): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(133): note: 'strcpy' 선언을 참조하십시오.
+c:\users\c-01\desktop\ncs 프로그래밍 강연 자료\1_게임 자료구조와 알고리즘\게임자료구조와 알고리즘\강의용코드\chapter11\chainedtable\person.cpp(24): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\ucrt\string.h(133): note: 'strcpy' 선언을 참조하십시오.
+  Table.cpp
+  코드를 생성하고 있습니다...
+  ChainedTable.vcxproj -> C:\Users\C-01\Desktop\NCS 프로그래밍 강연 자료\1_게임 자료구조와 알고리즘\게임자료구조와 알고리즘\강의용코드\Chapter11\Debug\ChainedTable.exe

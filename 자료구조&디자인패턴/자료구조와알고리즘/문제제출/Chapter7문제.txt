@@ -1,0 +1,47 @@
+문제1. ArrayList.h, ArrayList.cpp를 이용해서 Listmain을 만들어보자.
+
+	조건 1. 리스트를 생성 및 초기화 한 다음, 정수 1부터 9까지 리스트에 저장한다.
+	조건 2. 리스트에 저장된 값을 순차적으로 참조하여 그 합을 계산하여 출력한다.
+	조건 3. 리스트에 저장된 값들 중 2의 배수와 3의 배수에 해당하는 값을 모두 삭제한다.
+	조건 4. 마지막으로 리스트에 저장된 데이터를 순서대로 출력한다.
+
+문제2. 아래의 코드를 헤더파일로 하는 대응 .cpp파일을 작성하고 조건에 맞는 main을 작성해 보자.
+
+#ifndef __NAME_CARD_H__
+#define __NAME_CARD_H__
+
+#define NAME_LEN		30
+#define PHONE_LEN	30
+
+typedef struct __namecard
+{
+	char name[NAME_LEN];
+	char phone[PHONE_LEN];
+} NameCard;
+
+// NameCard 구조체 변수의 동적 할당 및 초기화 후 주소 값 반환
+NameCard * MakeNameCard(char * name, char * phone);
+
+// NameCard 구조체 변수의 정보 출력
+void ShowNameCardInfo(NameCard * pcard);
+
+// 이름이 같으면 0, 다르면 0이 아닌 값 반환
+int NameCompare(NameCard * pcard, char * name);
+
+// 전화번호 정보를 변경
+void ChangePhoneNum(NameCard * pcard, char * phone);
+
+#endif
+
+main.cpp 조건
+
+1. 총 3명의 전화번호 정보를, ArrayList에 저장한다.
+2. 특정 이름을 대상으로 탐색을 진행하여, 그 사람의 정보를 출력한다.
+3. 특정 이름을 대상으로 탐색을 진행하여, 그 사람의 전화번호 정보를 변경한다.
+4. 특정 이름을 대상으로 탐색을 진행하여, 그 사람의 정보를 삭제한다.
+5. 끝으로 남아있는 모든 사람의 전화번호 정보를 출력한다.
+
+문제3. 문제1의 조건을 자신이 원하는 대로 바꿔서 만들어보자, 문제2의 조건중 3명의 정보를 받는것을 초기에 입력 받
+은 수만큼 저장하도록 변경해 보자. 
+
+
