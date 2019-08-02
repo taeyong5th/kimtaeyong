@@ -40,7 +40,7 @@ GameManager::GameManager()
 		{			
 			if (m_Map[i][j]->getData() != MINE)
 			{
-				int count = countAround(i, j);
+				int count = countMine(i, j);
 				m_Map[i][j]->setData(count);
 			}
 		}
@@ -139,7 +139,7 @@ void GameManager::adjustCursorPosition()
 	if (m_Cursor.y > HEIGHT - 1) m_Cursor.y = HEIGHT - 1;
 }
 
-int GameManager::countAround(int i, int j)
+int GameManager::countMine(int i, int j)
 {
 	int count = 0;
 
