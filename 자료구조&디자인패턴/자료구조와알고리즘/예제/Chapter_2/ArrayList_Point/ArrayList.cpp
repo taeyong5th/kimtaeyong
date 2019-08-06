@@ -7,7 +7,7 @@ void ListInit(List* plist)
 	(plist->curPosition) = -1; // 현재 아무 위치도 가리키지 않음!
 }
 
-void Linsert(List* plist, LData data)
+void LInsert(List* plist, LData data)
 {
 	if (plist->numOfData >= LIST_LEN) // 더 이상 저장할 공간이 없다면…
 	{

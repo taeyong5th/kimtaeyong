@@ -42,19 +42,7 @@ void SInsert(List * plist, LData data)
 
 void LInsert(List * plist, LData data)
 {
-	Node * newNode = (Node *)malloc(sizeof(Node));
-	newNode->data = data;
-	newNode->next = NULL;
-
-	Node * Cur = plist->head;
-
-	while (Cur->next != NULL)
-	{
-		Cur = Cur->next;
-	}
-	Cur->next = newNode;
-
-	(plist->numOfData)++;
+	
 }
 
 int LFirst(List * plist, LData * pdata)

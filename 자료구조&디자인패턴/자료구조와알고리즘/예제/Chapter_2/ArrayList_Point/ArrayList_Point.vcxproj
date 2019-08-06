@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{DD082587-3C34-48E7-9F67-D53E0D45C716}</ProjectGuid>
-    <RootNamespace>DLinkedList</RootNamespace>
+    <ProjectGuid>{7CA9963E-7CF6-4995-A2C8-34455EA2BD6D}</ProjectGuid>
+    <RootNamespace>ArrayList_Point</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -75,6 +75,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
     </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -110,11 +113,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DLinkedList.h" />
+    <ClCompile Include="ArrayList.cpp" />
+    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="PointListMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DLinkedList.cpp" />
-    <ClCompile Include="DLinkedListMain.cpp" />
+    <ClInclude Include="ArrayList.h" />
+    <ClInclude Include="Point.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

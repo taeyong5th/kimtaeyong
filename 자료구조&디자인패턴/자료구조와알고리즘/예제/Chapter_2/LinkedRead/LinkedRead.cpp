@@ -27,10 +27,14 @@ int main(void)
 		/*** 노드의 추가과정 ***/
 		newNode = (Node*)malloc(sizeof(Node));
 		newNode->data = readData;
+		newNode->next = NULL;
 
-		if (head != NULL) newNode->next = head;
+		if (head == NULL)
+			head = newNode;
+		else
+			tail->next = newNode;
 
-		head = newNode;
+		tail = newNode;
 	}
 	printf("\n");
 
@@ -75,8 +79,6 @@ int main(void)
 			free(delNode);    // 두 번째 이후의 노드 삭제
 		}
 	}
-
-	system("pause");
 
 	return 0;
 }

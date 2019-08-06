@@ -1,31 +1,17 @@
 #include <stdio.h>
-#include<stdlib.h>
 #include "DLinkedList.h"
 
 int main(void)
 {
 	// List의 생성 및 초기화 /////////////////////////////
 	List list;
-	Point compPos;
-	Point * ppos;
+	int data;
 	ListInit(&list);
 
-	// 4개의 데이터 저장 /////////////////////////////
-	ppos = (Point*)malloc(sizeof(Point));
-	SetPointPos(ppos, 2, 1);
-	LInsert(&list, ppos);
-
-	ppos = (Point*)malloc(sizeof(Point));
-	SetPointPos(ppos, 2, 2);
-	LInsert(&list, ppos);
-
-	ppos = (Point*)malloc(sizeof(Point));
-	SetPointPos(ppos, 3, 1);
-	LInsert(&list, ppos);
-
-	ppos = (Point*)malloc(sizeof(Point));
-	SetPointPos(ppos, 3, 2);
-	LInsert(&list, ppos);
+	// 5개의 데이터 저장 /////////////////////////////
+	LInsert(&list, 11);  LInsert(&list, 11);
+	LInsert(&list, 22);  LInsert(&list, 22);
+	LInsert(&list, 33);
 
 	// 저장된 데이터의 전체 출력 /////////////////////////
 	printf("현재 데이터의 수: %d \n", LCount(&list));
