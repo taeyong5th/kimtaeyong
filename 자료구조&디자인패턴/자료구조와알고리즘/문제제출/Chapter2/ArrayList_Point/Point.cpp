@@ -14,6 +14,11 @@ void ShowPointPos(Point* ppos)
 
 int PointComp(Point* pos1, Point* pos2)
 {
+	if (pos1->xpos <= pos2->xpos && pos1->ypos < pos2->ypos)
+		return 0;
+	else
+		return 1;
+	/*
 	if (pos1->xpos == pos2->xpos && pos1->ypos == pos2->ypos)
 		return 0;
 	else if (pos1->xpos == pos2->xpos)
@@ -22,4 +27,5 @@ int PointComp(Point* pos1, Point* pos2)
 		return 2;
 	else
 		return -1;
+	*/
 }

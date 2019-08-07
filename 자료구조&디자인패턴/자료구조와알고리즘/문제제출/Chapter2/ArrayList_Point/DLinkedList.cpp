@@ -92,5 +92,5 @@ int LCount(List * plist)
 
 void SetSortRule(List * plist, int(*comp)(LData d1, LData d2))
 {
-	
+	plist->comp = comp;
 }

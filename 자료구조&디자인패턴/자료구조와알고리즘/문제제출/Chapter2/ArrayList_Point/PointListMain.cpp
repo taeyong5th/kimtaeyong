@@ -10,6 +10,7 @@ int main(void)
 	Point * ppos;
 
 	ListInit(&list);
+	SetSortRule(&list, PointComp);	
 
 	/*** 4개의 데이터 저장 ***/
 	ppos = (Point*)malloc(sizeof(Point));
@@ -19,7 +20,7 @@ int main(void)
 	ppos = (Point*)malloc(sizeof(Point));
 	SetPointPos(ppos, 2, 2);
 	LInsert(&list, ppos);
-
+	
 	ppos = (Point*)malloc(sizeof(Point));
 	SetPointPos(ppos, 3, 1);
 	LInsert(&list, ppos);
