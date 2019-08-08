@@ -54,9 +54,9 @@ int main(void)
 			//소멸할 데이터를 반환하고 메모리를 해제 할 수 있는 기회를 주어야한다.
 			//핵심을 주소값을 반환받고 직접 해제하는 코드를 작성하는것이 올바른 것이다.
 			ppos = LRemove(&list);
-			free(ppos);
+			//free(ppos);
 		}
-
+		/*
 		while (LNext(&list, &ppos))
 		{
 			if (PointComp(ppos, &compPos) == 1)
@@ -64,8 +64,12 @@ int main(void)
 				ppos = LRemove(&list);
 				free(ppos);
 			}
-		}
+		}*/
 	}
+
+	//ppos->xpos = 2;
+	//ppos->ypos = 1;
+	//LRemove(&list, &ppos, 2);
 
 	/*** 삭제 후 남은 데이터 전체 출력 ***/
 	printf("현재 데이터의 수: %d \n", LCount(&list));
@@ -78,6 +82,8 @@ int main(void)
 			ShowPointPos(ppos);
 	}
 	printf("\n");
+
+	Release(&list);
 
 	return 0;
 }

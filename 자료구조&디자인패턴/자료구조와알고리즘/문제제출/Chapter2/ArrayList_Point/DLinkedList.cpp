@@ -94,3 +94,43 @@ void SetSortRule(List * plist, int(*comp)(LData d1, LData d2))
 {
 	plist->comp = comp;
 }
+
+void LRemove(List * plist, LData * pdata, int ret)
+{
+	if (plist->comp == NULL) return;
+
+	Node * before = plist->head;
+	Node * remove;
+
+	while (before->next != NULL)
+	{
+		if (plist->comp(*pdata, before->next->data) == ret)
+		{
+			remove = before->next;
+			before->next = remove->next;
+			free(before->next);
+			(plist->numOfData)--;
+		}
+		before = before->next;
+	}
+}
+
+void Release(List * plist)
+{
+	if (plist->head == NULL) return;
+	Node * before = plist->head;
+	Node * remove;
+
+	while (before->next != NULL)
+	{
+		remove = before->next;
+		before->next = remove->next;
+		free(remove);
+		before = before->next;
+	}
+	free(plist->head);
+
+	plist->head = NULL;
+	plist->comp = NULL;
+	plist->numOfData = 0;
+}
