@@ -1,0 +1,3 @@
+﻿  Snake.cpp
+c:\users\b-6\desktop\김태용\project\snake\snake0714_14 (1)\snake\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  snake.vcxproj -> C:\Users\B-6\Desktop\김태용\Project\Snake\snake0714_14 (1)\x64\Debug\snake.exe

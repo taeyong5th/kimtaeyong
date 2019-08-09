@@ -1,0 +1,9 @@
+﻿  Map.cpp
+c:\users\b-6\desktop\김태용\snake0709\snake\snake\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  MapDraw.cpp
+c:\users\b-6\desktop\김태용\snake0709\snake\snake\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+c:\users\b-6\desktop\김태용\snake0709\snake\snake\mapdraw.cpp(26): warning C4018: '>': signed 또는 unsigned가 일치하지 않습니다.
+  소스.cpp
+c:\users\b-6\desktop\김태용\snake0709\snake\snake\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  코드를 생성하고 있습니다...
+  snake.vcxproj -> C:\Users\B-6\Desktop\김태용\Snake0709\snake\Debug\snake.exe
