@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{C40D76F5-75ED-48C9-B07B-8A2CB406338D}</ProjectGuid>
-    <RootNamespace>UsefulHeap</RootNamespace>
+    <ProjectGuid>{427D74E9-54CA-49D0-86AD-E0A26C2E963B}</ProjectGuid>
+    <RootNamespace>PriorityQueue</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -121,11 +121,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="UsefulHeap.h" />
+    <ClCompile Include="PriorityQueue.cpp" />
+    <ClCompile Include="PriorityQueueMain.cpp" />
+    <ClCompile Include="UsefulHeap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="UsefulHeap.cpp" />
-    <ClCompile Include="UsefulHeapMain.cpp" />
+    <ClInclude Include="PriorityQueue.h" />
+    <ClInclude Include="UsefulHeap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
