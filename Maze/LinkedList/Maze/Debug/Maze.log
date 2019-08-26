@@ -1,0 +1,8 @@
+﻿  GameManager.cpp
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\MapDraw.h(14,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\MapDraw.h(14,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\GameManager.cpp(155,1): warning C4996:  'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\conio.h(459): message :  'kbhit' 선언을 참조하십시오.
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\GameManager.cpp(158,1): warning C4996:  'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\conio.h(453): message :  'getch' 선언을 참조하십시오.
+  Maze.vcxproj -> D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Debug\Maze.exe

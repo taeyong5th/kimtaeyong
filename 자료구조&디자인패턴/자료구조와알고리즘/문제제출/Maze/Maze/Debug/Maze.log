@@ -1,14 +1,8 @@
 ﻿  GameManager.cpp
-c:\users\b-6\desktop\김태용\project\미로찾기\maze\maze\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
-c:\users\b-6\desktop\김태용\project\미로찾기\maze\maze\gamemanager.cpp(43): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\conio.h(459): note: 'kbhit' 선언을 참조하십시오.
-c:\users\b-6\desktop\김태용\project\미로찾기\maze\maze\gamemanager.cpp(45): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\conio.h(453): note: 'getch' 선언을 참조하십시오.
-c:\users\b-6\desktop\김태용\project\미로찾기\maze\maze\gamemanager.cpp(51): warning C4065: switch문에 'default'가 있으나 'case' 레이블이 없습니다.
-  Main.cpp
-c:\users\b-6\desktop\김태용\project\미로찾기\maze\maze\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
-  Point.cpp
-c:\users\b-6\desktop\김태용\project\미로찾기\maze\maze\mapdraw.h(14): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
-  Point.h
-  코드를 생성하고 있습니다...
-  Maze.vcxproj -> C:\Users\B-6\Desktop\김태용\Project\미로찾기\Maze\Debug\Maze.exe
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\MapDraw.h(14,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\MapDraw.h(14,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\GameManager.cpp(155,1): warning C4996:  'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\conio.h(459): message :  'kbhit' 선언을 참조하십시오.
+D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Maze\GameManager.cpp(158,1): warning C4996:  'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0\ucrt\conio.h(453): message :  'getch' 선언을 참조하십시오.
+  Maze.vcxproj -> D:\study\kimtaeyong\자료구조&디자인패턴\자료구조와알고리즘\문제제출\Maze\Debug\Maze.exe
