@@ -2,19 +2,23 @@
 
 void GameManager::printMap()
 {
-	for (list<Point>::iterator iter = m_MapDataList.begin(); iter != m_MapDataList.end(); ++iter)
+
+	for (int i = 0; i < m_MapDataList.size(); i++)
 	{
-		switch (iter->type)
+		for (list<Point>::iterator iter = m_MapDataList[i].begin(); iter != m_MapDataList[i].end(); ++iter)
 		{
-		case WALL:
-			m_MapDraw.DrawPoint("■", iter->x, iter->y);
-			break;
-		case GOAL:
-			m_MapDraw.DrawPoint("◎", iter->x, iter->y);
-			break;
-		case EMPTY:
-			m_MapDraw.DrawPoint("  ", iter->x, iter->y);
-			break;
+			switch (iter->type)
+			{
+			case WALL:
+				m_MapDraw.DrawPoint("■", iter->x, iter->y);
+				break;
+			case GOAL:
+				m_MapDraw.DrawPoint("◎", iter->x, iter->y);
+				break;
+			case EMPTY:
+				m_MapDraw.DrawPoint("  ", iter->x, iter->y);
+				break;
+			}
 		}
 	}
 }
@@ -50,15 +54,23 @@ void GameManager::moveCharacter(int key)
 	int x = (m_characterPos.x + moveX);
 	int y = (m_characterPos.y + moveY);
 
-	for (list<Point>::iterator iter = m_MapDataList.begin(); iter != m_MapDataList.end(); ++iter)
+	// 이동할 위치가 맵 범위 안에 있으면,
+	if ((0 <= x && x < MAP_SIZE_WIDTH) && (0 <= y && y < MAP_SIZE_HEIGHT))
 	{
-		if ((x == iter->x) && (y == iter->y) && (iter->type != WALL))
+		// x, y 위치의 iter를 구한다.
+		list<Point>::iterator iter = m_MapDataList[y].begin();
+		for (int i = 0; i < x; ++i)
 		{
-			m_characterPos.x += moveX;
-			m_characterPos.y += moveY;
+			++iter;
+		}
+		
+		// x, y 위치가 벽이 아니면 이동시킨다.
+		if (iter->type != WALL)
+		{
+			m_characterPos.x = x;
+			m_characterPos.y = y;
 		}
 	}
-
 }
 
 // 목표 지점에 도달했는지 확인한다.
@@ -88,9 +100,10 @@ void GameManager::init()
 	mapFile.close();
 	
 	// 리스트 초기화
-	PointType type;
+	PointType type;	
 	for (int i = 0; i < MAP_SIZE_HEIGHT; i++)
 	{
+		list<Point> list;
 		for (int j = 0; j < MAP_SIZE_WIDTH; j++)
 		{
 			if (mapData[i][j] == '1')
@@ -119,8 +132,9 @@ void GameManager::init()
 			//Point* point = createPoint(j, i, type);
 			//LInsert(&m_MapDataList, point);
 			Point point = {j, i, type};
-			m_MapDataList.push_back(point);
+			list.push_back(point);
 		}
+		m_MapDataList.push_back(list);
 	}
 }
 
