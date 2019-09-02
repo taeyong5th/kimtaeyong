@@ -51,31 +51,13 @@ void GameManager::moveCharacter(int key)
 		break;
 	}
 
-	//Point* p;
-	//if (LFirst(&m_MapDataList, &p))
-	//{
-	//	while (LNext(&m_MapDataList, &p))
-	//	{
-	//		if ((p->x == m_characterPos.x + moveX) && (p->y == m_characterPos.y + moveY))
-	//		{
-	//			// 캐릭터가 이동할 벽이 아니면(비어 있으면) 이동
-	//			if (p->type != WALL)
-	//			{
-	//				m_characterPos.x += moveX;
-	//				m_characterPos.y += moveY;
-	//				break;
-	//			}
-	//		}
-	//	}
-	//}
-
 	int x = (m_characterPos.x + moveX);
 	int y = (m_characterPos.y + moveY);
-	if (m_MapDataList[x][y] != WALL)
+	if (m_MapDataList[y][x] != WALL)
 	{
 		m_characterPos.x += moveX;
 		m_characterPos.y += moveY;
-	}
+	}	
 }
 
 // 목표 지점에 도달했는지 확인한다.
