@@ -1,0 +1,13 @@
+﻿  GameManager.cpp
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\mapdraw.h(19): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(24): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(90): warning C4101: 'tmp' :참조되지 않은 지역 변수입니다.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(159): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(187): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(1774): note: 'sprintf' 선언을 참조하십시오.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(188): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(208): note: 'fopen' 선언을 참조하십시오.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(290): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(330): warning C4244: '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+c:\users\b-6\desktop\김태용\project\rpg\rpg0724_2\project1\project1\gamemanager.cpp(335): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Project1.vcxproj -> C:\Users\B-6\Desktop\김태용\Project\RPG\RPG0724_2\Project1\Debug\Project1.exe
