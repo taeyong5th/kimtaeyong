@@ -17,6 +17,16 @@ void Character::inputName()
 	m_strName = name;
 }
 
+void Character::setJobClass(JobClass* jobClass)
+{
+	m_jobClass = jobClass;
+}
+
+JobClass* Character::getJobClass()
+{
+	return m_jobClass;
+}
+
 int Character::getCurHealth()
 {
 	return m_iCurHealth;
@@ -257,10 +267,14 @@ void Character::setWeapon(Weapon* weapon)
 Character::Character()
 {
 	mWeapon = NULL;
+	m_jobClass = NULL;	
 }
 
 Character::~Character()
 {
 	if (mWeapon != NULL)
 		delete mWeapon;
+
+	if (m_jobClass != NULL)
+		delete m_jobClass;
 }

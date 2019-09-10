@@ -3,6 +3,14 @@
 
 class Character;
 
+enum WeaponType
+{
+	WEAPON_BOW,
+	WEAPON_DAGGER,
+	WEAPON_GUN,
+	WEAPON_SWORD
+};
+
 class Weapon
 {
 protected:

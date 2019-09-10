@@ -54,9 +54,33 @@ void GameManager::Start()
 
 void GameManager::Loading()
 {
-	m_MapDraw.gotoxy(WIDTH / 2, HEIGHT / 2);	
+	m_MapDraw.gotoxy(WIDTH / 2, HEIGHT / 2);
 	cout << "플레이어 이름 입력 : ";
 	Player.inputName();
+	m_MapDraw.gotoxy(WIDTH / 2, HEIGHT / 2);
+	cout << "\t\t직업 선택\t\t" << endl;
+	m_MapDraw.gotoxy(WIDTH / 2, HEIGHT / 2 + 1); 
+	cout << "(1. Knight / 2. Archer / 3.Hunter) : ";
+	int classSelect;
+	cin >> classSelect;
+	CharacterFactory factory;
+	JobClass* jobClass;
+	switch (classSelect)
+	{
+	case 1:
+		jobClass = factory.CreateJobClass(CLASS_KNIGHT);
+		break;
+	case 2:
+		jobClass = factory.CreateJobClass(CLASS_ARCHER);
+		break;
+	case 3:
+		jobClass = factory.CreateJobClass(CLASS_HUNTER);
+		break;
+	default:
+		jobClass = factory.CreateJobClass(CLASS_KNIGHT);
+	}
+	Player.setJobClass(jobClass);
+
 	ifstream fs("Default.txt", ios::in);
 	if (!fs.is_open())
 	{
@@ -79,9 +103,8 @@ void GameManager::Loading()
 		Enemy[i].LoadCharacter(fs);
 	}
 	fs.close();
+	system("cls");
 }
-
-
 
 
 void GameManager::Fight(Character * Player, Character * Enemy)

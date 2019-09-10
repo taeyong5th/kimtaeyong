@@ -6,6 +6,7 @@
 #include "Gun.h"
 #include "Dagger.h"
 #include "Sword.h"
+#include "CharacterFactory.h"
 
 class Character
 {
@@ -14,6 +15,7 @@ private:
 	MapDraw mMapDraw;
 
 	string m_strName;
+	JobClass* m_jobClass;
 	int m_iAtkdmg;
 	int m_iCurHealth;
 	int m_iMaxHealth;
@@ -28,6 +30,8 @@ public:
 	string getName();
 	void setName(string name);
 	void inputName();
+	void setJobClass(JobClass* jobClass);
+	JobClass* getJobClass();
 	int getCurHealth();
 	void setCurHealth(int health);
 	int getMaxHealth();

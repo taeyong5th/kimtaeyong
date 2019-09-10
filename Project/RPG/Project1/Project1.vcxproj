@@ -23,32 +23,32 @@
     <ProjectGuid>{06C53AA7-FE21-46E7-B891-5E2A3E27332C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Project1</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -141,9 +141,11 @@
   <ItemGroup>
     <ClCompile Include="Bow.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="CharacterFactory.cpp" />
     <ClCompile Include="Dagger.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="Gun.cpp" />
+    <ClCompile Include="JobClass.cpp" />
     <ClCompile Include="MapDraw.cpp" />
     <ClCompile Include="Sword.cpp" />
     <ClCompile Include="Weapon.cpp" />
@@ -153,9 +155,11 @@
   <ItemGroup>
     <ClInclude Include="Bow.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="CharacterFactory.h" />
     <ClInclude Include="Dagger.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="Gun.h" />
+    <ClInclude Include="JobClass.h" />
     <ClInclude Include="MapDraw.h" />
     <ClInclude Include="Mecro.h" />
     <ClInclude Include="Sword.h" />

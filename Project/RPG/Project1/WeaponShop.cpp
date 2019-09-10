@@ -31,22 +31,22 @@ Weapon* WeaponShop::showWeaponList(WeaponType weaponType, int page)
 	switch (weaponType)
 	{
 	case WEAPON_BOW:
-		newWeapon = new Bow();
+		newWeapon = factory.CreateWeapon(WEAPON_BOW);
 		count = bowCount;
 		weapons = m_Bows;
 		break;
 	case WEAPON_DAGGER:
-		newWeapon = new Dagger();
+		newWeapon = factory.CreateWeapon(WEAPON_DAGGER);
 		count = daggerCount;
 		weapons = m_Daggers;
 		break;
 	case WEAPON_GUN:
-		newWeapon = new Gun();
+		newWeapon = factory.CreateWeapon(WEAPON_GUN);
 		count = gunCount;
 		weapons = m_Guns;
 		break;
 	case WEAPON_SWORD:
-		newWeapon = new Sword();
+		newWeapon = factory.CreateWeapon(WEAPON_SWORD);
 		count = SwordCount;
 		weapons = m_Swords;
 		break;

@@ -6,18 +6,13 @@
 #include "Dagger.h"
 #include "Gun.h"
 #include "Sword.h"
+#include "CharacterFactory.h"
 
-enum WeaponType
-{
-	WEAPON_BOW,
-	WEAPON_DAGGER,
-	WEAPON_GUN,
-	WEAPON_SWORD
-};
 
 class WeaponShop
 {
 private:
+	CharacterFactory factory;
 	int bowCount;
 	int daggerCount;
 	int gunCount;
