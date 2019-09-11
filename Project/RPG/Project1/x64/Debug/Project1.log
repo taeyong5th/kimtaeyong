@@ -1,0 +1,46 @@
+﻿  Bow.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  Character.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\Bow.cpp(9,45): warning C4244:  '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\Character.cpp(86,30): warning C4244:  '+=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  CharacterFactory.cpp
+  Dagger.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\Character.cpp(139,6): warning C4101:  'Num' :참조되지 않은 지역 변수입니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  GameManager.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(26,14): warning C4244:  '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(115,7): warning C4101:  'tmp' :참조되지 않은 지역 변수입니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(184,13): warning C4244:  '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(212,1): warning C4996:  'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(1774): message :  'sprintf' 선언을 참조하십시오.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(213,1): warning C4996:  'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\ucrt\stdio.h(208): message :  'fopen' 선언을 참조하십시오.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(315,14): warning C4244:  '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(355,12): warning C4244:  '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Gun.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\GameManager.cpp(360,14): warning C4244:  '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  Sword.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\Gun.cpp(6,16): warning C4244:  '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  Weapon.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  WeaponShop.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  소스.cpp
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\WeaponShop.cpp(62,13): warning C4244:  '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,17): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\MapDraw.h(19,20): warning C4838:  'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+  코드를 생성하고 있습니다...
+C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\Project1\소스.cpp(6,1): warning C4326:  'main'의 반환 형식이 'int'이어야 하는데 'void'입니다.
+  Project1.vcxproj -> C:\Users\F-04\Desktop\taeyong\RPG_만든것_FINAL\x64\Debug\Project1.exe

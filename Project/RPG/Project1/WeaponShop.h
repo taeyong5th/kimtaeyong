@@ -12,7 +12,7 @@
 class WeaponShop
 {
 private:
-	CharacterFactory factory;
+	CharacterFactory *factory;
 	int bowCount;
 	int daggerCount;
 	int gunCount;

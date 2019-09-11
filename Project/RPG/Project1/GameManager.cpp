@@ -5,12 +5,14 @@ GameManager::GameManager()
 {
 	GameOver = 0;
 	Enemy = NULL;
+	m_characterFactory = CharacterFactory::getInstance();
 }
 
 GameManager::~GameManager()
 {
 	if (Enemy != NULL)
 		delete[] Enemy;
+	delete m_characterFactory;
 }
 
 void GameManager::Start()
@@ -63,21 +65,21 @@ void GameManager::Loading()
 	cout << "(1. Knight / 2. Archer / 3.Hunter) : ";
 	int classSelect;
 	cin >> classSelect;
-	CharacterFactory factory;
+	
 	JobClass* jobClass;
 	switch (classSelect)
 	{
 	case 1:
-		jobClass = factory.CreateJobClass(CLASS_KNIGHT);
+		jobClass = m_characterFactory->CreateJobClass(CLASS_KNIGHT);
 		break;
 	case 2:
-		jobClass = factory.CreateJobClass(CLASS_ARCHER);
+		jobClass = m_characterFactory->CreateJobClass(CLASS_ARCHER);
 		break;
 	case 3:
-		jobClass = factory.CreateJobClass(CLASS_HUNTER);
+		jobClass = m_characterFactory->CreateJobClass(CLASS_HUNTER);
 		break;
 	default:
-		jobClass = factory.CreateJobClass(CLASS_KNIGHT);
+		jobClass = m_characterFactory->CreateJobClass(CLASS_KNIGHT);
 	}
 	Player.setJobClass(jobClass);
 
@@ -323,7 +325,7 @@ void GameManager::LoadWeapon()
 		Weapon* weapon;
 		switch (Select)
 		{
-		case 1:				
+		case 1:
 			weapon = m_WeaponShop.showWeaponList(WEAPON_BOW);
 			Player.setWeapon(weapon);
 			break;

@@ -162,6 +162,7 @@
     <ClInclude Include="JobClass.h" />
     <ClInclude Include="MapDraw.h" />
     <ClInclude Include="Mecro.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="Sword.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="WeaponShop.h" />

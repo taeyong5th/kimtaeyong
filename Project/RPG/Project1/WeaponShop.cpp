@@ -31,22 +31,22 @@ Weapon* WeaponShop::showWeaponList(WeaponType weaponType, int page)
 	switch (weaponType)
 	{
 	case WEAPON_BOW:
-		newWeapon = factory.CreateWeapon(WEAPON_BOW);
+		newWeapon = factory->CreateWeapon(WEAPON_BOW);
 		count = bowCount;
 		weapons = m_Bows;
 		break;
 	case WEAPON_DAGGER:
-		newWeapon = factory.CreateWeapon(WEAPON_DAGGER);
+		newWeapon = factory->CreateWeapon(WEAPON_DAGGER);
 		count = daggerCount;
 		weapons = m_Daggers;
 		break;
 	case WEAPON_GUN:
-		newWeapon = factory.CreateWeapon(WEAPON_GUN);
+		newWeapon = factory->CreateWeapon(WEAPON_GUN);
 		count = gunCount;
 		weapons = m_Guns;
 		break;
 	case WEAPON_SWORD:
-		newWeapon = factory.CreateWeapon(WEAPON_SWORD);
+		newWeapon = factory->CreateWeapon(WEAPON_SWORD);
 		count = SwordCount;
 		weapons = m_Swords;
 		break;
@@ -109,6 +109,7 @@ Weapon* WeaponShop::showWeaponList(WeaponType weaponType, int page)
 
 WeaponShop::WeaponShop()
 {	
+	factory = CharacterFactory::getInstance();
 	string type, name;
 	int atk, price;	
 	ifstream f;
@@ -160,4 +161,5 @@ WeaponShop::~WeaponShop()
 	delete[] m_Daggers;
 	delete[] m_Guns;
 	delete[] m_Swords;
+	delete factory;
 }

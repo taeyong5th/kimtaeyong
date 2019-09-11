@@ -205,7 +205,7 @@ void Character::LoadInfo(ifstream& f)
 		f >> type >> name >> atk >> price;
 		if (type == "Bow")
 		{
-			weapon = new Bow;			
+			weapon = new Bow;
 		}
 		else if (type == "Dagger")
 		{
@@ -254,8 +254,12 @@ void Character::setWeapon(Weapon* weapon)
 	
 	if (m_iGold >= weapon->getPrice())
 	{
-		m_iGold -= weapon->getPrice();
-		mWeapon = weapon;
+		getJobClass()->SetWeapon(weapon);
+		if (getJobClass()->EquipCheck())
+		{
+			m_iGold -= weapon->getPrice();
+			mWeapon = weapon;
+		}
 	}
 	else 
 	{

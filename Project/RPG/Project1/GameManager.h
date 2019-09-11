@@ -9,6 +9,7 @@ class GameManager
 private:
 	MapDraw m_MapDraw;
 	WeaponShop m_WeaponShop;
+	CharacterFactory * m_characterFactory;
 
 	int GameOver;
 	int Stage;

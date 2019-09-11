@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Factory">
+    <Filter Include="DesignPattern">
       <UniqueIdentifier>{da62bf93-cde8-4059-a368-59ccf48bdc45}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -49,10 +49,10 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="JobClass.cpp">
-      <Filter>Factory</Filter>
+      <Filter>DesignPattern</Filter>
     </ClCompile>
     <ClCompile Include="CharacterFactory.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>DesignPattern</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,13 +84,16 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="CharacterFactory.h">
-      <Filter>Factory</Filter>
+      <Filter>DesignPattern</Filter>
     </ClInclude>
     <ClInclude Include="Weapon.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="JobClass.h">
-      <Filter>Factory</Filter>
+      <Filter>DesignPattern</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>DesignPattern</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
