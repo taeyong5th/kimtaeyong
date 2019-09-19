@@ -1,0 +1,6 @@
+﻿  WinMain.cpp
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER3\CHAPTER3\WinMain.cpp(84,21): warning C4244:  '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER3\CHAPTER3\WinMain.cpp(84,18): warning C4244:  '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER3\CHAPTER3\WinMain.cpp(55,6): warning C4101:  'hdc' :참조되지 않은 지역 변수입니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER3\CHAPTER3\WinMain.cpp(56,14): warning C4101:  'ps' :참조되지 않은 지역 변수입니다.
+  CHAPTER3.vcxproj -> C:\Users\F-04\Desktop\taeyong\제출\CHAPTER3\x64\Debug\CHAPTER3.exe
