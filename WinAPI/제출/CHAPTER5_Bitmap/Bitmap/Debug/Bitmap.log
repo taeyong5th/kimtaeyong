@@ -1,0 +1,7 @@
+﻿  Bitmap.cpp
+  BitmapManager.cpp
+  Main.cpp
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER5_Bitmap\Bitmap\Bitmap.cpp(16,14): warning C4101:  'ps' :참조되지 않은 지역 변수입니다.
+  코드를 생성하고 있습니다...
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER5_Bitmap\Bitmap\Main.cpp(47,11): warning C4101:  'MemDC' :참조되지 않은 지역 변수입니다.
+  Bitmap.vcxproj -> C:\Users\F-04\Desktop\taeyong\제출\CHAPTER5_Bitmap\Debug\Bitmap.exe
