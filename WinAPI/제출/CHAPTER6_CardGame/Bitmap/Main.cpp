@@ -10,6 +10,8 @@ LPCTSTR lpszClass = TEXT("BitMap");
 
 #define WINDOW_WIDTH 1000 // 윈도우 너비
 #define WINDOW_HEIGHT 700 // 윈도우 높이
+#define IDT_GAMETIME 1 // ID_TIMER_GAMETIME 게임 시간 타이머
+#define IDT_CARD_OPEN_LOCK 2 // ID_TIMER_CARD_OPEN_LOCK 카드 2장이 틀렸을때 카드를 오픈을 막는 타이머
 
 #define BITMAP_COUNT 11 // 출력할 비트맵 이미지 개수
 BitmapManager* bitmapManager = BitmapManager::GetInstance(); // 비트맵 매니저
@@ -21,6 +23,7 @@ const UINT cardList[2][6] = { {0, 1, 2, 3, 4, 5 }
 
 Card* card = nullptr;
 CardManager cardManager;
+
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPervlnstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -53,22 +56,32 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPervlnstance, LPSTR lpszCmd
 }
 
 
-// 비트맵 이미지 클릭시 발생할 이벤트 함수
-void bitmapEvent(HWND hWnd, Card* card)
+bool isLocked = false;
+// 카드 클릭시 발생할 이벤트 함수
+void cardClicked(HWND hWnd, Card* card)
 {
-	if (!card->isOpen())
-		card->open();
-	else
-		card->close();
+	cardManager.choose(card);
 
+	// 카드가 매칭되
+	if (cardManager.isMatched())
+	{
+		cardManager.update();
+	}
+	else if(cardManager.chooseCount() == 2 && !isLocked)
+	{
+		isLocked = true;
+		SetTimer(hWnd, IDT_CARD_OPEN_LOCK, 1000, NULL);
+	}
 	InvalidateRect(hWnd, NULL, TRUE);
 }
+
+SYSTEMTIME st;
+static TCHAR sTime[128];
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
-	PAINTSTRUCT ps;
-	
+	PAINTSTRUCT ps;	
 	int x, y;
 	
 	std::list<Card*>::reverse_iterator it;
@@ -90,10 +103,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			for (int j = 0; j < 6; j++)
 			{
 				card = new Card(IDB_CARD1 + cardList[i][j], IDB_CARD_BACK, 20 + 160 * j, 100 + 250 * i, 145, 235);
-				card->setEventFunction(bitmapEvent);
+				card->setEventFunction(cardClicked);
 				cardManager.add(card);
 			}
 		}
+
+		// 타이머 등록
+		SetTimer(hWnd, IDT_GAMETIME, 1000, NULL);
+		SendMessage(hWnd, WM_TIMER, 1, 0);
+		return 0;
+	case WM_TIMER:
+		switch (wParam)
+		{
+		case IDT_GAMETIME:
+			GetLocalTime(&st);
+			wsprintf(sTime, TEXT("지금 시간은 %d:%d:%d입니다."),
+				st.wHour, st.wMinute, st.wSecond);
+			break;
+		case IDT_CARD_OPEN_LOCK:
+			KillTimer(hWnd, IDT_CARD_OPEN_LOCK);
+			cardManager.update();
+			isLocked = false;
+			MessageBox(hWnd, TEXT("틀렸습니다."), TEXT("실패"), NULL);
+			
+			break;
+		}
+		InvalidateRect(hWnd, NULL, TRUE);
 		return 0;
 	case WM_LBUTTONDOWN:
 		x = LOWORD(lParam);
@@ -102,16 +137,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		return 0;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
+		
+		TextOut(hdc, WINDOW_WIDTH / 2, 10, sTime, lstrlen(sTime));
 
 		for (it = cardManager.m_CardList.rbegin(); it != cardManager.m_CardList.rend(); ++it)
 		{
 			card = *it;
 			bitmapManager->draw(hdc, card->getBitmapID(), card->getX(), card->getY());
 		}
-		
+
 		EndPaint(hWnd, &ps);
 		return 0;
 	case WM_DESTROY:
+		KillTimer(hWnd, IDT_GAMETIME);
 		delete bitmapManager;
 		PostQuitMessage(0);
 		return 0;

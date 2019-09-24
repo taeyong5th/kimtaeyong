@@ -2,22 +2,41 @@
 
 void Card::open()
 {
-	m_bIsOpened = true;
+	m_eState = CARD_OPENED;
 }
 
 void Card::close()
 {
-	m_bIsOpened = false;
+	m_eState = CARD_CLOSED;
 }
 
-bool Card::isOpen()
+bool Card::isOpened()
 {
-	return m_bIsOpened;
+	switch (m_eState)
+	{
+	case CARD_OPENED:
+	case CARD_MATCHED:
+		return true;
+	case CARD_CLOSED:
+		return false;
+	default:
+		return false;
+	}
+}
+
+void Card::setState(CARD_STATE state)
+{
+	m_eState = state;
+}
+
+CARD_STATE Card::getState()
+{
+	return m_eState;
 }
 
 int Card::getBitmapID()
 {
-	if (isOpen())
+	if (isOpened())
 	{
 		return m_iBitmapID;
 	}
@@ -68,7 +87,7 @@ Card::Card(int bitmapID, int closedBitmapID, int x, int y, int width, int height
 	m_iClosedBitmapID = closedBitmapID;
 	m_ix = x;
 	m_iy = y;
-	m_bIsOpened = false;
+	m_eState = CARD_CLOSED;
 	m_fpEvent = nullptr;
 }
 

@@ -2,10 +2,17 @@
 #include <Windows.h>
 #include "Bitmap.h"
 
+enum CARD_STATE
+{
+	CARD_OPENED,
+	CARD_CLOSED,
+	CARD_MATCHED
+};
+
 class Card
 {
 private:
-	bool m_bIsOpened; // 카드가 보여질지 말지 결정
+	CARD_STATE m_eState;
 	int m_iBitmapID; // 그려질 비트맵 id
 	int m_iClosedBitmapID; // 카드가 뒤집혔을때 그려질 비트맵 id
 	int m_ix, m_iy; // 카드가 그려질 좌상 위치
@@ -15,7 +22,9 @@ private:
 public:
 	void open();
 	void close();
-	bool isOpen();
+	bool isOpened();
+	void setState(CARD_STATE state);
+	CARD_STATE getState();
 	int getBitmapID();
 	int getX();
 	int getY();
