@@ -1,0 +1,6 @@
+﻿  BitmapManager.cpp
+  Main.cpp
+C:\Users\Kim\Desktop\CHAPTER5_Bitmap\Bitmap\BitmapManager.cpp(29,28): warning C4267:  'return': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
+C:\Users\Kim\Desktop\CHAPTER5_Bitmap\Bitmap\Main.cpp(68,13): warning C4244:  '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Bitmap.vcxproj -> C:\Users\Kim\Desktop\CHAPTER5_Bitmap\x64\Debug\Bitmap.exe
