@@ -24,6 +24,11 @@ void BitmapManager::remove(Bitmap *bitmap)
 	m_BitmapList.remove(bitmap);
 }
 
+int BitmapManager::getSize()
+{
+	return m_BitmapList.size();
+}
+
 void BitmapManager::draw(HDC hdc)
 {
 	std::list<Bitmap*>::iterator it;

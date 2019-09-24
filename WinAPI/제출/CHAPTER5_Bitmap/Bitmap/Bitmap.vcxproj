@@ -151,6 +151,7 @@
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BitmapManager.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Singleton.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Bitmap.rc" />

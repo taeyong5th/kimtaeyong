@@ -11,7 +11,7 @@ LPCTSTR lpszClass = TEXT("BitMap");
 #define WINDOW_HEIGHT 700 // 윈도우 높이
 
 #define CARD_COUNT 10 // 출력할 비트맵 이미지 개수
-BitmapManager bitmapManager; // 비트맵 매니저
+BitmapManager* bitmapManager = BitmapManager::GetInstance(); // 비트맵 매니저
 HBITMAP hBitmap;
 Bitmap* bitmap = nullptr;
 const LPCWSTR nameList[CARD_COUNT] = { TEXT("강아지"), TEXT("호랑이"), TEXT("오리"), TEXT("코끼리"), TEXT("소"), TEXT("말"), TEXT("고양이"), TEXT("원숭이"), TEXT("개구리"), TEXT("닭") };
@@ -51,8 +51,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPervlnstance, LPSTR lpszCmd
 void bitmapEvent(HWND hWnd, Bitmap* bitmap)
 {
 	MessageBox(hWnd, bitmap->getName(), TEXT("이름"), MB_OK);
-	bitmapManager.remove(bitmap);
-	bitmapManager.add(bitmap);
+	bitmapManager->remove(bitmap);
+	bitmapManager->add(bitmap);
 	InvalidateRect(hWnd, NULL, TRUE);
 }
 
@@ -73,20 +73,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			bitmap = new Bitmap(hWnd, hBitmap, rand()% (WINDOW_WIDTH - 100), rand() % (WINDOW_HEIGHT - 100), 145, 235);
 			bitmap->setName(nameList[i]);
 			bitmap->setEventFunction(bitmapEvent);
-			bitmapManager.add(bitmap);
+			bitmapManager->add(bitmap);
 		}
 		return 0;
 	case WM_LBUTTONDOWN:
 		x = LOWORD(lParam);
 		y = HIWORD(lParam);
-		bitmapManager.runClickEvent(hWnd, x, y);
+		bitmapManager->runClickEvent(hWnd, x, y);
 		return 0;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
-		bitmapManager.draw(hdc);
+		bitmapManager->draw(hdc);
 		EndPaint(hWnd, &ps);
 		return 0;
 	case WM_DESTROY:
+		delete bitmapManager;
 		PostQuitMessage(0);
 		return 0;
 	}
