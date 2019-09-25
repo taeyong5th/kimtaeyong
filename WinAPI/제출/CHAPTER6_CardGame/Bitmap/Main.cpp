@@ -18,7 +18,7 @@ BitmapManager* bitmapManager = BitmapManager::GetInstance(); // 비트맵 매니저
 HBITMAP hBitmap;
 Bitmap* bitmap = nullptr;
 //const LPCWSTR nameList[CARD_COUNT] = { TEXT("강아지"), TEXT("호랑이"), TEXT("오리"), TEXT("코끼리"), TEXT("소"), TEXT("말"), TEXT("고양이"), TEXT("원숭이"), TEXT("개구리"), TEXT("닭") };
-const UINT cardList[2][6] = { {0, 1, 2, 3, 4, 5 }
+const UINT cardBitmapIDs[2][6] = { {0, 1, 2, 3, 4, 5 }
 							 ,{1, 3, 5, 2, 4, 0 } };
 
 Card* card = nullptr;
@@ -83,7 +83,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	HDC hdc;
 	PAINTSTRUCT ps;	
 	int x, y;
-	
+	std::list<Card*> cardList;
 	std::list<Card*>::reverse_iterator it;
 
 	switch (iMessage)
@@ -102,7 +102,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		{
 			for (int j = 0; j < 6; j++)
 			{
-				card = new Card(IDB_CARD1 + cardList[i][j], IDB_CARD_BACK, 20 + 160 * j, 100 + 250 * i, 145, 235);
+				card = new Card(IDB_CARD1 + cardBitmapIDs[i][j], IDB_CARD_BACK, 20 + 160 * j, 100 + 250 * i, 145, 235);
 				card->setEventFunction(cardClicked);
 				cardManager.add(card);
 			}
@@ -125,7 +125,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 			cardManager.update();
 			isLocked = false;
 			MessageBox(hWnd, TEXT("틀렸습니다."), TEXT("실패"), NULL);
-			
 			break;
 		}
 		InvalidateRect(hWnd, NULL, TRUE);
@@ -140,7 +139,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		
 		TextOut(hdc, WINDOW_WIDTH / 2, 10, sTime, lstrlen(sTime));
 
-		for (it = cardManager.m_CardList.rbegin(); it != cardManager.m_CardList.rend(); ++it)
+		// 모든 카드를 화면에 그린다.
+		cardList = cardManager.getCardList();
+		for (it = cardList.rbegin(); it != cardList.rend(); ++it)
 		{
 			card = *it;
 			bitmapManager->draw(hdc, card->getBitmapID(), card->getX(), card->getY());

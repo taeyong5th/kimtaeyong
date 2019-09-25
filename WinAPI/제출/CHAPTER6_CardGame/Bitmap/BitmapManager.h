@@ -1,6 +1,5 @@
 #pragma once
 #include <Windows.h>
-#include <list>
 #include <map>
 #include "Bitmap.h"
 #include "Singleton.h"

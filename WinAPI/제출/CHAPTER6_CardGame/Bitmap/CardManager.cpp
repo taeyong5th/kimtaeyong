@@ -10,6 +10,11 @@ CardManager::~CardManager()
 	
 }
 
+std::list<Card*> CardManager::getCardList()
+{
+	return m_CardList;
+}
+
 size_t CardManager::chooseCount()
 {
 	return m_ChoosedCardList.size();
@@ -60,6 +65,7 @@ void CardManager::update()
 		m_ChoosedCardList.clear();
 	}
 }
+
 
 void CardManager::add(Card* card)
 {
