@@ -13,16 +13,54 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Chess">
+      <UniqueIdentifier>{9ef7ac19-448e-4399-a7a8-5b932b23fa20}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Pawn.h">
+    <ClInclude Include="GameDefine.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Piece.h">
+    <ClInclude Include="Bitmap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Board.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>Chess</Filter>
     </ClInclude>
+    <ClInclude Include="Piece.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Pawn.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BitmapManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Piece.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

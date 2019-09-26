@@ -1,12 +1,15 @@
 #pragma once
 #include <vector>
+#include "GameDefine.h"
 class Board;
 
 class Piece
 {
-private:
+protected:
 	int m_iBitmapID; // 피스의 모양
+	int m_ix, m_iy; // 피스의 위치
 	unsigned int m_imoveCount; // 피스를 움직인 횟수
+	TEAM m_eTeam; 
 
 public:
 	virtual bool move(Board* board, int x, int y) = 0; // board의 x, y 위치로 피스를 이동
