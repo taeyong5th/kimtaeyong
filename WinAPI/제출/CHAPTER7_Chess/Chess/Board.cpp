@@ -7,7 +7,10 @@ void Board::setPiece(Piece* piece, BOARD_POSITION_X x, BOARD_POSITION_Y y)
 
 Piece* Board::getPiece(BOARD_POSITION_X x, BOARD_POSITION_Y y)
 {
-	return m_PiecesonBoard[x][y];
+	if (x < POS_A || x > POS_H || y < POS_8 || y > POS_1)
+		return nullptr;
+	else
+		return m_PiecesonBoard[x][y];
 }
 
 Piece* Board::getPiece(POINT point)

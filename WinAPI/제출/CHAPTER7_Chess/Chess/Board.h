@@ -3,6 +3,11 @@
 #include "GameDefine.h"
 #include "Piece.h"
 #include "Pawn.h"
+#include "Knight.h"
+#include "Rook.h"
+#include "Bishop.h"
+#include "Queen.h"
+#include "King.h"
 #include "BitmapManager.h"
 
 class Board

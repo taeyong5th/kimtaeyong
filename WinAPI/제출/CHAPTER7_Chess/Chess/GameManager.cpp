@@ -6,13 +6,41 @@ void GameManager::init()
 	for (UINT x = POS_A; x < POS_X_COUNT; x++)
 	{
 		m_board.setPiece(new Pawn(IMG_BLACK_PAWN, (BOARD_POSITION_X)x, POS_7, TEAM_BLACK), (BOARD_POSITION_X)x, POS_7);
-	}	
+	}
+	// ÈæÆÀ ³ªÀÌÆ® ¼¼ÆÃ
+	m_board.setPiece(new Knight(IMG_BLACK_KNIGHT, POS_B, POS_8, TEAM_BLACK), POS_B, POS_8);
+	m_board.setPiece(new Knight(IMG_BLACK_KNIGHT, POS_G, POS_8, TEAM_BLACK), POS_G, POS_8);
+	// ÈæÆÀ ·è ¼¼ÆÃ
+	m_board.setPiece(new Rook(IMG_BLACK_ROOK, POS_A, POS_8, TEAM_BLACK), POS_A, POS_8);
+	m_board.setPiece(new Rook(IMG_BLACK_ROOK, POS_H, POS_8, TEAM_BLACK), POS_H, POS_8);
+	// ÈæÆÀ ºñ¼ó ¼¼ÆÃ
+	m_board.setPiece(new Bishop(IMG_BLACK_BISHOP, POS_C, POS_8, TEAM_BLACK), POS_C, POS_8);
+	m_board.setPiece(new Bishop(IMG_BLACK_BISHOP, POS_F, POS_8, TEAM_BLACK), POS_F, POS_8);
+	// ÈæÆÀ Äý
+	m_board.setPiece(new Queen(IMG_BLACK_QUEEN, POS_D, POS_8, TEAM_BLACK), POS_D, POS_8);
+	// ÈæÆÀ Å·
+	m_board.setPiece(new King(IMG_BLACK_KING, POS_E, POS_8, TEAM_BLACK), POS_E, POS_8);
+	
 	
 	// ¹éÆÀ Æù ¼¼ÆÃ
 	for (UINT x = POS_A; x < POS_X_COUNT; x++)
 	{
 		m_board.setPiece(new Pawn(IMG_WHITE_PAWN, (BOARD_POSITION_X)x, POS_2, TEAM_WHITE), (BOARD_POSITION_X)x, POS_2);
 	}
+	// ¹éÆÀ ³ªÀÌÆ® ¼¼ÆÃ
+	m_board.setPiece(new Knight(IMG_WHITE_KNIGHT, POS_B, POS_1, TEAM_WHITE), POS_B, POS_1);
+	m_board.setPiece(new Knight(IMG_WHITE_KNIGHT, POS_G, POS_1, TEAM_WHITE), POS_G, POS_1);
+	// ¹éÆÀ ·è ¼¼ÆÃ
+	m_board.setPiece(new Rook(IMG_WHITE_ROOK, POS_A, POS_1, TEAM_WHITE), POS_A, POS_1);
+	m_board.setPiece(new Rook(IMG_WHITE_ROOK, POS_H, POS_1, TEAM_WHITE), POS_H, POS_1);
+	// ¹éÆÀ ºñ¼ó ¼¼ÆÃ
+	m_board.setPiece(new Bishop(IMG_WHITE_BISHOP, POS_C, POS_1, TEAM_WHITE), POS_C, POS_1);
+	m_board.setPiece(new Bishop(IMG_WHITE_BISHOP, POS_F, POS_1, TEAM_WHITE), POS_F, POS_1);
+	// ¹éÆÀ Äý ¼¼ÆÃ
+	m_board.setPiece(new Queen(IMG_WHITE_QUEEN, POS_D, POS_1, TEAM_WHITE), POS_D, POS_1);
+	// ¹éÆÀ Å· ¼¼ÆÃ
+	m_board.setPiece(new King(IMG_WHITE_KING, POS_E, POS_1, TEAM_WHITE), POS_E, POS_1);
+
 }
 
 void GameManager::start()
@@ -30,9 +58,9 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 	else
 	{
 		std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> pos = m_board.calcPosition(point);
-		std::vector<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> vec = m_SelectedPiece->getMovablePositions(&m_board);
+		std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> pos_list = m_SelectedPiece->getMovablePositions(&m_board);
 
-		for (auto iter = vec.begin(); iter != vec.end(); ++iter)
+		for (auto iter = pos_list.begin(); iter != pos_list.end(); ++iter)
 		{
 			if ((*iter) == pos)
 			{

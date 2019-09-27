@@ -45,6 +45,21 @@
     <ClInclude Include="Player.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Knight.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="King.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Rook.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Bishop.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
+    <ClInclude Include="Queen.h">
+      <Filter>Chess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitmapManager.cpp">
@@ -66,6 +81,21 @@
       <Filter>Chess</Filter>
     </ClCompile>
     <ClCompile Include="Pawn.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Knight.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="King.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Rook.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Bishop.cpp">
+      <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Queen.cpp">
       <Filter>Chess</Filter>
     </ClCompile>
   </ItemGroup>

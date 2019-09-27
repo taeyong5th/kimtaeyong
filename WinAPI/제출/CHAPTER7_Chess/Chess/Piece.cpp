@@ -1,26 +1,27 @@
 #include "Piece.h"
 #include "Board.h"
 
-bool Piece::move(Board* board, BOARD_POSITION_X x, BOARD_POSITION_Y y)
+Piece* Piece::move(Board* board, BOARD_POSITION_X x, BOARD_POSITION_Y y)
 {
+	Piece* p = board->getPiece(x, y);
 	board->setPiece(nullptr, m_ix, m_iy);
 	m_ix = x;
 	m_iy = y;
 	board->setPiece(this, x, y);
 	m_imoveCount++;
-	return false;
+	return p;
 }
 
 void Piece::drawMovablePositions(HDC hdc, int x, int y, Board *board)
 {
-	std::vector<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> vec = getMovablePositions(board);
+	std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> posList = getMovablePositions(board);
 
 	float width = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_MOVABLE)->getWidth();
 	float height = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_MOVABLE)->getHeight();
 
-	for (int i = 0; i < vec.size(); i++)
+	for (auto iter = posList.begin(); iter != posList.end(); ++iter)
 	{		
-		BitmapManager::GetInstance()->draw(hdc, IMG_BOARD_MOVABLE, x + vec[i].first * width * BITMAP_RESIZE_RATE, y + vec[i].second * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
+		BitmapManager::GetInstance()->draw(hdc, IMG_BOARD_MOVABLE, x + iter->first * width * BITMAP_RESIZE_RATE, y + iter->second * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
 	}
 }
 
@@ -34,6 +35,11 @@ void Piece::draw(HDC hdc, int x, int y)
 std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> Piece::getPosition()
 {
 	return std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>(m_ix, m_iy);
+}
+
+TEAM Piece::getTeam()
+{
+	return m_eTeam;
 }
 
 Piece::Piece(LPCWSTR bitmapName, BOARD_POSITION_X x, BOARD_POSITION_Y y, TEAM team) :

@@ -1,2 +1,40 @@
-﻿  Pawn.cpp
-  Chess.vcxproj -> C:\Users\Kim\Desktop\Proj\CHAPTER7_Chess\x64\Debug\Chess.exe
+﻿  Bishop.cpp
+  Board.cpp
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(20,14): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(21,15): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(27,21): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(28,20): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(29,27): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(30,27): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(52,17): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(53,18): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(54,100): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(54,64): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(58,17): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(59,18): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(60,100): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(60,64): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(76,14): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(77,15): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(83,21): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(84,20): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(85,27): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  GameManager.cpp
+  King.cpp
+  Knight.cpp
+  Main.cpp
+  Pawn.cpp
+  Piece.cpp
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Board.cpp(86,27): warning C4244:  '=': 'float'에서 'LONG'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(19,14): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(20,15): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(24,110): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(24,64): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(30,14): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(31,15): warning C4244:  '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(32,100): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Queen.cpp
+  Rook.cpp
+  코드를 생성하고 있습니다...
+C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\Chess\Piece.cpp(32,61): warning C4244:  '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Chess.vcxproj -> C:\Users\F-04\Desktop\taeyong\제출\CHAPTER7_Chess\x64\Debug\Chess.exe
