@@ -2,6 +2,7 @@
 
 #define BOARD_WIDTH 8
 #define BOARD_HEIGHT 8
+#define BITMAP_RESIZE_RATE 0.5f
 
 #define IMG_BLACK_PAWN		L"res//block_b_00.bmp"
 #define IMG_BLACK_KNIGHT	L"res//block_b_01.bmp"
@@ -20,6 +21,7 @@
 #define IMG_BOARD_WHITE		L"res//block00.bmp"
 #define IMG_BOARD_BLACK		L"res//block01.bmp"
 #define IMG_BOARD_SELECTED	L"res//block02.bmp"
+#define IMG_BOARD_MOVABLE	L"res//block03.bmp"
 
 enum TEAM
 {
@@ -29,6 +31,7 @@ enum TEAM
 
 enum BOARD_POSITION_X
 {
+	POS_X_INVALID = -1,
 	POS_A,
 	POS_B,
 	POS_C,
@@ -36,11 +39,13 @@ enum BOARD_POSITION_X
 	POS_E,
 	POS_F,
 	POS_G,
-	POS_H
+	POS_H,
+	POS_X_COUNT
 };
 
 enum BOARD_POSITION_Y
 {
+	POS_Y_INVALID = -1,
 	POS_8,
 	POS_7,
 	POS_6,
@@ -48,5 +53,6 @@ enum BOARD_POSITION_Y
 	POS_4,
 	POS_3,
 	POS_2,
-	POS_1
+	POS_1,
+	POS_Y_COUNT
 };

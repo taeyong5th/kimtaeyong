@@ -9,10 +9,12 @@ class GameManager
 {
 private:
 	Board m_board;
+	Piece* m_SelectedPiece;
 
 public:
 	void init();
 	void start();
+	void clickEvent(HWND hWnd, POINT point);
 	void draw(HDC hdc);
 	GameManager(HWND hWnd);
 	~GameManager();

@@ -29,16 +29,23 @@ int BitmapManager::getSize()
 	return m_BitmapList.size();
 }
 
-void BitmapManager::draw(HDC hdc, LPCWSTR fileName, int x, int y)
+Bitmap* BitmapManager::getBitmap(LPCWSTR fileName)
+{
+	std::map<LPCWSTR, Bitmap*>::iterator it = m_BitmapList.find(fileName);
+
+	if (it != m_BitmapList.end())
+	{
+		return it->second;
+	}
+	return nullptr;
+}
+
+void BitmapManager::draw(HDC hdc, LPCWSTR fileName, int x, int y, float px, float py)
 {
 	std::map<LPCWSTR, Bitmap*>::iterator it = m_BitmapList.find(fileName);
 
 	if (it != m_BitmapList.end())
 	{	
-		(it->second)->draw(hdc, x, y);
-	}
-	else
-	{
-
+		(it->second)->draw(hdc, x, y, px, py);
 	}
 }

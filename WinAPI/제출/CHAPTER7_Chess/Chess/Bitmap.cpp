@@ -48,14 +48,17 @@ LPCWSTR Bitmap::getBitmapFileName()
 	return m_strFileName;
 }
 
-void Bitmap::draw(HDC hdc, int x, int y)
-{	
+void Bitmap::draw(HDC hdc, int x, int y, float px, float py)
+{
 	PAINTSTRUCT ps;
 	HBITMAP oldBitmap;
 
+	px = px > 0.0f ? px : 1.0f;
+	py = py > 0.0f ? py : 1.0f;
+
 	oldBitmap = (HBITMAP)SelectObject(m_MemDC, m_hBitmap);
 	//BitBlt(hdc, x, y, m_iWidth, m_iHeight, m_MemDC, 0, 0, SRCCOPY);
-	TransparentBlt(hdc, x, y, m_iWidth, m_iHeight, m_MemDC, 0, 0,
+	TransparentBlt(hdc, x, y, m_iWidth * px, m_iHeight * py, m_MemDC, 0, 0,
 		m_iWidth, m_iHeight, RGB(255, 0, 255));
 
 	SelectObject(m_MemDC, oldBitmap);

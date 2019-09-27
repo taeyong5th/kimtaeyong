@@ -1,4 +1,4 @@
-#include <windows.h>
+#include <Windows.h>
 #include <ctime>
 #include "GameManager.h"
 
@@ -6,8 +6,8 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = TEXT("Chess");
 
-#define WINDOW_WIDTH 1500 // 윈도우 너비
-#define WINDOW_HEIGHT 1000 // 윈도우 높이
+#define WINDOW_WIDTH 800 // 윈도우 너비
+#define WINDOW_HEIGHT 600 // 윈도우 높이
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPervlnstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -18,7 +18,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPervlnstance, LPSTR lpszCmd
 
 	WndClass.cbClsExtra = 0;
 	WndClass.cbWndExtra = 0;
-	WndClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	WndClass.hbrBackground = (HBRUSH)GetStockObject(DKGRAY_BRUSH);
 	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	WndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	WndClass.hInstance = hInstance;
@@ -45,7 +45,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;	
-	int x, y;
+	POINT point;
 	
 	switch (iMessage)
 	{
@@ -58,9 +58,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 		//InvalidateRect(hWnd, NULL, TRUE);
 		return 0;
 	case WM_LBUTTONDOWN:
-		x = LOWORD(lParam);
-		y = HIWORD(lParam);
-
+		point.x = LOWORD(lParam);
+		point.y = HIWORD(lParam);
+		game->clickEvent(hWnd, point);
 		return 0;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
