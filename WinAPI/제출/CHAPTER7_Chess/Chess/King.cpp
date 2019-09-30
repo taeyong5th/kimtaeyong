@@ -5,8 +5,8 @@ std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> King::getMovablePositio
 {
 	std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> posList;
 	Piece* p;
-	const int move_x[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
-	const int move_y[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+	const int move_x[8] = { -1, 0, 1, 1, 1, 0, -1, -1 };
+	const int move_y[8] = { -1, -1, -1, 0, 1, 1, 1, 0 };
 
 	// 8개의 위치로 이동 가능
 	for (int i = 0; i < 8; i++)
@@ -31,6 +31,16 @@ std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> King::getMovablePositio
 			++iter;
 		}
 	}
+
+	//// 체크 당하는 위치를 제거
+	//for (auto iter = posList.begin(); iter != posList.end(); )
+	//{
+	//	p = board->getPiece(iter->first, iter->second);
+	//	std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> attackList = p->getAttackablePositions(board);
+
+
+	//	++iter;
+	//}
 
 	return posList;
 }

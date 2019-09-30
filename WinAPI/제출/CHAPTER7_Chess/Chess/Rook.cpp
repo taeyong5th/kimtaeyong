@@ -46,6 +46,7 @@ std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Rook::getMovablePositio
 	return posList;
 }
 
+
 Rook::Rook(LPCWSTR bitmapName, BOARD_POSITION_X x, BOARD_POSITION_Y y, TEAM team) :
 	Piece(bitmapName, x, y, team)
 {

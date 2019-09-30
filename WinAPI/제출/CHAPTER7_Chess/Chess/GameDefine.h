@@ -1,7 +1,7 @@
 #pragma once
 
-#define WINDOW_WIDTH 800 // 윈도우 너비
-#define WINDOW_HEIGHT 600 // 윈도우 높이
+#define WINDOW_WIDTH 750 // 윈도우 너비
+#define WINDOW_HEIGHT 550 // 윈도우 높이
 
 #define BOARD_WIDTH 8
 #define BOARD_HEIGHT 8
@@ -29,7 +29,8 @@
 enum TEAM
 {
 	TEAM_BLACK,
-	TEAM_WHITE
+	TEAM_WHITE,
+	TEAM_COUNT
 };
 
 enum BOARD_POSITION_X

@@ -94,6 +94,49 @@ std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> Board::calcPosition(POINT point)
 	return std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>(POS_X_INVALID, POS_Y_INVALID);
 }
 
+bool Board::isChecked(TEAM team)
+{
+	Piece* piece;
+	King* king = nullptr;
+	std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> s;
+
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		for (UINT j = 0; j < BOARD_HEIGHT; j++)
+		{
+			piece = m_PiecesonBoard[(BOARD_POSITION_X)i][(BOARD_POSITION_Y)j];
+			if (piece == nullptr) continue;
+
+			// 적이 공격가능한 위치를 계산한다.
+			if (piece->getTeam() != team)
+			{
+				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
+				positions = piece->getAttackablePositions(this);
+
+				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
+				{
+					s.insert(*iter);
+				}
+			}
+			// 아군 킹의 정보를 구한다.
+			else
+			{
+				if (king == nullptr)
+					king = dynamic_cast<King*>(piece);
+			}
+		}
+	}
+
+	for (auto iter = s.begin(); iter != s.end(); ++iter)
+	{
+		if (king != nullptr && king->getPosition() == *iter)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 Board::Board()
 {
 	m_ix = m_iy = 0;

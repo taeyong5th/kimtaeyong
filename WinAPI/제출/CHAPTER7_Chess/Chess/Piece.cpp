@@ -1,6 +1,11 @@
 #include "Piece.h"
 #include "Board.h"
 
+std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Piece::getAttackablePositions(Board* board)
+{
+	return getMovablePositions(board);
+}
+
 Piece* Piece::move(Board* board, BOARD_POSITION_X x, BOARD_POSITION_Y y)
 {
 	Piece* p = board->getPiece(x, y);

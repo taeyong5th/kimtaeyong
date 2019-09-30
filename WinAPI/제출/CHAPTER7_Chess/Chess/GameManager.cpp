@@ -2,9 +2,10 @@
 
 void GameManager::init()
 {
-
+	m_eTurn = TEAM_BLACK;
 	m_SelectedPiece = nullptr;
 	m_eState = STATE_PLAY;
+	m_iTurnCount = 0;
 
 	// 흑팀 폰 세팅
 	for (UINT x = POS_A; x < POS_X_COUNT; x++)
@@ -57,7 +58,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 	{ // 이전에 선택한 피스가 없으면 피스 선택
 		if (m_SelectedPiece == nullptr)
 		{
-			m_SelectedPiece = m_board.getPiece(point);
+			m_SelectedPiece = m_board.getPiece(point);			
 		}
 		// 있으면 피스 이동
 		else
@@ -69,7 +70,12 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 			{
 				if ((*iter) == pos)
 				{
-					m_SelectedPiece->move(&m_board, pos.first, pos.second);
+					// 이동한 자리에 원래 있던 피스를 제거
+					Piece* p = m_SelectedPiece->move(&m_board, pos.first, pos.second);
+					if (p != nullptr)
+					{
+						delete p;
+					}
 				}
 			}
 
@@ -83,17 +89,24 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 					m_eState = STATE_PROMOTION;
 				}
 			}
-
+			
 			if (m_eState != STATE_PROMOTION)
 			{
 				m_SelectedPiece = nullptr;
+				m_eTurn = (TEAM)(((int)m_eTurn + 1) % TEAM_COUNT);
+				m_iTurnCount++;
 			}
 		}
 
+		// 이동 후 킹이 체크당하는지 확인
+		if (isChecked(TEAM_BLACK))
+		{
+			MessageBox(hWnd, L"체크", L"체크됨", MB_OK);
+		}
 	}
 	// 프로모션
 	else if (m_eState == STATE_PROMOTION)
-	{	
+	{
 		PROMOTION_BUTTON btn = m_PromotionUI.click(point);
 		BOARD_POSITION_X x = m_SelectedPiece->getPosition().first;
 		BOARD_POSITION_Y y = m_SelectedPiece->getPosition().second;
@@ -104,7 +117,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 		case BUTTON_NONE:
 			break;
 		case BUTTON_QUEEN:
-			if(team == TEAM_BLACK)
+			if (team == TEAM_BLACK)
 				piece = new Queen(IMG_BLACK_QUEEN, x, y, team);
 			else
 				piece = new Queen(IMG_WHITE_QUEEN, x, y, team);
@@ -146,10 +159,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 		default:
 			break;
 		}
-
 	}
-	
-
 	
 	InvalidateRect(hWnd, NULL, TRUE);
 
@@ -158,7 +168,10 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 void GameManager::draw(HDC hdc)
 {
 	// 보드를 그린다.
-	m_board.draw(hdc, 0, 0);
+	m_board.draw(hdc);
+
+	// 게임을 그린다.
+	m_GameInfoUI.draw(hdc, m_eTurn, m_iTurnCount);
 
 	// 선택한 피스가 이동할 수 있는 곳을 그린다.
 	if (m_SelectedPiece != nullptr)
@@ -170,6 +183,48 @@ void GameManager::draw(HDC hdc)
 	{
 		m_PromotionUI.draw(hdc);
 	}
+}
+
+bool GameManager::isChecked(TEAM team)
+{
+	Piece* piece;
+	King* king = nullptr;
+	std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> s;
+
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		for (UINT j = 0; j < BOARD_HEIGHT; j++)
+		{
+			piece = m_board.getPiece((BOARD_POSITION_X)i, (BOARD_POSITION_Y)j);
+			if (piece == nullptr) continue;
+
+			// 적이 공격가능한 위치를 계산한다.
+			if (piece->getTeam() != team)
+			{
+				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
+				positions = piece->getAttackablePositions(&m_board);
+				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
+				{
+					s.insert(*iter);
+				}
+			}
+			// 아군 킹의 정보를 구한다.
+			else
+			{
+				if (king == nullptr)
+					king = dynamic_cast<King*>(piece);
+			}
+		}
+	}
+
+	for (auto iter = s.begin(); iter != s.end(); ++iter)
+	{
+		if (king != nullptr && king->getPosition() == *iter)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 GameManager::GameManager(HWND hWnd)
