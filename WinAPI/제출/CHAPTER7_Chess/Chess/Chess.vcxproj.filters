@@ -16,6 +16,9 @@
     <Filter Include="Chess">
       <UniqueIdentifier>{9ef7ac19-448e-4399-a7a8-5b932b23fa20}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{92846d82-d5d0-414d-859c-6a1ee5bc5d40}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameDefine.h">
@@ -60,6 +63,12 @@
     <ClInclude Include="Queen.h">
       <Filter>Chess</Filter>
     </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="PromotionUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitmapManager.cpp">
@@ -97,6 +106,12 @@
     </ClCompile>
     <ClCompile Include="Queen.cpp">
       <Filter>Chess</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="PromotionUI.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

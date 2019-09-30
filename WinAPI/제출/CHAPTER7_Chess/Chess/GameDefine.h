@@ -1,5 +1,8 @@
 #pragma once
 
+#define WINDOW_WIDTH 800 // 윈도우 너비
+#define WINDOW_HEIGHT 600 // 윈도우 높이
+
 #define BOARD_WIDTH 8
 #define BOARD_HEIGHT 8
 #define BITMAP_RESIZE_RATE 0.5f

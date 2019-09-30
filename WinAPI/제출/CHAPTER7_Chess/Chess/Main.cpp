@@ -6,8 +6,6 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = TEXT("Chess");
 
-#define WINDOW_WIDTH 800 // 윈도우 너비
-#define WINDOW_HEIGHT 600 // 윈도우 높이
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPervlnstance, LPSTR lpszCmdParam, int nCmdShow)
 {
@@ -65,6 +63,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		game->draw(hdc);
+		
 		EndPaint(hWnd, &ps);
 		return 0;
 	case WM_DESTROY:		
