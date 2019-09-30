@@ -22,7 +22,9 @@ public:
 	Piece* getPiece(POINT point); // point 좌표에 있는 피스를 반환
 	void draw(HDC hdc, int x = 0, int y = 0); // x, y 위치에 보드를 그린다.
 	std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> calcPosition(POINT point); // 클릭한 좌표에 해당하는 보드 좌표를 반환한다.
+	std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> getAttackablePositions(TEAM team); // team이 공격가능한 모든 좌표를 반환한다.
 	bool isChecked(TEAM team);  // team의 킹이 체크된 상태인지
+
 	Board();
 	~Board();
 };

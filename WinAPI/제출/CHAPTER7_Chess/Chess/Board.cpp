@@ -94,6 +94,35 @@ std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> Board::calcPosition(POINT point)
 	return std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>(POS_X_INVALID, POS_Y_INVALID);
 }
 
+std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Board::getAttackablePositions(TEAM team)
+{
+	Piece* piece;
+	std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> s;
+
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		for (UINT j = 0; j < BOARD_HEIGHT; j++)
+		{
+			piece = m_PiecesonBoard[(BOARD_POSITION_X)i][(BOARD_POSITION_Y)j];
+			if (piece == nullptr) continue;
+
+			// 적이 공격가능한 위치를 계산한다.
+			if (piece->getTeam() == team)
+			{
+				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
+				positions = piece->getAttackablePositions(this);
+
+				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
+				{
+					s.insert(*iter);
+				}
+			}
+		}
+	}
+
+	return s;
+}
+
 bool Board::isChecked(TEAM team)
 {
 	Piece* piece;

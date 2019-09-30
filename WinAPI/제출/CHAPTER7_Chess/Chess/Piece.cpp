@@ -20,10 +20,16 @@ Piece* Piece::move(Board* board, BOARD_POSITION_X x, BOARD_POSITION_Y y)
 void Piece::drawMovablePositions(HDC hdc, int x, int y, Board *board)
 {
 	std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> posList = getMovablePositions(board);
+	float width, height;
+	
+	// 피스 위치에 선택된 효과를 그린다.
+	width = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_SELECTED)->getWidth();
+	height = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_SELECTED)->getHeight();
+	BitmapManager::GetInstance()->draw(hdc, IMG_BOARD_SELECTED, x + m_ix * width * BITMAP_RESIZE_RATE, y + m_iy * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
 
-	float width = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_MOVABLE)->getWidth();
-	float height = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_MOVABLE)->getHeight();
-
+	// 이동 가능한 좌표에 점을 그린다.
+	width = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_MOVABLE)->getWidth();
+	height = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_MOVABLE)->getHeight();
 	for (auto iter = posList.begin(); iter != posList.end(); ++iter)
 	{		
 		BitmapManager::GetInstance()->draw(hdc, IMG_BOARD_MOVABLE, x + iter->first * width * BITMAP_RESIZE_RATE, y + iter->second * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);

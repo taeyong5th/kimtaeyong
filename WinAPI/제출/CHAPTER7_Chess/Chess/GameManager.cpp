@@ -24,7 +24,8 @@ void GameManager::init()
 	// 흑팀 퀸
 	m_board.setPiece(new Queen(IMG_BLACK_QUEEN, POS_D, POS_8, TEAM_BLACK), POS_D, POS_8);
 	// 흑팀 킹
-	m_board.setPiece(new King(IMG_BLACK_KING, POS_E, POS_8, TEAM_BLACK), POS_E, POS_8);
+	m_blackKing = new King(IMG_BLACK_KING, POS_E, POS_8, TEAM_BLACK);
+	m_board.setPiece(m_blackKing, POS_E, POS_8);
 	
 	
 	// 백팀 폰 세팅
@@ -44,8 +45,8 @@ void GameManager::init()
 	// 백팀 퀸 세팅
 	m_board.setPiece(new Queen(IMG_WHITE_QUEEN, POS_D, POS_1, TEAM_WHITE), POS_D, POS_1);
 	// 백팀 킹 세팅
-	m_board.setPiece(new King(IMG_WHITE_KING, POS_E, POS_1, TEAM_WHITE), POS_E, POS_1);
-
+	m_whiteKing = new King(IMG_WHITE_KING, POS_E, POS_1, TEAM_WHITE);
+	m_board.setPiece(m_whiteKing, POS_E, POS_1);
 }
 
 void GameManager::start()
@@ -57,6 +58,10 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 	if (m_eState == STATE_CHOOSE_PIECE)
 	{
 		m_SelectedPiece = m_board.getPiece(point);
+		/*if (m_SelectedPiece != nullptr)
+		{
+			m_eState = STATE_CHOOSE_MOVE_POSITION;
+		}*/
 		if (m_SelectedPiece != nullptr && m_SelectedPiece->getTeam() == m_eTurn)
 		{
 			m_eState = STATE_CHOOSE_MOVE_POSITION;
@@ -98,7 +103,8 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 				if ((m_SelectedPiece->getTeam() == TEAM_BLACK && m_SelectedPiece->getPosition().second == POS_1)
 					|| (m_SelectedPiece->getTeam() == TEAM_WHITE && m_SelectedPiece->getPosition().second == POS_8))
 				{
-					m_eState = STATE_PROMOTION;
+					m_eState = STATE_CHOOSE_PROMOTION;
+					InvalidateRect(hWnd, NULL, TRUE);
 					return;
 				}
 			}
@@ -107,6 +113,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 			if (isChecked(m_eTurn))
 			{
 				MessageBox(hWnd, L"체크", L"체크됨", MB_OK);
+				isCheckMate();
 			}
 			nextTurn();
 		}
@@ -117,55 +124,14 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 			m_eState = STATE_CHOOSE_PIECE;
 		}
 	}
-	// 프로모션
-	else if (m_eState == STATE_PROMOTION)
+	// 프로모션 선택 화면
+	else if (m_eState == STATE_CHOOSE_PROMOTION)
 	{
 		PROMOTION_BUTTON btn = m_PromotionUI.click(point);
-		BOARD_POSITION_X x = m_SelectedPiece->getPosition().first;
-		BOARD_POSITION_Y y = m_SelectedPiece->getPosition().second;
-		TEAM team = m_SelectedPiece->getTeam();
-		Piece* piece;
-		switch (btn)
+		Piece* p = PromotePiece(m_SelectedPiece, btn);
+		if (p != nullptr)
 		{
-		case BUTTON_NONE:
-			break;
-		case BUTTON_QUEEN:
-			if (team == TEAM_BLACK)
-				piece = new Queen(IMG_BLACK_QUEEN, x, y, team);
-			else
-				piece = new Queen(IMG_WHITE_QUEEN, x, y, team);
-			m_board.setPiece(piece, x, y);
-			delete m_SelectedPiece;
 			nextTurn();
-			break;
-		case BUTTON_ROOK:
-			if (team == TEAM_BLACK)
-				piece = new Rook(IMG_BLACK_ROOK, x, y, team);
-			else
-				piece = new Rook(IMG_WHITE_ROOK, x, y, team);
-			m_board.setPiece(piece, x, y);
-			delete m_SelectedPiece;
-			nextTurn();
-			break;
-		case BUTTON_BISHOP:
-			if (team == TEAM_BLACK)
-				piece = new Bishop(IMG_BLACK_BISHOP, x, y, team);
-			else
-				piece = new Bishop(IMG_WHITE_BISHOP, x, y, team);
-			m_board.setPiece(piece, x, y);
-			nextTurn();
-			break;
-		case BUTTON_KNIGHT:
-			if (team == TEAM_BLACK)
-				piece = new Knight(IMG_BLACK_KNIGHT, x, y, team);
-			else
-				piece = new Knight(IMG_WHITE_KNIGHT, x, y, team);
-			m_board.setPiece(piece, x, y);
-			delete m_SelectedPiece;
-			nextTurn();
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -188,7 +154,7 @@ void GameManager::draw(HDC hdc)
 		m_SelectedPiece->drawMovablePositions(hdc, 0, 0, &m_board);
 	}
 
-	if (m_eState == STATE_PROMOTION)
+	if (m_eState == STATE_CHOOSE_PROMOTION)
 	{
 		m_PromotionUI.draw(hdc);
 	}
@@ -214,7 +180,7 @@ bool GameManager::isChecked(TEAM team)
 				positions = piece->getAttackablePositions(&m_board);
 				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
 				{
-					s.insert(*iter);
+					//s.insert(*iter);
 				}
 			}
 			// 아군 킹의 정보를 구한다.
@@ -225,6 +191,7 @@ bool GameManager::isChecked(TEAM team)
 			}
 		}
 	}
+	s = m_board.getAttackablePositions(team);
 
 	for (auto iter = s.begin(); iter != s.end(); ++iter)
 	{
@@ -234,6 +201,69 @@ bool GameManager::isChecked(TEAM team)
 		}
 	}
 	return false;
+}
+
+bool GameManager::isCheckMate()
+{
+	if (m_whiteKing->getMovablePositions(&m_board).size() == 0)
+	{
+		//exit(0);
+		// 킹이 체크되어 이동할수 있는 곳이 0일때
+		// 킹을 체크 중인 적 피스를 다음턴에 잡을 수 없으면 체크메이트,
+		// 아니면 그냥 체크.
+
+	}
+
+	return false;
+}
+
+Piece* GameManager::PromotePiece(Piece* pawn, PROMOTION_BUTTON btn)
+{
+	BOARD_POSITION_X x = pawn->getPosition().first;
+	BOARD_POSITION_Y y = pawn->getPosition().second;
+	TEAM team = pawn->getTeam();
+	Piece* piece = nullptr;
+	switch (btn)
+	{
+	case BUTTON_NONE:
+		break;
+	case BUTTON_QUEEN:
+		if (team == TEAM_BLACK)
+			piece = new Queen(IMG_BLACK_QUEEN, x, y, team);
+		else
+			piece = new Queen(IMG_WHITE_QUEEN, x, y, team);
+		m_board.setPiece(piece, x, y);
+		delete pawn;
+		break;
+	case BUTTON_ROOK:
+		if (team == TEAM_BLACK)
+			piece = new Rook(IMG_BLACK_ROOK, x, y, team);
+		else
+			piece = new Rook(IMG_WHITE_ROOK, x, y, team);
+		m_board.setPiece(piece, x, y);
+		delete pawn;
+		break;
+	case BUTTON_BISHOP:
+		if (team == TEAM_BLACK)
+			piece = new Bishop(IMG_BLACK_BISHOP, x, y, team);
+		else
+			piece = new Bishop(IMG_WHITE_BISHOP, x, y, team);
+		m_board.setPiece(piece, x, y);
+		delete pawn;
+		break;
+	case BUTTON_KNIGHT:
+		if (team == TEAM_BLACK)
+			piece = new Knight(IMG_BLACK_KNIGHT, x, y, team);
+		else
+			piece = new Knight(IMG_WHITE_KNIGHT, x, y, team);
+		m_board.setPiece(piece, x, y);
+		delete pawn;
+		break;
+	default:
+		break;
+	}
+
+	return piece;
 }
 
 void GameManager::nextTurn()

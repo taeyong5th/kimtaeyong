@@ -17,11 +17,11 @@ protected:
 
 public:
 	virtual std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> getMovablePositions(Board* board) = 0; // piece가 이동할 수 있는 모든좌표 반환
-	std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> getAttackablePositions(Board* board); // piece가 공격할 수 있는 모든좌표 반환
+	virtual std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> getAttackablePositions(Board* board); // piece가 공격할 수 있는 모든좌표 반환
 
 	Piece* move(Board* board, BOARD_POSITION_X x, BOARD_POSITION_Y y); // board의 x, y 위치로 피스를 이동 후 그 자리에 있던 피스를 반환
 	void drawMovablePositions(HDC hdc, int x, int y, Board *board); // piece가 이동 가능한 곳을 그린다.
-	void draw(HDC hdc, int x, int y);
+	void draw(HDC hdc, int x, int y);	
 	std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> getPosition();
 	TEAM getTeam();
 	Piece(LPCWSTR bitmapName, BOARD_POSITION_X x, BOARD_POSITION_Y y, TEAM team);
