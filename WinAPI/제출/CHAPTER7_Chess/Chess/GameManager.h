@@ -9,9 +9,9 @@
 
 enum GAME_STATE
 {
-	STATE_START,
-	STATE_PLAY,
-	STATE_PROMOTION,
+	STATE_CHOOSE_PIECE,
+	STATE_CHOOSE_MOVE_POSITION,
+	STATE_PROMOTION
 };
 
 class GameManager
@@ -27,10 +27,11 @@ private:
 
 public:
 	void init();
-	void start();	
+	void start();
 	void clickEvent(HWND hWnd, POINT point);
 	void draw(HDC hdc);
 	bool isChecked(TEAM team); // team의 킹이 체크된 상태인지
+	void nextTurn();
 	GameManager(HWND hWnd);
 	~GameManager();
 };

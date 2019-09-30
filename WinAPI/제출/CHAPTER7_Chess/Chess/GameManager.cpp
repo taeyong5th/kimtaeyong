@@ -4,7 +4,7 @@ void GameManager::init()
 {
 	m_eTurn = TEAM_BLACK;
 	m_SelectedPiece = nullptr;
-	m_eState = STATE_PLAY;
+	m_eState = STATE_CHOOSE_PIECE;
 	m_iTurnCount = 0;
 
 	// 흑팀 폰 세팅
@@ -54,54 +54,67 @@ void GameManager::start()
 
 void GameManager::clickEvent(HWND hWnd, POINT point)
 {
-	if (m_eState == STATE_PLAY)
-	{ // 이전에 선택한 피스가 없으면 피스 선택
-		if (m_SelectedPiece == nullptr)
+	if (m_eState == STATE_CHOOSE_PIECE)
+	{
+		m_SelectedPiece = m_board.getPiece(point);
+		if (m_SelectedPiece != nullptr && m_SelectedPiece->getTeam() == m_eTurn)
 		{
-			m_SelectedPiece = m_board.getPiece(point);			
+			m_eState = STATE_CHOOSE_MOVE_POSITION;
 		}
-		// 있으면 피스 이동
-		else
+		else if (m_SelectedPiece != nullptr && m_SelectedPiece->getTeam() != m_eTurn)
 		{
-			std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> pos = m_board.calcPosition(point);
-			std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> pos_list = m_SelectedPiece->getMovablePositions(&m_board);
+			m_SelectedPiece = nullptr;
+		}
+	}
+	else if (m_eState == STATE_CHOOSE_MOVE_POSITION)
+	{
+		std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> pos = m_board.calcPosition(point);
+		std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> pos_list = m_SelectedPiece->getMovablePositions(&m_board);
+		bool movable = false;
 
-			for (auto iter = pos_list.begin(); iter != pos_list.end(); ++iter)
+		// 마우스 클릭한 위치로 이동 가능한지 검사
+		for (auto iter = pos_list.begin(); iter != pos_list.end(); ++iter)
+		{
+			if ((*iter) == pos)
 			{
-				if ((*iter) == pos)
-				{
-					// 이동한 자리에 원래 있던 피스를 제거
-					Piece* p = m_SelectedPiece->move(&m_board, pos.first, pos.second);
-					if (p != nullptr)
-					{
-						delete p;
-					}
-				}
+				movable = true;
+				break;
 			}
+		}
 
-			// 폰이 가장 끝으로 가면 프로모션
-			Pawn* p = dynamic_cast<Pawn*>(m_SelectedPiece);
+		// 이동 가능하면 선택한 피스를 이동
+		if (movable)
+		{
+			// 피스를 이동 후 그 자리에 있던 피스를 제거
+			Piece* p = m_SelectedPiece->move(&m_board, pos.first, pos.second);
 			if (p != nullptr)
+			{
+				delete p;
+			}
+			// 폰이 가장 끝으로 가면 프로모션
+			Pawn* pawn = dynamic_cast<Pawn*>(m_SelectedPiece);
+			if (pawn != nullptr)
 			{
 				if ((m_SelectedPiece->getTeam() == TEAM_BLACK && m_SelectedPiece->getPosition().second == POS_1)
 					|| (m_SelectedPiece->getTeam() == TEAM_WHITE && m_SelectedPiece->getPosition().second == POS_8))
 				{
 					m_eState = STATE_PROMOTION;
+					return;
 				}
 			}
-			
-			if (m_eState != STATE_PROMOTION)
-			{
-				m_SelectedPiece = nullptr;
-				m_eTurn = (TEAM)(((int)m_eTurn + 1) % TEAM_COUNT);
-				m_iTurnCount++;
-			}
-		}
 
-		// 이동 후 킹이 체크당하는지 확인
-		if (isChecked(TEAM_BLACK))
+			// 이동 후 킹이 체크당하는지 확인
+			if (isChecked(m_eTurn))
+			{
+				MessageBox(hWnd, L"체크", L"체크됨", MB_OK);
+			}
+			nextTurn();
+		}
+		// 이동이 불가능하면 다시 피스를 선택
+		else
 		{
-			MessageBox(hWnd, L"체크", L"체크됨", MB_OK);
+			m_SelectedPiece = nullptr;
+			m_eState = STATE_CHOOSE_PIECE;
 		}
 	}
 	// 프로모션
@@ -123,8 +136,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 				piece = new Queen(IMG_WHITE_QUEEN, x, y, team);
 			m_board.setPiece(piece, x, y);
 			delete m_SelectedPiece;
-			m_SelectedPiece = nullptr;
-			m_eState = STATE_PLAY;
+			nextTurn();
 			break;
 		case BUTTON_ROOK:
 			if (team == TEAM_BLACK)
@@ -133,8 +145,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 				piece = new Rook(IMG_WHITE_ROOK, x, y, team);
 			m_board.setPiece(piece, x, y);
 			delete m_SelectedPiece;
-			m_SelectedPiece = nullptr;
-			m_eState = STATE_PLAY;
+			nextTurn();
 			break;
 		case BUTTON_BISHOP:
 			if (team == TEAM_BLACK)
@@ -142,9 +153,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 			else
 				piece = new Bishop(IMG_WHITE_BISHOP, x, y, team);
 			m_board.setPiece(piece, x, y);
-			delete m_SelectedPiece;
-			m_SelectedPiece = nullptr;
-			m_eState = STATE_PLAY;
+			nextTurn();
 			break;
 		case BUTTON_KNIGHT:
 			if (team == TEAM_BLACK)
@@ -153,13 +162,13 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 				piece = new Knight(IMG_WHITE_KNIGHT, x, y, team);
 			m_board.setPiece(piece, x, y);
 			delete m_SelectedPiece;
-			m_SelectedPiece = nullptr;
-			m_eState = STATE_PLAY;
+			nextTurn();
 			break;
 		default:
 			break;
 		}
 	}
+
 	
 	InvalidateRect(hWnd, NULL, TRUE);
 
@@ -199,7 +208,7 @@ bool GameManager::isChecked(TEAM team)
 			if (piece == nullptr) continue;
 
 			// 적이 공격가능한 위치를 계산한다.
-			if (piece->getTeam() != team)
+			if (piece->getTeam() == team)
 			{
 				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
 				positions = piece->getAttackablePositions(&m_board);
@@ -225,6 +234,14 @@ bool GameManager::isChecked(TEAM team)
 		}
 	}
 	return false;
+}
+
+void GameManager::nextTurn()
+{
+	m_SelectedPiece = nullptr;
+	m_eTurn = (TEAM)(((int)m_eTurn + 1) % TEAM_COUNT);
+	m_iTurnCount++;
+	m_eState = STATE_CHOOSE_PIECE;
 }
 
 GameManager::GameManager(HWND hWnd)
