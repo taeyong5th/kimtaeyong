@@ -69,6 +69,22 @@ void Board::draw(HDC hdc, int x, int y)
 	}
 }
 
+void Board::drawMovablePositions(HDC hdc, TEAM team)
+{
+	Piece* piece;
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		for (UINT j = 0; j < BOARD_HEIGHT; j++)
+		{
+			piece = m_PiecesonBoard[(BOARD_POSITION_X)i][(BOARD_POSITION_Y)j];
+			if (piece != nullptr && piece->getTeam() == team)
+			{
+				piece->drawMovablePositions(hdc, m_ix, m_iy, this);
+			}
+		}
+	}
+}
+
 std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> Board::calcPosition(POINT point)
 {
 	RECT rect;
@@ -106,11 +122,40 @@ std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Board::getAttackablePosi
 			piece = m_PiecesonBoard[(BOARD_POSITION_X)i][(BOARD_POSITION_Y)j];
 			if (piece == nullptr) continue;
 
-			// 적이 공격가능한 위치를 계산한다.
+			// team이 공격가능한 위치를 계산한다.
 			if (piece->getTeam() == team)
 			{
 				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
 				positions = piece->getAttackablePositions(this);
+
+				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
+				{
+					s.insert(*iter);
+				}
+			}
+		}
+	}
+
+	return s;
+}
+
+std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Board::getMovablePositions(TEAM team)
+{
+	Piece* piece;
+	std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> s;
+
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		for (UINT j = 0; j < BOARD_HEIGHT; j++)
+		{
+			piece = m_PiecesonBoard[(BOARD_POSITION_X)i][(BOARD_POSITION_Y)j];
+			if (piece == nullptr) continue;
+
+			// team이 이동가능한 위치를 계산한다.
+			if (piece->getTeam() == team)
+			{
+				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
+				positions = piece->getMovablePositions(this);
 
 				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
 				{
@@ -166,6 +211,26 @@ bool Board::isChecked(TEAM team)
 	return false;
 }
 
+void Board::clear()
+{
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		for (UINT j = 0; j < BOARD_HEIGHT; j++)
+		{
+			Piece* piece = m_PiecesonBoard[(BOARD_POSITION_X)i][(BOARD_POSITION_Y)j];
+			if (piece == nullptr) 
+				continue;
+			else 
+				delete piece;
+		}
+	}
+
+	for (UINT i = 0; i < BOARD_WIDTH; i++)
+	{
+		memset(m_PiecesonBoard[i], 0, sizeof(Piece*) * BOARD_HEIGHT);
+	}
+}
+
 Board::Board()
 {
 	m_ix = m_iy = 0;
@@ -178,4 +243,5 @@ Board::Board()
 
 Board::~Board()
 {
+	clear();
 }

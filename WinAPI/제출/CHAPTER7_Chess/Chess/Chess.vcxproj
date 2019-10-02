@@ -157,7 +157,6 @@
     <ClInclude Include="Knight.h" />
     <ClInclude Include="Pawn.h" />
     <ClInclude Include="Piece.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="PromotionUI.h" />
     <ClInclude Include="Queen.h" />
     <ClInclude Include="Rook.h" />

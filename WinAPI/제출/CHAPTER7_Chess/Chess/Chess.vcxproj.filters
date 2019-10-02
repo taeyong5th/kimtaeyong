@@ -45,9 +45,6 @@
     <ClInclude Include="Pawn.h">
       <Filter>Chess</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Knight.h">
       <Filter>Chess</Filter>
     </ClInclude>

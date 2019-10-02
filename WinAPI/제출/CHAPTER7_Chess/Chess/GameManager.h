@@ -10,7 +10,7 @@
 enum GAME_STATE
 {
 	STATE_CHOOSE_PIECE,
-	STATE_CHOOSE_MOVE_POSITION,
+	STATE_CHOOSE_POSITION,
 	STATE_CHOOSE_PROMOTION
 };
 
@@ -24,15 +24,11 @@ private:
 	GAME_STATE m_eState;
 	PromotionUI m_PromotionUI;
 	GameinfoUI m_GameInfoUI;
-	King* m_blackKing, * m_whiteKing;
 
 public:
 	void init();
-	void start();
 	void clickEvent(HWND hWnd, POINT point);
 	void draw(HDC hdc);
-	bool isChecked(TEAM team); // team의 킹이 체크된 상태인지
-	bool isCheckMate();
 	Piece* PromotePiece(Piece* pawn, PROMOTION_BUTTON btn); // pawn을 프로모션 시킨다.
 	void nextTurn();
 	GameManager(HWND hWnd);

@@ -7,6 +7,7 @@ void GameManager::init()
 	m_eState = STATE_CHOOSE_PIECE;
 	m_iTurnCount = 0;
 
+	m_board.clear();
 	// 흑팀 폰 세팅
 	for (UINT x = POS_A; x < POS_X_COUNT; x++)
 	{
@@ -24,9 +25,7 @@ void GameManager::init()
 	// 흑팀 퀸
 	m_board.setPiece(new Queen(IMG_BLACK_QUEEN, POS_D, POS_8, TEAM_BLACK), POS_D, POS_8);
 	// 흑팀 킹
-	m_blackKing = new King(IMG_BLACK_KING, POS_E, POS_8, TEAM_BLACK);
-	m_board.setPiece(m_blackKing, POS_E, POS_8);
-	
+	m_board.setPiece(new King(IMG_BLACK_KING, POS_E, POS_8, TEAM_BLACK), POS_E, POS_8);	
 	
 	// 백팀 폰 세팅
 	for (UINT x = POS_A; x < POS_X_COUNT; x++)
@@ -45,16 +44,12 @@ void GameManager::init()
 	// 백팀 퀸 세팅
 	m_board.setPiece(new Queen(IMG_WHITE_QUEEN, POS_D, POS_1, TEAM_WHITE), POS_D, POS_1);
 	// 백팀 킹 세팅
-	m_whiteKing = new King(IMG_WHITE_KING, POS_E, POS_1, TEAM_WHITE);
-	m_board.setPiece(m_whiteKing, POS_E, POS_1);
-}
-
-void GameManager::start()
-{
+	m_board.setPiece(new King(IMG_WHITE_KING, POS_E, POS_1, TEAM_WHITE), POS_E, POS_1);
 }
 
 void GameManager::clickEvent(HWND hWnd, POINT point)
 {
+	// 피스를 하나 선택한다.
 	if (m_eState == STATE_CHOOSE_PIECE)
 	{
 		m_SelectedPiece = m_board.getPiece(point);
@@ -64,14 +59,15 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 		}*/
 		if (m_SelectedPiece != nullptr && m_SelectedPiece->getTeam() == m_eTurn)
 		{
-			m_eState = STATE_CHOOSE_MOVE_POSITION;
+			m_eState = STATE_CHOOSE_POSITION;
 		}
 		else if (m_SelectedPiece != nullptr && m_SelectedPiece->getTeam() != m_eTurn)
 		{
 			m_SelectedPiece = nullptr;
 		}
 	}
-	else if (m_eState == STATE_CHOOSE_MOVE_POSITION)
+	// 피스를 이동한다.
+	else if (m_eState == STATE_CHOOSE_POSITION)
 	{
 		std::pair<BOARD_POSITION_X, BOARD_POSITION_Y> pos = m_board.calcPosition(point);
 		std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> pos_list = m_SelectedPiece->getMovablePositions(&m_board);
@@ -109,13 +105,26 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 				}
 			}
 
-			// 이동 후 킹이 체크당하는지 확인
-			if (isChecked(m_eTurn))
-			{
-				MessageBox(hWnd, L"체크", L"체크됨", MB_OK);
-				isCheckMate();
-			}
 			nextTurn();
+
+			// 체크메이트 검사
+			if (m_board.getMovablePositions(m_eTurn).size() == 0)
+			{
+				MessageBox(hWnd, L"체크메이트!", L"체크메이트!", MB_OK);
+				init();
+			}
+			// 이동 후 킹이 체크당하는지 확인
+			else if (m_board.isChecked(m_eTurn))
+			{
+				MessageBox(hWnd, L"체크!", L"체크!", MB_OK);
+			}
+			// 50턴이면 무승부
+			else if (m_iTurnCount > 50)
+			{
+				MessageBox(hWnd, L"무승부!", L"무승부!", MB_OK);
+				init();
+			}
+			
 		}
 		// 이동이 불가능하면 다시 피스를 선택
 		else
@@ -124,7 +133,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 			m_eState = STATE_CHOOSE_PIECE;
 		}
 	}
-	// 프로모션 선택 화면
+	// 폰이 프로모션할 피스를 선택한다.
 	else if (m_eState == STATE_CHOOSE_PROMOTION)
 	{
 		PROMOTION_BUTTON btn = m_PromotionUI.click(point);
@@ -132,12 +141,33 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 		if (p != nullptr)
 		{
 			nextTurn();
+			// 체크메이트 검사
+			if (m_board.getMovablePositions(m_eTurn).size() == 0)
+			{
+				MessageBox(hWnd, L"체크메이트!", L"체크메이트!", MB_OK);
+				init();
+			}
+			// 이동 후 킹이 체크당하는지 확인
+			else if (m_board.isChecked(m_eTurn))
+			{
+				MessageBox(hWnd, L"체크!", L"체크!", MB_OK);
+			}
+			// 50턴이면 무승부
+			else if (m_iTurnCount > 50)
+			{
+				MessageBox(hWnd, L"무승부!", L"무승부!", MB_OK);
+				init();
+			}
 		}
 	}
-
 	
-	InvalidateRect(hWnd, NULL, TRUE);
+	// 리셋 버튼 눌렀으면 재시작
+	if (m_GameInfoUI.click(point) == GAMEINFO_BUTTON_RESET)
+	{
+		init();
+	}
 
+	InvalidateRect(hWnd, NULL, TRUE);
 }
 
 void GameManager::draw(HDC hdc)
@@ -145,8 +175,9 @@ void GameManager::draw(HDC hdc)
 	// 보드를 그린다.
 	m_board.draw(hdc);
 
-	// 게임을 그린다.
-	m_GameInfoUI.draw(hdc, m_eTurn, m_iTurnCount);
+	// UI를 그린다.
+	m_GameInfoUI.update(m_eTurn, m_iTurnCount);
+	m_GameInfoUI.draw(hdc);
 
 	// 선택한 피스가 이동할 수 있는 곳을 그린다.
 	if (m_SelectedPiece != nullptr)
@@ -158,63 +189,6 @@ void GameManager::draw(HDC hdc)
 	{
 		m_PromotionUI.draw(hdc);
 	}
-}
-
-bool GameManager::isChecked(TEAM team)
-{
-	Piece* piece;
-	King* king = nullptr;
-	std::set<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> s;
-
-	for (UINT i = 0; i < BOARD_WIDTH; i++)
-	{
-		for (UINT j = 0; j < BOARD_HEIGHT; j++)
-		{
-			piece = m_board.getPiece((BOARD_POSITION_X)i, (BOARD_POSITION_Y)j);
-			if (piece == nullptr) continue;
-
-			// 적이 공격가능한 위치를 계산한다.
-			if (piece->getTeam() == team)
-			{
-				std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> positions;
-				positions = piece->getAttackablePositions(&m_board);
-				for (auto iter = positions.begin(); iter != positions.end(); ++iter)
-				{
-					//s.insert(*iter);
-				}
-			}
-			// 아군 킹의 정보를 구한다.
-			else
-			{
-				if (king == nullptr)
-					king = dynamic_cast<King*>(piece);
-			}
-		}
-	}
-	s = m_board.getAttackablePositions(team);
-
-	for (auto iter = s.begin(); iter != s.end(); ++iter)
-	{
-		if (king != nullptr && king->getPosition() == *iter)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool GameManager::isCheckMate()
-{
-	if (m_whiteKing->getMovablePositions(&m_board).size() == 0)
-	{
-		//exit(0);
-		// 킹이 체크되어 이동할수 있는 곳이 0일때
-		// 킹을 체크 중인 적 피스를 다음턴에 잡을 수 없으면 체크메이트,
-		// 아니면 그냥 체크.
-
-	}
-
-	return false;
 }
 
 Piece* GameManager::PromotePiece(Piece* pawn, PROMOTION_BUTTON btn)
@@ -296,21 +270,6 @@ GameManager::GameManager(HWND hWnd)
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BOARD_SELECTED));
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BOARD_MOVABLE));
 	
-	// https://locofield.com/1
-	// https://en.cppreference.com/w/cpp/filesystem/is_directory
-	// https://stackoverflow.com/questions/27720553/conversion-of-wchar-t-to-string
-	//std::wstring imgPath(IMG_PATH);
-	/*std::string dir(imgPath.begin(), imgPath.end());
-
-	for (auto& p : std::experimental::filesystem::directory_iterator(dir))
-	{
-		if (!std::experimental::filesystem::is_directory(p.status()))
-		{
-			std::string str = p.path().string();
-			std::wstring wstr(str.begin(), str.end());
-			BitmapManager::GetInstance()->add(new Bitmap(hWnd, wstr.c_str()));
-		}
-	}*/
 }
 
 GameManager::~GameManager()
