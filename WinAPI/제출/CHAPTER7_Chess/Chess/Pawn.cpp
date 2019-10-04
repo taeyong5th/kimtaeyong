@@ -64,7 +64,7 @@ std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Pawn::getMovablePositio
 	// 아군의 킹이 체크 당하고 있으면 체크를 건 기물의 진로를 차단하는 수만 둘 수 있다.
 	if (board->isChecked(m_eTeam))
 	{
-		// 킹이 공격(체크) 당하는 위치 제거
+		// 이동 후 킹이 공격(체크) 당하는 위치 제거
 		for (auto iter = posList.begin(); iter != posList.end(); )
 		{
 			// 임시로 기물을 이동 시킨다.

@@ -44,31 +44,27 @@ std::list<std::pair<BOARD_POSITION_X, BOARD_POSITION_Y>> Queen::getMovablePositi
 	BOARD_POSITION_X origin_x = m_ix;
 	BOARD_POSITION_Y origin_y = m_iy;
 
-	// 아군의 킹이 체크 당하고 있으면 체크를 건 기물의 진로를 차단하는 수만 둘 수 있다.
-	if (board->isChecked(m_eTeam))
+	// 이동했을 때 킹이 공격(체크) 당하는 위치 제거
+	for (auto iter = posList.begin(); iter != posList.end(); )
 	{
-		// 킹이 공격(체크) 당하는 위치 제거
-		for (auto iter = posList.begin(); iter != posList.end(); )
+		// 임시로 기물을 이동 시킨다.
+		Piece* p = this->move(board, iter->first, iter->second);
+
+		// 임시로 이동한 상태에서 체크 당하는지 확인한다.
+		bool isChecked = board->isChecked(m_eTeam);
+
+		// 임시로 이동한 피스를 원래 자리로 되돌린다.
+		this->move(board, origin_x, origin_y);
+		board->setPiece(p, iter->first, iter->second);
+
+		// 체크 당하는 위치이면 이동불가능한 위치이므로 제외
+		if (isChecked)
 		{
-			// 임시로 기물을 이동 시킨다.
-			Piece* p = this->move(board, iter->first, iter->second);
-
-			// 임시로 이동한 상태에서 체크 당하는지 확인한다.
-			bool isChecked = board->isChecked(m_eTeam);
-
-			// 임시로 이동한 피스를 원래 자리로 되돌린다.
-			this->move(board, origin_x, origin_y);
-			board->setPiece(p, iter->first, iter->second);
-
-			// 체크 당하는 위치이면 이동불가능한 위치이므로 제외
-			if (isChecked)
-			{
-				iter = posList.erase(iter);
-			}
-			else
-			{
-				++iter;
-			}
+			iter = posList.erase(iter);
+		}
+		else
+		{
+			++iter;
 		}
 	}
 	
