@@ -3,3 +3,6 @@
 *.log
 *.idb
 *.pdb
+*.ipch
+*.db
+*.suo
