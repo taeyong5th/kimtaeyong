@@ -2,7 +2,7 @@
 
 BitmapManager::BitmapManager()
 {
-	
+	m_MemDC = nullptr;
 }
 
 BitmapManager::~BitmapManager()
@@ -12,6 +12,8 @@ BitmapManager::~BitmapManager()
 	{
 		delete (it->second);
 	}
+
+	DeleteDC(m_MemDC);
 }
 
 void BitmapManager::add(Bitmap *bitmap)
@@ -40,12 +42,27 @@ Bitmap* BitmapManager::getBitmap(LPCWSTR fileName)
 	return nullptr;
 }
 
-void BitmapManager::draw(HDC hdc, LPCWSTR fileName, int x, int y, float px, float py)
+void BitmapManager::prepare(HDC hdc, LPCWSTR fileName, int x, int y, float px, float py, float sx, float sy, float ex, float ey)
 {
+	if (m_MemDC == nullptr)
+	{
+		m_MemDC = CreateCompatibleDC(hdc);
+		m_hBitmap = CreateCompatibleBitmap(hdc, 1024, 1000);
+		SelectObject(m_MemDC, m_hBitmap);
+	}
+
 	std::map<LPCWSTR, Bitmap*>::iterator it = m_BitmapList.find(fileName);
 
 	if (it != m_BitmapList.end())
-	{	
-		(it->second)->draw(hdc, x, y, px, py);
+	{
+		(it->second)->draw(m_MemDC, x, y, px, py, sx, sy, ex, ey);
+	}
+}
+
+void BitmapManager::draw(HDC hdc, int sx, int sy, int ex, int ey)
+{
+	if (m_MemDC != nullptr)
+	{
+		BitBlt(hdc, sx, sy, ex, ey, m_MemDC, 0, 0, SRCCOPY);
 	}
 }

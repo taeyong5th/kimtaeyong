@@ -51,13 +51,13 @@ void Board::draw(HDC hdc, int x, int y)
 			{
 				float width = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_WHITE)->getWidth();
 				float height = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_WHITE)->getHeight();
-				BitmapManager::GetInstance()->draw(hdc, IMG_BOARD_WHITE, x + i * width * BITMAP_RESIZE_RATE, y + j * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
+				BitmapManager::GetInstance()->prepare(hdc, IMG_BOARD_WHITE, x + i * width * BITMAP_RESIZE_RATE, y + j * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
 			}
 			else
 			{
 				float width = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_BLACK)->getWidth();
 				float height = BitmapManager::GetInstance()->getBitmap(IMG_BOARD_BLACK)->getHeight();
-				BitmapManager::GetInstance()->draw(hdc, IMG_BOARD_BLACK, x + i * width * BITMAP_RESIZE_RATE, y + j * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
+				BitmapManager::GetInstance()->prepare(hdc, IMG_BOARD_BLACK, x + i * width * BITMAP_RESIZE_RATE, y + j * height * BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE, BITMAP_RESIZE_RATE);
 			}
 
 			// 피스를 그린다.

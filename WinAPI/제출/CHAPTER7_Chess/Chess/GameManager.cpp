@@ -100,7 +100,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 					|| (m_SelectedPiece->getTeam() == TEAM_WHITE && m_SelectedPiece->getPosition().second == POS_8))
 				{
 					m_eState = STATE_CHOOSE_PROMOTION;
-					InvalidateRect(hWnd, NULL, TRUE);
+					InvalidateRect(hWnd, NULL, false);
 					return;
 				}
 			}
@@ -167,7 +167,7 @@ void GameManager::clickEvent(HWND hWnd, POINT point)
 		init();
 	}
 
-	InvalidateRect(hWnd, NULL, TRUE);
+	InvalidateRect(hWnd, NULL, false);
 }
 
 void GameManager::draw(HDC hdc)
@@ -189,6 +189,7 @@ void GameManager::draw(HDC hdc)
 	{
 		m_PromotionUI.draw(hdc);
 	}
+	BitmapManager::GetInstance()->draw(hdc, 0, 0, 500, 500);
 }
 
 Piece* GameManager::PromotePiece(Piece* pawn, PROMOTION_BUTTON btn)
