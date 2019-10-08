@@ -87,14 +87,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 
 		hdc = BeginPaint(hWnd, &ps);
-		BitmapManager::GetInstance()->draw(hdc, L"back.bmp", 0, 0);
-		//BitmapManager::GetInstance()->draw(hdc, L"image.bmp", x, y, 1.0f, 1.0f);
-		//BitmapManager::GetInstance()->draw(hdc, L"image.bmp", 0, 0, 1.0f, 1.0f, 0.25f, 0.0f, 0.5f, 0.25f);		
 
-		BitmapManager::GetInstance()->draw(hdc, L"image.bmp", x, y, 2.0f, 2.0f, 0.25f * (moveFrame % 4), 0.25f * direction, 0.25f * (moveFrame % 4) + 0.25f, 0.25f * direction + 0.25f);
+		BitmapManager::GetInstance()->prepare(hdc, L"back.bmp", 0, 0);
+		BitmapManager::GetInstance()->prepare(hdc, L"image.bmp", x, y, 2.0f, 2.0f, 0.25f * (moveFrame % 4), 0.25f * direction, 0.25f * (moveFrame % 4) + 0.25f, 0.25f * direction + 0.25f);
 
-		//StretchBlt(hdc, 0, 0, 1024, 768, g_backDC, 0, 0, 102, 768, SRCCOPY);
-		//TransparentBlt(hdc, x, y, g_size.cx / 4, g_size.cy / 4, g_playerDC, 0, 0, g_size.cx / 4, g_size.cy / 4, RGB(255, 0, 255));
+		BitmapManager::GetInstance()->draw(hdc, 0, 0, 1000, 800);
+
 		EndPaint(hWnd, &ps);
 		return 0;
 	case WM_TIMER:

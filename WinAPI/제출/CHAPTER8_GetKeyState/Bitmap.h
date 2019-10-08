@@ -19,5 +19,5 @@ public:
 	int getWidth();
 	int getHeight();
 	LPCWSTR getBitmapFileName();
-	void draw(HDC hdc, int x, int y, float px = 1.0f, float py = 1.0f, float sx = 0.0f, float sy = 0.0f, float ex = 1.0f, float ey = 1.0f);
+	void prepare(HDC memDC, int x, int y, float px = 1.0f, float py = 1.0f, float sx = 0.0f, float sy = 0.0f, float ex = 1.0f, float ey = 1.0f);
 };
