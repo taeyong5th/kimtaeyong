@@ -45,6 +45,9 @@
     <ClCompile Include="FireCircle.cpp">
       <Filter>Circus</Filter>
     </ClCompile>
+    <ClCompile Include="CircusObject.cpp">
+      <Filter>Circus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h">
@@ -78,6 +81,9 @@
       <Filter>Circus</Filter>
     </ClInclude>
     <ClInclude Include="Goal.h">
+      <Filter>Circus</Filter>
+    </ClInclude>
+    <ClInclude Include="CircusObject.h">
       <Filter>Circus</Filter>
     </ClInclude>
   </ItemGroup>

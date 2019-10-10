@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <math.h>
+#include <vector>
 #include "BitmapManager.h"
 
 /* 윈도우 크기 */
