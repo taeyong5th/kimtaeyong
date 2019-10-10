@@ -10,31 +10,30 @@ enum PLAYER_STATE
 	PLAYER_STATE_WIN
 };
 
-class Player
+class Player : public CircusObject
 {
 private:
-	int m_ix, m_iy; // 캐릭터가 그려질 위치(좌상단이 아닌 중심위치)
-	int m_iWidth, m_iHeight;
-	const float m_iMultiple = 2.0f; // 원본 이미지의 몇 배크기로 그릴지	
 	PLAYER_STATE m_eState;
 
 	LPCWSTR m_aMoveAnimation[3];
 	LPCWSTR m_aWinAnimation[2];
-
-	RECT m_Rect; // 충돌 범위
 	
-	//타임체크용
-	DWORD m_dwPrevTime;
-	DWORD m_dwCurTime;
-	float m_fDeltaTime;
 	float m_fMoveAnimTick; // 움직일때 애니메이션을 몇초마다 바뀌게 할지
 	float m_fJumpTick; // 점프 동작
+
+	RECT getPlayerRect();
+	RECT getLionRect();
 public:
-	RECT getRect();
+	// 오브젝트의 x, y 초기 위치를 정한다.
+	void init(int x, int y) override;
+	// camera의 X위치에 따라 화면상의 위치를 다시 정한다.
+	void update(int camera_x = 0) override;
+	// 비트맵 매니저의 Memory DC에 그린다.
+	void draw() override;
+
+	void setPosition(int player_x);
 	void setState(PLAYER_STATE state);
-	void update(int x);
-	void draw();
-	void init(int x, int y);
+
 	Player();
 	~Player();
 };

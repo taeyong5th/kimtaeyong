@@ -1,5 +1,15 @@
 #include "Goal.h"
 
+RECT Goal::getGoalRect()
+{
+	RECT rect;
+	rect.left = m_ix - m_iWidth / 2;
+	rect.right = rect.left + m_iWidth;
+	rect.top = m_iy - m_iHeight / 2;
+	rect.bottom = rect.top + m_iHeight;
+	return rect;
+}
+
 void Goal::init(int x, int y)
 {
 	m_ix = x;
@@ -8,25 +18,19 @@ void Goal::init(int x, int y)
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getHeight() * m_iMultiple;
 
-	m_Rect.left = m_ix - m_iWidth / 2;
-	m_Rect.right = m_Rect.left + m_iWidth;
-	m_Rect.top = m_iy - m_iHeight / 2;
-	m_Rect.bottom = m_Rect.top + m_iHeight;
 }
 
-void Goal::update(int x, int y)
+void Goal::update(int cameraX)
 {
-	init(x, y);
+	m_iCameraX = cameraX;
+
+	m_RectList.clear();
+	m_RectList.push_back(getGoalRect());
 }
 
 void Goal::draw()
 {
-	BitmapManager::GetInstance()->prepare(IMG_GOAL, m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
-}
-
-RECT Goal::getRect()
-{
-	return m_Rect;
+	BitmapManager::GetInstance()->prepare(IMG_GOAL, m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 }
 
 Goal::Goal()

@@ -26,5 +26,5 @@ public:
 	virtual void draw() = 0;
 
 	CircusObject();
-	~CircusObject();
+	virtual ~CircusObject();
 };

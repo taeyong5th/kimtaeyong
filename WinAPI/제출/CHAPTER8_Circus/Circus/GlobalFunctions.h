@@ -1,9 +1,9 @@
 #pragma once
 
 /*
-1000px´ç 10m
+128px = 1m
 */
 int PixelToMeter(int x)
-{
-	return 0;
+{	
+	return (x >> 7);
 }

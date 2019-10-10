@@ -4,13 +4,15 @@
 #include <math.h>
 #include <vector>
 #include "BitmapManager.h"
+#include "CircusObject.h"
 
 /* 윈도우 크기 */
 #define WINDOW_WIDTH 1000
 #define WINDOW_HEIGHT 800
 
 #define PI 3.141592f
-#define GAME_SPEED 3
+#define PLAYER_SPEED 500
+#define MAP_WIDTH 1500
 
 /* 이미지 리소스 */
 #define IMG_BG_GROUND			L"res//back.bmp"

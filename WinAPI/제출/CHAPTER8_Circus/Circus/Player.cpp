@@ -1,9 +1,11 @@
 #include "Player.h"
 
-
-RECT Player::getRect()
+void Player::setPosition(int player_x)
 {
-	return m_Rect;
+	m_ix = player_x;
+	m_RectList.clear();
+	m_RectList.push_back(getLionRect());
+	m_RectList.push_back(getPlayerRect());
 }
 
 void Player::setState(PLAYER_STATE state)
@@ -18,23 +20,26 @@ void Player::setState(PLAYER_STATE state)
 	}
 }
 
-void Player::update(int x)
+void Player::update(int camera_x)
 {
-	m_ix = x;
+	m_iCameraX = camera_x;
+
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
+	m_dwPrevTime = m_dwCurTime;
+
+	//m_ix = m_iCameraX + 140;
+
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER1)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER1)->getHeight() * m_iMultiple;
 
-	m_Rect.left = m_ix - m_iWidth / 2;
-	m_Rect.right = m_Rect.left + m_iWidth;
-	m_Rect.top = m_iy + m_iHeight / 4;
-	m_Rect.bottom = m_iy + m_iHeight / 2;
+	m_RectList.clear();
+	m_RectList.push_back(getLionRect());
+	m_RectList.push_back(getPlayerRect());
 }
 
 void Player::draw()
 {
-	m_dwCurTime = GetTickCount();
-	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
-	m_dwPrevTime = m_dwCurTime;
 
 	static int animCount = 0;
 	static int originY;
@@ -43,7 +48,7 @@ void Player::draw()
 	switch (m_eState)
 	{
 	case PLAYER_STATE_IDLE:
-		BitmapManager::GetInstance()->prepare(m_aMoveAnimation[0], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(m_aMoveAnimation[0], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case PLAYER_STATE_MOVE:
 		m_fMoveAnimTick += m_fDeltaTime;
@@ -52,7 +57,7 @@ void Player::draw()
 			m_fMoveAnimTick = 0.0f;
 			animCount = ++animCount % 3;
 		}
-		BitmapManager::GetInstance()->prepare(m_aMoveAnimation[animCount], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(m_aMoveAnimation[animCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case PLAYER_STATE_JUMP:
 		m_fJumpTick += m_fDeltaTime;
@@ -61,22 +66,21 @@ void Player::draw()
 			float temp = sinf(m_fJumpTick / 1.2f * PI) * 190;
 			m_iy = originY - temp;
 
-			m_Rect.left = m_ix - m_iWidth / 2;
-			m_Rect.right = m_Rect.left + m_iWidth;
-			m_Rect.top = m_iy + m_iHeight / 4;
-			m_Rect.bottom = m_iy + m_iHeight / 2;
-			BitmapManager::GetInstance()->prepare(m_aMoveAnimation[2], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+			m_RectList.clear();
+			m_RectList.push_back(getLionRect());
+			m_RectList.push_back(getPlayerRect());
+			BitmapManager::GetInstance()->prepare(m_aMoveAnimation[2], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		}
 		else
 		{
 			m_iy = originY;
 			m_fJumpTick = 0.0f;
 			m_eState = PLAYER_STATE_IDLE;
-			BitmapManager::GetInstance()->prepare(m_aMoveAnimation[2], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+			BitmapManager::GetInstance()->prepare(m_aMoveAnimation[2], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		}
 		break;
 	case PLAYER_STATE_DIE:
-		BitmapManager::GetInstance()->prepare(IMG_PLAYER_DIE, m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(IMG_PLAYER_DIE, m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case PLAYER_STATE_WIN:
 		m_fMoveAnimTick += m_fDeltaTime;
@@ -85,11 +89,31 @@ void Player::draw()
 			m_fMoveAnimTick = 0.0f;
 			animCount = ++animCount % 2;
 		}
-		BitmapManager::GetInstance()->prepare(m_aWinAnimation[animCount], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(m_aWinAnimation[animCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	default:
 		break;
 	}
+}
+
+RECT Player::getPlayerRect()
+{
+	RECT rect;
+	rect.left = m_ix - m_iWidth / 7;
+	rect.right = m_ix + m_iWidth / 7;
+	rect.top = m_iy - m_iHeight / 2;
+	rect.bottom = m_iy;
+	return rect;
+}
+
+RECT Player::getLionRect()
+{
+	RECT rect;
+	rect.left = m_ix - m_iWidth / 2;
+	rect.right = rect.left + m_iWidth;
+	rect.top = m_iy;
+	rect.bottom = m_iy + m_iHeight / 2;
+	return rect;
 }
 
 void Player::init(int x, int y)
@@ -99,10 +123,10 @@ void Player::init(int x, int y)
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER1)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER1)->getHeight() * m_iMultiple;
 
-	m_Rect.left = m_ix - m_iWidth / 2;
-	m_Rect.right = m_Rect.left + m_iWidth;
-	m_Rect.top = m_iy + m_iHeight / 4;
-	m_Rect.bottom = m_iy + m_iHeight / 2;
+	// 사람, 사자에 대한 충돌범위 저장
+	m_RectList.clear();
+	m_RectList.push_back(getLionRect());
+	m_RectList.push_back(getPlayerRect());
 
 	m_eState = PLAYER_STATE_IDLE;
 

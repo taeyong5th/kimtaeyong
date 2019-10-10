@@ -1,8 +1,13 @@
 #include "FireCircle.h"
 
-RECT FireCircle::getRect()
+RECT FireCircle::getFireRect()
 {
-	return m_Rect;
+	RECT rect;
+	rect.left = m_ix;
+	rect.right = m_ix + m_iWidth;
+	rect.top = m_iy + m_iHeight / 2 - 11 * m_iMultiple;
+	rect.bottom = m_iy + m_iHeight / 2;
+	return rect;
 }
 
 void FireCircle::init(int x, int y)
@@ -15,15 +20,10 @@ void FireCircle::init(int x, int y)
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_L)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_L)->getHeight() * m_iMultiple;
 
-	m_Rect.left = m_ix - m_iWidth;
-	m_Rect.right = m_ix + m_iWidth;
-	m_Rect.top = m_iy + m_iHeight / 2 - 11 * m_iMultiple;
-	m_Rect.bottom = m_iy + m_iHeight / 2;
-
 	m_iAnimCount = 0;
-	m_iCameraX = 0;
-	m_dwCurTime = GetTickCount();
-	m_dwPrevTime = GetTickCount();
+
+	m_RectList.clear();
+	m_RectList.push_back(getFireRect());
 }
 
 void FireCircle::update(int cameraX)
@@ -41,10 +41,14 @@ void FireCircle::update(int cameraX)
 	if(m_Movement == FIRE_AUTO_MOVE)
 		m_ix -= m_fDeltaTime * 100;
 
-	m_Rect.left = m_ix - m_iCameraX;
-	m_Rect.right = m_ix + m_iWidth - m_iCameraX;
-	m_Rect.top = m_iy + m_iHeight / 2 - 11 * m_iMultiple;
-	m_Rect.bottom = m_iy + m_iHeight / 2;
+	m_RectList.clear();
+	m_RectList.push_back(getFireRect());
+}
+
+void FireCircle::draw()
+{
+	draw(FIRE_L);
+	draw(FIRE_R);
 }
 
 void FireCircle::draw(FIRE_CIRCLE loc)

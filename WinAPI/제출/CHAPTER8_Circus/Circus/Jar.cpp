@@ -1,8 +1,13 @@
 #include "Jar.h"
 
-RECT Jar::getRect()
+RECT Jar::getJarRect()
 {
-	return m_Rect;
+	RECT rect;
+	rect.left = m_ix - m_iWidth / 3;
+	rect.right = rect.left + m_iWidth;
+	rect.top = m_iy - m_iHeight / 3;
+	rect.bottom = rect.top + m_iHeight;
+	return rect;
 }
 
 void Jar::init(int x, int y)
@@ -11,16 +16,14 @@ void Jar::init(int x, int y)
 	m_iy = y;
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getHeight() * m_iMultiple;
-
-	m_Rect.left = m_ix - m_iWidth / 3;
-	m_Rect.right = m_Rect.left + m_iWidth;
-	m_Rect.top = m_iy - m_iHeight / 3;
-	m_Rect.bottom = m_Rect.top + m_iHeight;
 }
 
-void Jar::update(int x, int y)
+void Jar::update(int cameraX)
 {
-	init(x, y);
+	m_iCameraX = cameraX;
+
+	m_RectList.clear();
+	m_RectList.push_back(getJarRect());
 }
 
 void Jar::draw()
@@ -41,15 +44,13 @@ void Jar::draw()
 		m_fAnimTick = 0.0f;
 		animCount = ++animCount % 2;
 	}
-	BitmapManager::GetInstance()->prepare(m_aAnimation[animCount], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
-
+	BitmapManager::GetInstance()->prepare(m_aAnimation[animCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 }
 
 Jar::Jar()
 {
 	m_aAnimation[0] = IMG_ENEMY_JAR;
 	m_aAnimation[1] = IMG_ENEMY_JAR2;
-
 }
 
 Jar::~Jar()
