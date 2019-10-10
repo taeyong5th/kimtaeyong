@@ -9,7 +9,7 @@
 #define WINDOW_HEIGHT 800
 
 #define PI 3.141592f
-#define GAME_SPEED 10
+#define GAME_SPEED 3
 
 /* 이미지 리소스 */
 #define IMG_BG_GROUND			L"res//back.bmp"

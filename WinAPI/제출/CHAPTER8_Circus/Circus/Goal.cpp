@@ -5,6 +5,9 @@ void Goal::init(int x, int y)
 	m_ix = x;
 	m_iy = y;
 
+	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getWidth() * m_iMultiple;
+	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getHeight() * m_iMultiple;
+
 	m_Rect.left = m_ix - m_iWidth / 2;
 	m_Rect.right = m_Rect.left + m_iWidth;
 	m_Rect.top = m_iy - m_iHeight / 2;
@@ -28,10 +31,7 @@ RECT Goal::getRect()
 
 Goal::Goal()
 {
-	init(0, 0);
-
-	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getWidth() * m_iMultiple;
-	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getHeight() * m_iMultiple;
+	
 }
 
 Goal::~Goal()

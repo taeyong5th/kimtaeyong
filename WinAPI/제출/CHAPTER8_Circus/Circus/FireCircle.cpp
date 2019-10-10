@@ -1,11 +1,29 @@
 #include "FireCircle.h"
 
+RECT FireCircle::getRect()
+{
+	return m_Rect;
+}
+
 void FireCircle::init(int x, int y)
 {
+	m_Movement = FIRE_AUTO_MOVE;
+
 	m_ix = x;
 	m_iy = y;
+
+	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_L)->getWidth() * m_iMultiple;
+	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_L)->getHeight() * m_iMultiple;
+
+	m_Rect.left = m_ix - m_iWidth;
+	m_Rect.right = m_ix + m_iWidth;
+	m_Rect.top = m_iy + m_iHeight / 2 - 11 * m_iMultiple;
+	m_Rect.bottom = m_iy + m_iHeight / 2;
+
 	m_iAnimCount = 0;
 	m_iCameraX = 0;
+	m_dwCurTime = GetTickCount();
+	m_dwPrevTime = GetTickCount();
 }
 
 void FireCircle::update(int cameraX)
@@ -20,28 +38,35 @@ void FireCircle::update(int cameraX)
 		m_fAnimTick = 0.0f;
 		m_iAnimCount = ++m_iAnimCount % 2;
 	}
-	m_ix -= 3;
+	if(m_Movement == FIRE_AUTO_MOVE)
+		m_ix -= m_fDeltaTime * 100;
+
+	m_Rect.left = m_ix - m_iCameraX;
+	m_Rect.right = m_ix + m_iWidth - m_iCameraX;
+	m_Rect.top = m_iy + m_iHeight / 2 - 11 * m_iMultiple;
+	m_Rect.bottom = m_iy + m_iHeight / 2;
 }
 
 void FireCircle::draw(FIRE_CIRCLE loc)
 {
-	int width = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_L)->getWidth() * m_iMultiple;
-	int height = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_L)->getHeight() * m_iMultiple;
-
 	switch (loc)
 	{
 	case FIRE_L:
-		BitmapManager::GetInstance()->prepare(m_aAnimationL[m_iAnimCount], m_ix - width / 2 - m_iCameraX, m_iy - height / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(m_aAnimationL[m_iAnimCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case FIRE_R:
-		BitmapManager::GetInstance()->prepare(m_aAnimationR[m_iAnimCount], m_ix + width / 2 - m_iCameraX, m_iy - height / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(m_aAnimationR[m_iAnimCount], m_ix + m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	}	
 }
 
+void FireCircle::setMovement(FIRE_MOVEMENT move)
+{
+	m_Movement = move;
+}
+
 FireCircle::FireCircle()
 {
-	init(900, 270);
 	m_aAnimationL[0] = IMG_ENEMY_L;
 	m_aAnimationL[1] = IMG_ENEMY_L2;
 	m_aAnimationR[0] = IMG_ENEMY_R;

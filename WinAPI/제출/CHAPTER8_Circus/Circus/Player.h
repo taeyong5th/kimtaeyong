@@ -22,7 +22,7 @@ private:
 	LPCWSTR m_aWinAnimation[2];
 
 	RECT m_Rect; // 충돌 범위
-
+	
 	//타임체크용
 	DWORD m_dwPrevTime;
 	DWORD m_dwCurTime;
@@ -32,9 +32,9 @@ private:
 public:
 	RECT getRect();
 	void setState(PLAYER_STATE state);
-	void update(int x, int y);
+	void update(int x);
 	void draw();
-	void init(int x, int y);	
+	void init(int x, int y);
 	Player();
 	~Player();
 };

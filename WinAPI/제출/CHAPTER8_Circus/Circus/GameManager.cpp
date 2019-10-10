@@ -37,80 +37,111 @@ void GameManager::init(HWND hWnd)
 
 	ReleaseDC(hWnd, hdc);
 
-	camera_x = 0;
+	player_x = camera_x = 0;
+	m_eState = GAME_PLAYING;
 	m_bg.init(camera_x, 0);
 	m_Player.init(140, 430);
 	m_jar.init(900, 0);
+	m_goal.init(900, 445);
+	m_fire.init(600, 270);
+	m_iHeart = 3;
+
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
+	m_fPauseTime = 0.0f;
 }
 
 void GameManager::update()
-{	
-	static int player_x = 0;
-	m_bg.update(camera_x, 0);
+{
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
+	m_dwPrevTime = m_dwCurTime;
+
+	// 플레이어가 마지막지점에 도착하거나 죽으면 게임을 멈춘다
+	RECT rect;
+	if (IntersectRect(&rect, &m_goal.getRect(), &m_Player.getRect()))
+	{
+		m_Player.setState(PLAYER_STATE_WIN);
+		m_eState = GAME_PAUSE;
+	}
+	if (   IntersectRect(&rect, &m_fire.getRect(), &m_Player.getRect())
+		|| IntersectRect(&rect, &m_jar.getRect(), &m_Player.getRect()))
+	{ 
+		m_Player.setState(PLAYER_STATE_DIE);
+		m_fire.setMovement(FIRE_STOP);
+		m_eState = GAME_PAUSE;
+	}
+
+	m_bg.update(camera_x, 0);	
+	m_jar.update(770 - camera_x, 445);
+	m_goal.update(900 - camera_x, 445);
+
 	m_bg.draw();
-	
-	m_jar.update(900 - camera_x, 445);
 	m_jar.draw();
+	m_goal.draw();
 
-	static Goal goal;
-	//goal.update(1600 - camera_x, 445);
-	goal.update(700 - camera_x, 445);
-	goal.draw();
-
-	static FireCircle f;
-	f.update(camera_x);
-	f.draw(FIRE_L);
-	m_Player.update(140 + player_x, 430);
+	m_fire.update(camera_x);
+	m_fire.draw(FIRE_L);
+	m_Player.update(140 + player_x);
 	m_Player.draw();
-	f.draw(FIRE_R);
+	m_fire.draw(FIRE_R);
 
 	HDC hdc = GetDC(m_hWnd);
 	BitmapManager::GetInstance()->draw(hdc, 0, 0);
 	ReleaseDC(m_hWnd, hdc);
 
-	// 마지막 지점 도달했는지 검사
-	RECT rect;
-	if (IntersectRect(&rect, &goal.getRect(), &m_Player.getRect()))
+	
+	// 게임을 멈추고 3초가 지나면 재시작
+	if (m_eState == GAME_PAUSE)
 	{
-		m_Player.setState(PLAYER_STATE_WIN);	
+		m_fPauseTime += m_fDeltaTime;
+		if (m_fPauseTime > 3.0f)
+		{
+			init(m_hWnd);
+		}
 	}
 
-	// 카메라 위치가 끝에 닿으면 캐릭터를 움직인다.
-	if (GetKeyState(VK_LEFT) & 0x8000)
+	// 게임플레이중일때만 키입력을 받는다.
+	if (m_eState == GAME_PLAYING)
 	{
-		m_Player.setState(PLAYER_STATE_MOVE);
-		if (player_x <= 0)
+		// 카메라 위치가 끝에 닿으면 캐릭터를 움직인다.
+		if (GetKeyState(VK_LEFT) & 0x8000)
 		{
-			camera_x -= GAME_SPEED;
-			camera_x = camera_x < 0 ? 0 : camera_x;
+			m_Player.setState(PLAYER_STATE_MOVE);
+			if (player_x <= 0)
+			{
+				camera_x -= GAME_SPEED;
+				camera_x = camera_x < 0 ? 0 : camera_x;
+			}
+			else
+			{
+				player_x -= GAME_SPEED;
+				player_x = player_x < 0 ? 0 : player_x;
+			}
+		}
+		else if (GetKeyState(VK_RIGHT) & 0x8000)
+		{
+			m_Player.setState(PLAYER_STATE_MOVE);
+			if (camera_x == 800)
+			{
+				player_x += GAME_SPEED;
+				player_x = player_x > 700 ? 700 : player_x;
+			}
+			else
+			{
+				camera_x += GAME_SPEED;
+				camera_x = camera_x > 800 ? 800 : camera_x;
+			}
 		}
 		else
 		{
-			player_x -= GAME_SPEED;
-			player_x = player_x < 0 ? 0 : player_x;
-		}		
-	}	
-	else if (GetKeyState(VK_RIGHT) & 0x8000)
-	{
-		m_Player.setState(PLAYER_STATE_MOVE);
-		if (camera_x == 800)
-		{
-			player_x += GAME_SPEED;
-			player_x = player_x > 700 ? 700 : player_x;
+			m_Player.setState(PLAYER_STATE_IDLE);
 		}
-		else
+		if (GetKeyState(VK_SPACE) & 0x8000)
 		{
-			camera_x += GAME_SPEED;
-			camera_x = camera_x > 800 ? 800 : camera_x;
+			m_Player.setState(PLAYER_STATE_JUMP);
 		}
-	}	
-	else
-	{
-		m_Player.setState(PLAYER_STATE_IDLE);
-	}
-	if (GetKeyState(VK_SPACE) & 0x8000)
-	{
-		m_Player.setState(PLAYER_STATE_JUMP);
 	}
 	
 }

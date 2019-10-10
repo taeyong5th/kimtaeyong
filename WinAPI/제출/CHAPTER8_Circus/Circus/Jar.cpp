@@ -1,21 +1,33 @@
 #include "Jar.h"
 
+RECT Jar::getRect()
+{
+	return m_Rect;
+}
+
 void Jar::init(int x, int y)
 {
 	m_ix = x;
 	m_iy = y;
+	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getWidth() * m_iMultiple;
+	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getHeight() * m_iMultiple;
+
+	m_Rect.left = m_ix - m_iWidth / 3;
+	m_Rect.right = m_Rect.left + m_iWidth;
+	m_Rect.top = m_iy - m_iHeight / 3;
+	m_Rect.bottom = m_Rect.top + m_iHeight;
 }
 
 void Jar::update(int x, int y)
 {
 	init(x, y);
-
 }
 
 void Jar::draw()
 {
-	int width = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getWidth() * m_iMultiple;
-	int height = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getHeight() * m_iMultiple;
+
+	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getWidth() * m_iMultiple;
+	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getHeight() * m_iMultiple;
 
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
@@ -29,15 +41,15 @@ void Jar::draw()
 		m_fAnimTick = 0.0f;
 		animCount = ++animCount % 2;
 	}
-	BitmapManager::GetInstance()->prepare(m_aAnimation[animCount], m_ix - width / 2, m_iy - height / 2, m_iMultiple, m_iMultiple);
+	BitmapManager::GetInstance()->prepare(m_aAnimation[animCount], m_ix - m_iWidth / 2, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 
 }
 
 Jar::Jar()
 {
-	init(0, 0);
 	m_aAnimation[0] = IMG_ENEMY_JAR;
 	m_aAnimation[1] = IMG_ENEMY_JAR2;
+
 }
 
 Jar::~Jar()
