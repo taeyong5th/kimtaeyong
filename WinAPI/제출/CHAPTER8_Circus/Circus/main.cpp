@@ -35,7 +35,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 
 	while (true)
 	{
-		/// 메시지큐에 메시지가 있으면 메시지 처리
+		// 메시지큐에 메시지가 있으면 메시지 처리
 		if (PeekMessage(&Message, NULL, 0, 0, PM_REMOVE))
 		{
 			if (Message.message == WM_QUIT)

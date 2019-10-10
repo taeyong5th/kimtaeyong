@@ -30,7 +30,7 @@ void BitmapManager::init(HDC hdc, int width, int height)
 	{
 		m_MemDC = CreateCompatibleDC(hdc);
 		m_hBitmap = CreateCompatibleBitmap(hdc, width, height);
-		SelectObject(m_MemDC, m_hBitmap);
+		m_oldBitmap = (HBITMAP)SelectObject(m_MemDC, m_hBitmap);
 	}
 }
 
@@ -76,6 +76,6 @@ void BitmapManager::draw(HDC hdc, int x, int y)
 {
 	if (m_MemDC != nullptr)
 	{
-		BitBlt(hdc, x, y, m_iWidth, m_iHeight, m_MemDC, 0, 0, SRCCOPY);
+		BitBlt(hdc, x, y, m_iWidth, m_iHeight, m_MemDC, 0, 0, SRCCOPY);		
 	}
 }

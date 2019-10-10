@@ -9,7 +9,7 @@ class BitmapManager : public Singleton<BitmapManager>
 private:
 	std::map<LPCWSTR, Bitmap*> m_BitmapList;
 	HDC m_MemDC;
-	HBITMAP m_hBitmap; // ∫Ò∆Æ∏  ¡§∫∏
+	HBITMAP m_hBitmap, m_oldBitmap; // ∫Ò∆Æ∏  ¡§∫∏
 	int m_iWidth, m_iHeight;
 public:
 	BitmapManager();

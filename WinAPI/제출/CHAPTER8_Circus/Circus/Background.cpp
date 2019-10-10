@@ -10,28 +10,32 @@ void Background::update(int x, int y)
 {
 	m_ix = -x;
 	m_iy = -y;
+}
+
+void Background::draw()
+{
 	// 배경 그리기
 	int bitmapWidth; // 각 비트맵(원본)의 가로 길이
 	int tempX = m_ix; // 코끼리와 관중이 그려질 위치를 저장할 변수
-	for (int i = 0; tempX < bgWidth; i++)
+	for (int i = 0; tempX < WINDOW_WIDTH; i++)
 	{
 		// 6번째마다 코끼리를 그린다.
 		if (i % 6 == 5)
 		{
 			bitmapWidth = BitmapManager::GetInstance()->getBitmap(IMG_BG_ELEPHANT)->getWidth();
-			BitmapManager::GetInstance()->prepare(IMG_BG_ELEPHANT, tempX, m_iy, multiple, multiple);
-			tempX += bitmapWidth * multiple;
+			BitmapManager::GetInstance()->prepare(IMG_BG_ELEPHANT, tempX, m_iy, m_iMultiple, m_iMultiple);
+			tempX += bitmapWidth * m_iMultiple;
 		}
 		else
 		{
 			bitmapWidth = BitmapManager::GetInstance()->getBitmap(IMG_BG_CROWD)->getWidth();
-			BitmapManager::GetInstance()->prepare(IMG_BG_CROWD, tempX, m_iy + 3 * multiple, multiple, multiple);
-			tempX += bitmapWidth * multiple;
+			BitmapManager::GetInstance()->prepare(IMG_BG_CROWD, tempX, m_iy + 3 * m_iMultiple, m_iMultiple, m_iMultiple);
+			tempX += bitmapWidth * m_iMultiple;
 		}
 
 		// 초록색 잔디 그리기
 		bitmapWidth = BitmapManager::GetInstance()->getBitmap(IMG_BG_GROUND)->getWidth();
-		BitmapManager::GetInstance()->prepare(IMG_BG_GROUND, m_ix + (bitmapWidth * multiple * i), m_iy + 67 * multiple, multiple, multiple);
+		BitmapManager::GetInstance()->prepare(IMG_BG_GROUND, m_ix + (bitmapWidth * m_iMultiple * i), m_iy + 67 * m_iMultiple, m_iMultiple, m_iMultiple);
 	}
 }
 

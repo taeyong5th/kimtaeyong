@@ -39,6 +39,12 @@
     <ClCompile Include="Jar.cpp">
       <Filter>Circus</Filter>
     </ClCompile>
+    <ClCompile Include="Goal.cpp">
+      <Filter>Circus</Filter>
+    </ClCompile>
+    <ClCompile Include="FireCircle.cpp">
+      <Filter>Circus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h">
@@ -66,6 +72,12 @@
       <Filter>Circus</Filter>
     </ClInclude>
     <ClInclude Include="Jar.h">
+      <Filter>Circus</Filter>
+    </ClInclude>
+    <ClInclude Include="FireCircle.h">
+      <Filter>Circus</Filter>
+    </ClInclude>
+    <ClInclude Include="Goal.h">
       <Filter>Circus</Filter>
     </ClInclude>
   </ItemGroup>

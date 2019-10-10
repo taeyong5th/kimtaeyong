@@ -22,7 +22,9 @@
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BitmapManager.cpp" />
+    <ClCompile Include="FireCircle.cpp" />
     <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="Goal.cpp" />
     <ClCompile Include="Jar.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -31,9 +33,11 @@
     <ClInclude Include="Background.h" />
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BitmapManager.h" />
+    <ClInclude Include="FireCircle.h" />
     <ClInclude Include="GameDefine.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GlobalFunctions.h" />
+    <ClInclude Include="Goal.h" />
     <ClInclude Include="Jar.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Singleton.h" />
