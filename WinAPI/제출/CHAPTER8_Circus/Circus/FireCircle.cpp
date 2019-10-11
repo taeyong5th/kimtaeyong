@@ -38,6 +38,9 @@ void FireCircle::update(int cameraX)
 		m_fAnimTick = 0.0f;
 		m_iAnimCount = ++m_iAnimCount % 2;
 	}
+	// 카메라 밖(왼쪽)으로 나가면 위치를 현재화면 끝으로 옮김
+	if (m_ix < cameraX)
+		m_ix += WINDOW_WIDTH;
 	if(m_Movement == FIRE_AUTO_MOVE)
 		m_ix -= m_fDeltaTime * 100;
 

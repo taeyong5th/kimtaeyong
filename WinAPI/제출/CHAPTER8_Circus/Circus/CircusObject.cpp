@@ -1,5 +1,15 @@
 #include "CircusObject.h"
 
+int CircusObject::getX()
+{
+	return m_ix;
+}
+
+int CircusObject::getY()
+{
+	return m_iy;
+}
+
 bool CircusObject::isCollision(CircusObject* object)
 {
 	RECT rect;

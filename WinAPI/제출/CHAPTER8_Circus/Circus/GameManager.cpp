@@ -44,7 +44,7 @@ void GameManager::init(HWND hWnd)
 	m_Player.init(player_x, 430);
 	m_jar.init(770, 445);
 	m_goal.init(MAP_WIDTH, 445);
-	m_fire.init(1000, 270);
+	m_fire.init(WINDOW_WIDTH, 270);
 	m_iHeart = 3;
 
 	m_dwPrevTime = GetTickCount();
@@ -64,36 +64,38 @@ void GameManager::update()
 	{
 		m_Player.setState(PLAYER_STATE_WIN);
 		m_fire.setMovement(FIRE_STOP);
-		m_eState = GAME_PAUSE;
+		m_eState = GAME_OVER;
 	}
 	if (m_Player.isCollision(&m_jar) || m_Player.isCollision(&m_fire))
 	{
 		m_Player.setState(PLAYER_STATE_DIE);
 		m_fire.setMovement(FIRE_STOP);
-		m_eState = GAME_PAUSE;
+		m_eState = GAME_OVER;
 	}
 
+	// 각 오브젝트의 위치를 업데이트한다
 	m_bg.update(camera_x, 0);	
 	m_jar.update(camera_x);
 	m_goal.update(camera_x);
+	m_fire.update(camera_x);
+	m_Player.setPosition(player_x);
+	m_Player.update(camera_x);
 
+	// 메모리DC에 그린다.
 	m_bg.draw();
 	m_jar.draw();
 	m_goal.draw();
-
-	m_fire.update(camera_x);
 	m_fire.draw(FIRE_L);
-	m_Player.setPosition(player_x);
-	m_Player.update(camera_x);
 	m_Player.draw();
 	m_fire.draw(FIRE_R);
 
+	// DC에 그린다.
 	HDC hdc = GetDC(m_hWnd);
 	BitmapManager::GetInstance()->draw(hdc, 0, 0);
 	ReleaseDC(m_hWnd, hdc);
 
 	// 게임을 멈추고 3초가 지나면 재시작
-	if (m_eState == GAME_PAUSE)
+	if (m_eState == GAME_OVER)
 	{
 		m_fPauseTime += m_fDeltaTime;
 		if (m_fPauseTime > 3.0f)

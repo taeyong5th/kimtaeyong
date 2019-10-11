@@ -16,6 +16,8 @@ protected:
 	DWORD m_dwCurTime;
 	float m_fDeltaTime;
 public:
+	int getX();
+	int getY();
 	// object와 충돌하는지 검사, 충돌하면 true 아니면 false
 	bool isCollision(CircusObject* object);
 	// 오브젝트의 x, y 초기 위치를 정한다.
@@ -24,7 +26,7 @@ public:
 	virtual void update(int cameraX = 0) = 0;
 	// 비트맵 매니저의 Memory DC에 그린다.
 	virtual void draw() = 0;
-
+	
 	CircusObject();
 	virtual ~CircusObject();
 };

@@ -8,8 +8,8 @@
 
 enum GAME_STATE
 {
-	GAME_PAUSE,
-	GAME_PLAYING
+	GAME_PLAYING,
+	GAME_OVER
 };
 
 class GameManager
