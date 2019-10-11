@@ -16,6 +16,9 @@
     <Filter Include="Circus">
       <UniqueIdentifier>{52ebbd28-05da-4f19-8718-fa319939179b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{9a1c886e-38f3-4e04-b0ae-93524d0ea36f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="CircusObject.cpp">
       <Filter>Circus</Filter>
+    </ClCompile>
+    <ClCompile Include="IntroUI.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="CircusObject.h">
       <Filter>Circus</Filter>
+    </ClInclude>
+    <ClInclude Include="IntroUI.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

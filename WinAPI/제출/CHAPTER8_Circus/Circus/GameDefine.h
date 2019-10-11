@@ -12,7 +12,7 @@
 
 #define PI 3.141592f
 #define PLAYER_SPEED 500
-#define MAP_WIDTH 1500
+#define MAP_WIDTH 3000
 
 /* 이미지 리소스 */
 #define IMG_BG_GROUND			L"res//back.bmp"
@@ -43,3 +43,5 @@
 #define IMG_PLAYER_WIN1			L"res//win.bmp"
 #define IMG_PLAYER_WIN2			L"res//win2.bmp"
 #define IMG_PLAYER_DIE			L"res//die.bmp"
+#define IMG_TITLE				L"res//title.bmp"
+#define IMG_NUMBER				L"res//number.bmp"

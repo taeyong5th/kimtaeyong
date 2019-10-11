@@ -4,7 +4,7 @@ RECT Jar::getJarRect()
 {
 	RECT rect;
 	rect.left = m_ix - m_iWidth / 3;
-	rect.right = rect.left + m_iWidth;
+	rect.right = m_ix + m_iWidth / 3;
 	rect.top = m_iy - m_iHeight / 3;
 	rect.bottom = rect.top + m_iHeight;
 	return rect;

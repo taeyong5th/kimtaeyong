@@ -4,12 +4,27 @@ void Background::init(int x, int y)
 {
 	m_ix = x;
 	m_iy = y;
+	m_eAnim = BG_ANIM_STOP;
 }
 
 void Background::update(int x, int y)
 {
 	m_ix = -x;
 	m_iy = -y;
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
+	m_dwPrevTime = m_dwCurTime;
+	m_fAnimTick += m_fDeltaTime;
+	if (m_fAnimTick > 0.1f) // 0.1초마다 그릴 이미지 변경
+	{
+		m_fAnimTick = 0.0f;
+		m_iAnimCount = ++m_iAnimCount % 2;
+	}
+	// 애니메이션을 멈춘 상태면 0번째 이미지로만 보여지게함
+	if (m_eAnim == BG_ANIM_STOP)
+	{
+		m_iAnimCount = 0;
+	}	
 }
 
 void Background::draw()
@@ -28,8 +43,8 @@ void Background::draw()
 		}
 		else
 		{
-			bitmapWidth = BitmapManager::GetInstance()->getBitmap(IMG_BG_CROWD)->getWidth();
-			BitmapManager::GetInstance()->prepare(IMG_BG_CROWD, tempX, m_iy + 3 * m_iMultiple, m_iMultiple, m_iMultiple);
+			bitmapWidth = BitmapManager::GetInstance()->getBitmap(m_aAnimation[m_iAnimCount])->getWidth();
+			BitmapManager::GetInstance()->prepare(m_aAnimation[m_iAnimCount], tempX, m_iy + 3 * m_iMultiple, m_iMultiple, m_iMultiple);
 			tempX += bitmapWidth * m_iMultiple;
 		}
 
@@ -39,9 +54,22 @@ void Background::draw()
 	}
 }
 
+void Background::setAnimState(BG_ANIM anim)
+{
+	m_eAnim = anim;
+}
+
 Background::Background()
 {
-	
+
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
+	m_fAnimTick = 0.0f;
+	m_iAnimCount = 0;
+
+	m_aAnimation[0] = IMG_BG_CROWD;
+	m_aAnimation[1] = IMG_BG_CROWD2;
 
 }
 
