@@ -15,6 +15,8 @@ protected:
 	DWORD m_dwPrevTime;
 	DWORD m_dwCurTime;
 	float m_fDeltaTime;
+
+	bool m_bScoreAcquired;
 public:
 	int getX();
 	int getY();
@@ -26,6 +28,9 @@ public:
 	virtual void update(int cameraX = 0) = 0;
 	// 비트맵 매니저의 Memory DC에 그린다.
 	virtual void draw() = 0;
+	// 점수를 이미 획득했는지
+	bool isAcquired();
+	void setScoreAcquired(bool acquired);
 	
 	CircusObject();
 	virtual ~CircusObject();

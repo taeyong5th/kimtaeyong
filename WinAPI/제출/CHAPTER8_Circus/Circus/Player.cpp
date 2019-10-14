@@ -30,6 +30,20 @@ void Player::update(int camera_x)
 
 	//m_ix = m_iCameraX + 140;
 
+	m_fMoveAnimTick += m_fDeltaTime;
+	if (m_fMoveAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
+	{
+		m_fMoveAnimTick = 0.0f;
+		animCount = ++animCount % 3;
+	}
+
+	m_fWinAnimTick += m_fDeltaTime;
+	if (m_fWinAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
+	{
+		m_fWinAnimTick = 0.0f;
+		m_iWinAnimCount = ++m_iWinAnimCount % 2;
+	}
+
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER1)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER1)->getHeight() * m_iMultiple;
 
@@ -40,8 +54,6 @@ void Player::update(int camera_x)
 
 void Player::draw()
 {
-
-	static int animCount = 0;
 	static int originY;
 	if (m_eState == PLAYER_STATE_IDLE) originY = m_iy;
 
@@ -51,12 +63,6 @@ void Player::draw()
 		BitmapManager::GetInstance()->prepare(m_aMoveAnimation[0], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case PLAYER_STATE_MOVE:
-		m_fMoveAnimTick += m_fDeltaTime;
-		if (m_fMoveAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
-		{
-			m_fMoveAnimTick = 0.0f;
-			animCount = ++animCount % 3;
-		}
 		BitmapManager::GetInstance()->prepare(m_aMoveAnimation[animCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case PLAYER_STATE_JUMP:
@@ -83,13 +89,7 @@ void Player::draw()
 		BitmapManager::GetInstance()->prepare(IMG_PLAYER_DIE, m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	case PLAYER_STATE_WIN:
-		m_fMoveAnimTick += m_fDeltaTime;
-		if (m_fMoveAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
-		{
-			m_fMoveAnimTick = 0.0f;
-			animCount = ++animCount % 2;
-		}
-		BitmapManager::GetInstance()->prepare(m_aWinAnimation[animCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
+		BitmapManager::GetInstance()->prepare(m_aWinAnimation[m_iWinAnimCount], m_ix - m_iWidth / 2 - m_iCameraX, m_iy - m_iHeight / 2, m_iMultiple, m_iMultiple);
 		break;
 	default:
 		break;
@@ -132,6 +132,9 @@ void Player::init(int x, int y)
 
 	m_fMoveAnimTick = 0.0f;
 	m_fJumpTick = 0.0f;
+	m_fWinAnimTick = 0.0f;
+	m_iWinAnimCount = 0;
+	animCount = 0;
 	m_dwPrevTime = GetTickCount();
 	m_dwCurTime = GetTickCount();
 }

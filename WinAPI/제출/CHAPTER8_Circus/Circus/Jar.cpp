@@ -16,6 +16,11 @@ void Jar::init(int x, int y)
 	m_iy = y;
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_ENEMY_JAR)->getHeight() * m_iMultiple;
+	
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
+	m_bScoreAcquired = false;
 }
 
 void Jar::update(int cameraX)

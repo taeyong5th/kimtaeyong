@@ -8,7 +8,8 @@ private:
 	LPCWSTR stars[3];
 
 public:
-	void draw(HWND hwnd);
+	void init(HWND hWnd);
+	void draw();
 	IntroUI();
 	~IntroUI();
 };

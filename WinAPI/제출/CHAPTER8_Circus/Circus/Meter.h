@@ -1,12 +1,11 @@
 #pragma once
 #include "GameDefine.h"
 
-class Jar : public CircusObject
+class Meter : public CircusObject
 {
 private:
-	LPCWSTR m_aAnimation[2];
-	float m_fAnimTick; // 애니메이션을 몇 초마다 바뀌게 할지
-	RECT getJarRect();
+	int m_iNumber; // 몇 m인지
+	NumberBitmap m_NumberUI;
 public:
 	// 오브젝트의 x, y 초기 위치를 정한다.
 	void init(int x, int y) override;
@@ -15,6 +14,6 @@ public:
 	// 비트맵 매니저의 Memory DC에 그린다.
 	void draw() override;
 
-	Jar();
-	~Jar();
+	Meter();
+	~Meter();
 };

@@ -13,7 +13,11 @@ RECT FireCircle::getFireRect()
 void FireCircle::init(int x, int y)
 {
 	m_Movement = FIRE_AUTO_MOVE;
-
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
+	m_fAnimTick = 0.0f;
+	
 	m_ix = x;
 	m_iy = y;
 
@@ -24,6 +28,7 @@ void FireCircle::init(int x, int y)
 
 	m_RectList.clear();
 	m_RectList.push_back(getFireRect());
+	m_bScoreAcquired = false;
 }
 
 void FireCircle::update(int cameraX)
@@ -33,14 +38,18 @@ void FireCircle::update(int cameraX)
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 	m_fAnimTick += m_fDeltaTime;
-	if (m_fAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
+	if (m_Movement != FIRE_STOP && m_fAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
 	{
 		m_fAnimTick = 0.0f;
 		m_iAnimCount = ++m_iAnimCount % 2;
 	}
 	// 카메라 밖(왼쪽)으로 나가면 위치를 현재화면 끝으로 옮김
 	if (m_ix < cameraX)
+	{
 		m_ix += WINDOW_WIDTH + 100;
+		m_bScoreAcquired = false;
+	}
+		
 	if(m_Movement == FIRE_AUTO_MOVE)
 		m_ix -= m_fDeltaTime * 100;
 

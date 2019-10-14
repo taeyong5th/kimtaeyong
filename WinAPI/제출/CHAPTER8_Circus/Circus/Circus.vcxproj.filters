@@ -54,6 +54,15 @@
     <ClCompile Include="IntroUI.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="Meter.cpp">
+      <Filter>Circus</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberBitmap.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreUI.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bitmap.h">
@@ -93,6 +102,15 @@
       <Filter>Circus</Filter>
     </ClInclude>
     <ClInclude Include="IntroUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Meter.h">
+      <Filter>Circus</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreUI.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberBitmap.h">
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>

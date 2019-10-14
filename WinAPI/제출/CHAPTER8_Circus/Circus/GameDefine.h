@@ -5,6 +5,7 @@
 #include <vector>
 #include "BitmapManager.h"
 #include "CircusObject.h"
+#include "NumberBitmap.h"
 
 /* 윈도우 크기 */
 #define WINDOW_WIDTH 1000
@@ -45,3 +46,5 @@
 #define IMG_PLAYER_DIE			L"res//die.bmp"
 #define IMG_TITLE				L"res//title.bmp"
 #define IMG_NUMBER				L"res//number.bmp"
+#define IMG_NOW					L"res//now.bmp"
+#define IMG_BEST				L"res//best.bmp"

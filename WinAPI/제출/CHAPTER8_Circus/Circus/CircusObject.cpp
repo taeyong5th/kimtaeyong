@@ -26,6 +26,16 @@ bool CircusObject::isCollision(CircusObject* object)
 	return false;
 }
 
+bool CircusObject::isAcquired()
+{
+	return m_bScoreAcquired;
+}
+
+void CircusObject::setScoreAcquired(bool acquired)
+{
+	m_bScoreAcquired = acquired;
+}
+
 CircusObject::CircusObject()
 {
 	m_ix = m_iy = m_iCameraX = 0;
@@ -34,6 +44,7 @@ CircusObject::CircusObject()
 	m_dwPrevTime = GetTickCount();
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = 0.0f;
+	m_bScoreAcquired = false;
 }
 
 CircusObject::~CircusObject()

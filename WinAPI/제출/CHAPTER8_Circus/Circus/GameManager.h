@@ -5,12 +5,15 @@
 #include "FireCircle.h"
 #include "Jar.h"
 #include "Goal.h"
+#include "Meter.h"
 #include "IntroUI.h"
+#include "ScoreUI.h"
 
 enum GAME_STATE
 {
 	GAME_INTRO,
-	GAME_PLAYING,
+	GAME_PLAY,
+	GAME_CLEAR,
 	GAME_OVER
 };
 
@@ -19,13 +22,22 @@ class GameManager
 private:
 	GAME_STATE m_eState;
 	HWND m_hWnd;
-	int camera_x, player_x;
+	int m_iCameraX, m_iPlayerX;
 	Background m_bg;
 	Player m_Player;
 	Goal m_goal;
 	FireCircle m_fires[2];
 	Jar m_jars[3]; // 
+	Meter m_Meters[3];
+
+	// 점수 관련
+	int m_iScore;
+	int m_iBestScore;
 	int m_iHeart;
+
+	// UI
+	IntroUI m_IntroUI;
+	ScoreUI m_ScoreUI;
 	
 	//타임체크용
 	DWORD m_dwPrevTime;
@@ -33,10 +45,11 @@ private:
 	float m_fDeltaTime;
 	float m_fPauseTime;
 
-	void updateObjects(std::vector<CircusObject*> objects);
-	void drawObjects(std::vector<CircusObject*> objects);
 	void intro();
-	void play();
+	void gamePlay();
+	void gameOver();
+	void gameClear();
+	void draw();
 public:
 	void init(HWND hWnd);
 	void update();

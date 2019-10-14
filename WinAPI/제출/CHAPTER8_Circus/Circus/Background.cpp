@@ -5,12 +5,15 @@ void Background::init(int x, int y)
 	m_ix = x;
 	m_iy = y;
 	m_eAnim = BG_ANIM_STOP;
+
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
 }
 
-void Background::update(int x, int y)
+void Background::update(int x)
 {
 	m_ix = -x;
-	m_iy = -y;
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
@@ -44,7 +47,7 @@ void Background::draw()
 		else
 		{
 			bitmapWidth = BitmapManager::GetInstance()->getBitmap(m_aAnimation[m_iAnimCount])->getWidth();
-			BitmapManager::GetInstance()->prepare(m_aAnimation[m_iAnimCount], tempX, m_iy + 3 * m_iMultiple, m_iMultiple, m_iMultiple);
+			BitmapManager::GetInstance()->prepare(m_aAnimation[m_iAnimCount], tempX, m_iy, m_iMultiple, m_iMultiple);
 			tempX += bitmapWidth * m_iMultiple;
 		}
 

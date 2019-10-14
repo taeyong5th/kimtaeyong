@@ -20,7 +20,10 @@ private:
 	
 	float m_fMoveAnimTick; // 움직일때 애니메이션을 몇초마다 바뀌게 할지
 	float m_fJumpTick; // 점프 동작
-
+	float m_fWinAnimTick;
+	int m_iWinAnimCount;
+	int animCount = 0;
+	
 	RECT getPlayerRect();
 	RECT getLionRect();
 public:

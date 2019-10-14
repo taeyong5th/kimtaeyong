@@ -26,7 +26,7 @@ private:
 	
 public:
 	void init(int x, int y = 0);
-	void update(int x, int y = 0);
+	void update(int x);
 	void draw();
 	void setAnimState(BG_ANIM anim);
 	Background();

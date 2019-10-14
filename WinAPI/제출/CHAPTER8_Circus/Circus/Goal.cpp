@@ -18,6 +18,9 @@ void Goal::init(int x, int y)
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getWidth() * m_iMultiple;
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_GOAL)->getHeight() * m_iMultiple;
 
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
 }
 
 void Goal::update(int cameraX)
