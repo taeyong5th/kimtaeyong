@@ -10,8 +10,12 @@ void Meter::init(int x, int y)
 	m_dwPrevTime = GetTickCount();
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = 0.0f;
+}
 
-	m_iNumber = (MAP_WIDTH - x) / 100;	
+void Meter::init(int x, int y, int mapWidth)
+{
+	init(x, y);
+	m_iNumber = (mapWidth - x) / 100;	
 }
 
 void Meter::update(int cameraX)

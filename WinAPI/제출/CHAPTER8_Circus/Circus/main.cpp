@@ -31,7 +31,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmd
 		WINDOW_WIDTH, WINDOW_HEIGHT, NULL, (HMENU)NULL, hInstance, NULL);
 	ShowWindow(hWnd, nCmdShow);
 
-	g_Game.init(hWnd);
+	g_Game.initResource(hWnd);
 
 	while (true)
 	{

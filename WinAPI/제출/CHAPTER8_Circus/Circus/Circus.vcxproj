@@ -42,7 +42,6 @@
     <ClInclude Include="FireCircle.h" />
     <ClInclude Include="GameDefine.h" />
     <ClInclude Include="GameManager.h" />
-    <ClInclude Include="GlobalFunctions.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="IntroUI.h" />
     <ClInclude Include="Jar.h" />

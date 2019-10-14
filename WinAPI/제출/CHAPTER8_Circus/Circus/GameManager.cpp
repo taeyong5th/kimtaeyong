@@ -5,7 +5,7 @@ void GameManager::update()
 	switch (m_eState)
 	{
 	case GAME_INTRO:
-		intro();
+		gameIntro();
 		break;
 	case GAME_PLAY:
 		gamePlay();
@@ -19,16 +19,49 @@ void GameManager::update()
 	}	
 }
 
-void GameManager::intro()
+void GameManager::gameIntro()
 {
 	m_IntroUI.draw();
 
 	// enter키를 누르면 플레이한다.
 	if (GetKeyState(VK_RETURN) & 0x8000)
 	{
-		init(m_hWnd);
+		m_iMapWidth = DEFAULT_MAP_WIDTH;
+		gameInit();
 		m_eState = GAME_PLAY;
+		m_iScore = 0;
+		m_iHeart = MAX_HEART;
 	}
+}
+
+void GameManager::gameInit()
+{
+	const int y = 100;
+	m_iPlayerX = 200;
+	m_iCameraX = 0;
+	m_eState = GAME_INTRO;
+	m_bg.init(m_iCameraX, 0 + y);
+	m_Player.init(m_iPlayerX, 430 + y);
+
+	m_eJarCount = m_iMapWidth / 1000;
+	if (m_jars != nullptr) delete[] m_jars;
+	if (m_Meters != nullptr) delete[] m_Meters;
+	m_jars = new Jar[m_eJarCount];
+	m_Meters = new Meter[m_eJarCount];
+	for (int i = 0; i < m_eJarCount; ++i)
+	{
+		m_jars[i].init(i * 1000 + 900, 445 + y);
+		m_Meters[i].init(i * 1000 + 1000, 530 + y, m_iMapWidth);
+	}
+
+	m_goal.init(m_iMapWidth + 50, 445 + y);
+	m_fires[0].init(WINDOW_WIDTH, 270 + y);
+	m_fires[1].init(WINDOW_WIDTH + 500, 270 + y);
+
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
+	m_fPauseTime = 0.0f;
 }
 
 void GameManager::gamePlay()
@@ -36,6 +69,8 @@ void GameManager::gamePlay()
 	// 플레이어가 마지막지점에 도착하면 승리
 	if (m_Player.isCollision(&m_goal))
 	{
+		m_iScore += 1000;
+		m_iBestScore = m_iScore > m_iBestScore ? m_iScore : m_iBestScore;
 		m_eState = GAME_CLEAR;
 		return;
 	}
@@ -47,7 +82,7 @@ void GameManager::gamePlay()
 		return;
 	}
 	// 플레이어가 불주전자에 부딫히면 사망
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < m_eJarCount; ++i)
 	{
 		if (m_Player.isCollision(&m_jars[i]))
 		{
@@ -69,7 +104,7 @@ void GameManager::gamePlay()
 			m_fires[i].setScoreAcquired(true);
 		}
 	}
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < m_eJarCount; ++i)
 	{
 		if (m_Player.getX() > m_jars[i].getX())
 		{
@@ -101,7 +136,7 @@ void GameManager::gamePlay()
 	{
 		m_Player.setState(PLAYER_STATE_MOVE);
 		m_iPlayerX += PLAYER_SPEED * m_fDeltaTime;
-		m_iPlayerX = m_iPlayerX > MAP_WIDTH ? MAP_WIDTH : m_iPlayerX;
+		m_iPlayerX = m_iPlayerX > m_iMapWidth ? m_iMapWidth : m_iPlayerX;
 	}
 	else
 	{
@@ -114,9 +149,9 @@ void GameManager::gamePlay()
 
 	// 카메라 위치 보정
 	m_iCameraX = m_iPlayerX - 140;
-	if (m_iCameraX > MAP_WIDTH - 800)
+	if (m_iCameraX > m_iMapWidth - 800)
 	{
-		m_iCameraX = MAP_WIDTH - 800;
+		m_iCameraX = m_iMapWidth - 800;
 	}
 }
 
@@ -132,12 +167,19 @@ void GameManager::gameOver()
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 
-	// 게임을 멈추고 3초가 지나면 재시작
+	// 게임을 멈추고 2초가 지나면 재시작
 	m_fPauseTime += m_fDeltaTime;
-	if (m_fPauseTime > 3.0f)
+	if (m_fPauseTime > 2.0f)
 	{
-		init(m_hWnd);
-		m_eState = GAME_PLAY;
+		if (m_iHeart < 1)
+		{
+			m_eState = GAME_INTRO;
+		}
+		else
+		{
+			gameInit();
+			m_eState = GAME_PLAY;
+		}
 	}
 }
 
@@ -154,11 +196,12 @@ void GameManager::gameClear()
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 
-	// 게임을 멈추고 3초가 지나면 재시작
+	// 게임을 멈추고 2초가 지나면 재시작
 	m_fPauseTime += m_fDeltaTime;
-	if (m_fPauseTime > 3.0f)
+	if (m_fPauseTime > 2.0f)
 	{
-		init(m_hWnd);
+		m_iMapWidth += 1000;
+		gameInit();
 		m_eState = GAME_PLAY;
 	}
 
@@ -173,9 +216,9 @@ void GameManager::gameClear()
 	}
 	// 카메라 위치 보정
 	m_iCameraX = m_iPlayerX - 140;
-	if (m_iCameraX > MAP_WIDTH - 800)
+	if (m_iCameraX > m_iMapWidth - 800)
 	{
-		m_iCameraX = MAP_WIDTH - 800;
+		m_iCameraX = m_iMapWidth - 800;
 	}
 
 }
@@ -184,7 +227,7 @@ void GameManager::draw()
 {
 	// 각 오브젝트의 위치를 업데이트한다
 	m_bg.update(m_iCameraX);
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < m_eJarCount; ++i)
 	{
 		m_jars[i].update(m_iCameraX);
 		m_Meters[i].update(m_iCameraX);
@@ -197,7 +240,7 @@ void GameManager::draw()
 
 	// 메모리DC에 그린다.
 	m_bg.draw();
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < m_eJarCount; ++i)
 	{
 		m_jars[i].draw();
 		m_Meters[i].draw();
@@ -217,14 +260,11 @@ void GameManager::draw()
 	ReleaseDC(m_hWnd, hdc);
 }
 
-void GameManager::init(HWND hWnd)
+void GameManager::initResource(HWND hWnd)
 {
 	m_hWnd = hWnd;
-
 	m_IntroUI.init(hWnd);
-
 	HDC hdc = GetDC(hWnd);
-
 	BitmapManager::GetInstance()->init(hdc, WINDOW_WIDTH, WINDOW_HEIGHT);
 	BitmapManager::GetInstance()->add(new Bitmap(m_hWnd, L"res//back.bmp"));
 	BitmapManager::GetInstance()->add(new Bitmap(m_hWnd, L"res//back_deco.bmp"));
@@ -258,43 +298,22 @@ void GameManager::init(HWND hWnd)
 	BitmapManager::GetInstance()->add(new Bitmap(m_hWnd, IMG_TITLE));
 	BitmapManager::GetInstance()->add(new Bitmap(m_hWnd, IMG_NOW));
 	BitmapManager::GetInstance()->add(new Bitmap(m_hWnd, IMG_BEST));
-
+	BitmapManager::GetInstance()->add(new Bitmap(m_hWnd, IMG_ICON_BLANK));
 	ReleaseDC(hWnd, hdc);
-	
-	m_iScore = 0;
-
-	int tempY = 100;
-	m_iPlayerX = 200;
-	m_iCameraX = 0;
-	m_eState = GAME_INTRO;
-	m_bg.init(m_iCameraX, 0 + tempY);
-	m_Player.init(m_iPlayerX, 430 + tempY);
-
-
-	for (int i = 0; i < 3; ++i)
-	{
-		m_jars[i].init(i * 1000 + 900, 445 + tempY);
-		m_Meters[i].init(i * 1000 + 1000, 530 + tempY);
-	}
-
-	m_goal.init(MAP_WIDTH + 50 , 445 + tempY);
-	m_fires[0].init(WINDOW_WIDTH, 270 + tempY);
-	m_fires[1].init(WINDOW_WIDTH + 500, 270 + tempY);
-
-	m_dwPrevTime = GetTickCount();
-	m_dwCurTime = GetTickCount();
-	m_fDeltaTime = 0.0f;
-	m_fPauseTime = 0.0f;
 }
 
 GameManager::GameManager()
 {
+	m_iScore = 0;
 	m_iBestScore = 0;
-	m_iHeart = 3;
+	m_iHeart = MAX_HEART;
+	m_iMapWidth = DEFAULT_MAP_WIDTH;
 }
 
 GameManager::~GameManager()
 {
 	BitmapManager::GetInstance()->DestroyInstance();
+	if (m_jars != nullptr) delete[] m_jars;
+	if (m_Meters != nullptr) delete[] m_Meters;
 }
 

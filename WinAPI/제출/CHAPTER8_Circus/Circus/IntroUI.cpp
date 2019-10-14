@@ -7,6 +7,8 @@ void IntroUI::init(HWND hWnd)
 
 void IntroUI::draw()
 {
+	BitmapManager::GetInstance()->prepare(IMG_ICON_BLANK, 0, 0, 90, 90);
+
 	int starCount = 0;
 	int width = BitmapManager::GetInstance()->getBitmap(stars[0])->getWidth();
 
@@ -45,6 +47,7 @@ IntroUI::IntroUI()
 	stars[1] = IMG_STAR2;
 	stars[2] = IMG_STAR3;
 	m_hWnd = nullptr;
+	
 }
 
 IntroUI::~IntroUI()

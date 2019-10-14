@@ -27,8 +27,10 @@ private:
 	Player m_Player;
 	Goal m_goal;
 	FireCircle m_fires[2];
-	Jar m_jars[3]; // 
-	Meter m_Meters[3];
+	Jar* m_jars; // 
+	Meter* m_Meters;
+	int m_eJarCount;
+	int m_iMapWidth;
 
 	// 점수 관련
 	int m_iScore;
@@ -45,13 +47,14 @@ private:
 	float m_fDeltaTime;
 	float m_fPauseTime;
 
-	void intro();
+	void gameIntro();
+	void gameInit();
 	void gamePlay();
 	void gameOver();
 	void gameClear();
-	void draw();
+	void draw();	
 public:
-	void init(HWND hWnd);
+	void initResource(HWND hWnd);
 	void update();
 	GameManager();
 	~GameManager();

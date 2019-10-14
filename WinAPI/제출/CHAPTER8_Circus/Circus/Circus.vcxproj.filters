@@ -83,9 +83,6 @@
     <ClInclude Include="Background.h">
       <Filter>Circus</Filter>
     </ClInclude>
-    <ClInclude Include="GlobalFunctions.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Circus</Filter>
     </ClInclude>

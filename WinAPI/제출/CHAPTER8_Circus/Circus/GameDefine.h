@@ -9,11 +9,12 @@
 
 /* 윈도우 크기 */
 #define WINDOW_WIDTH 1000
-#define WINDOW_HEIGHT 800
+#define WINDOW_HEIGHT 700
 
 #define PI 3.141592f
 #define PLAYER_SPEED 500
-#define MAP_WIDTH 3000
+#define DEFAULT_MAP_WIDTH 1000
+#define MAX_HEART 3
 
 /* 이미지 리소스 */
 #define IMG_BG_GROUND			L"res//back.bmp"
@@ -34,6 +35,7 @@
 #define IMG_ENEMY_JAR			L"res//front.bmp"
 #define IMG_ENEMY_JAR2			L"res//front2.bmp"
 #define IMG_ICON				L"res//icon.bmp"
+#define IMG_ICON_BLANK			L"res//icon_blank.bmp"
 #define IMG_METER				L"res//miter.bmp"
 #define IMG_STAR1				L"res//star.bmp"
 #define IMG_STAR2				L"res//star1.bmp"
