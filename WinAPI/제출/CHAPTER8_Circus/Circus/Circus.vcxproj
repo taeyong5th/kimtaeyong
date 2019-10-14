@@ -51,6 +51,9 @@
     <ClInclude Include="ScoreUI.h" />
     <ClInclude Include="Singleton.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="best.txt" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{4E08ECB9-A453-4642-A910-91D2D27D69E7}</ProjectGuid>

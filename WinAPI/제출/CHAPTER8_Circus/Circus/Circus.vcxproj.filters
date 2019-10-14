@@ -111,4 +111,9 @@
       <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="best.txt">
+      <Filter>리소스 파일</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

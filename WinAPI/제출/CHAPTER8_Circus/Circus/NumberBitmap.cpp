@@ -1,8 +1,9 @@
 #include "NumberBitmap.h"
 
-void NumberBitmap::draw(int number, int x, int y, float multiply, UINT digits)
+void NumberBitmap::draw(UINT number, int x, int y, float multiply, UINT digits)
 {
-	digits = digits > 6 ? 6 : digits;
+	number = number < 999999 ? number : 999999;
+	digits = digits < 6 ? digits : 6;
 
 	m_iWidth = BitmapManager::GetInstance()->getBitmap(IMG_NUMBER)->getWidth();
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_NUMBER)->getHeight();

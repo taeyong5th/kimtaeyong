@@ -116,6 +116,10 @@ void GameManager::gamePlay()
 		}
 	}
 	m_iBestScore = m_iScore > m_iBestScore ? m_iScore : m_iBestScore;
+	if (m_iBestScore > loadScore())
+	{
+		saveScore(m_iBestScore);
+	}
 
 	// 화면을 그린다.
 	draw();
@@ -161,6 +165,11 @@ void GameManager::gameOver()
 	m_Player.setState(PLAYER_STATE_DIE);
 	m_fires[0].setMovement(FIRE_STOP);
 	m_fires[1].setMovement(FIRE_STOP);
+	for (int i = 0; i < m_eJarCount; ++i)
+	{
+		m_jars[i].setAnimation(JAR_ANIM_STOP);
+	}
+
 	draw();
 
 	m_dwCurTime = GetTickCount();
@@ -190,6 +199,11 @@ void GameManager::gameClear()
 	m_bg.setAnimState(BG_ANIM_TWINKLE);
 	m_fires[0].setMovement(FIRE_STOP);
 	m_fires[1].setMovement(FIRE_STOP);
+	for (int i = 0; i < m_eJarCount; ++i)
+	{
+		m_jars[i].setAnimation(JAR_ANIM_STOP);
+	}
+
 	draw();
 
 	m_dwCurTime = GetTickCount();
@@ -260,6 +274,34 @@ void GameManager::draw()
 	ReleaseDC(m_hWnd, hdc);
 }
 
+int GameManager::loadScore()
+{
+	int score = 0;
+	std::ifstream file;
+	file.open(BEST_SCORE_FILEPATH, std::ios_base::in);
+	
+	if (file.is_open())
+	{
+		file >> score;		
+	}
+	file.close();
+	
+	return score;
+}
+
+bool GameManager::saveScore(int score)
+{
+	std::ofstream file;
+	file.open(BEST_SCORE_FILEPATH, std::ios_base::out);
+	// 파일 열기 실패
+	if (!file.is_open()) return false;
+
+	std::string str(std::to_string(score));
+	file.write(str.c_str(), str.size());	
+	file.close();
+	return true;
+}
+
 void GameManager::initResource(HWND hWnd)
 {
 	m_hWnd = hWnd;
@@ -305,7 +347,7 @@ void GameManager::initResource(HWND hWnd)
 GameManager::GameManager()
 {
 	m_iScore = 0;
-	m_iBestScore = 0;
+	m_iBestScore = loadScore();
 	m_iHeart = MAX_HEART;
 	m_iMapWidth = DEFAULT_MAP_WIDTH;
 }

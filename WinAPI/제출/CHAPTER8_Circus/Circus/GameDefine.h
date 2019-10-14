@@ -3,6 +3,8 @@
 #include <Windows.h>
 #include <math.h>
 #include <vector>
+#include <fstream>
+#include <string>
 #include "BitmapManager.h"
 #include "CircusObject.h"
 #include "NumberBitmap.h"
@@ -15,6 +17,9 @@
 #define PLAYER_SPEED 500
 #define DEFAULT_MAP_WIDTH 1000
 #define MAX_HEART 3
+
+/* 최고점수 저장할 파일 위치 */
+#define BEST_SCORE_FILEPATH "best.txt"
 
 /* 이미지 리소스 */
 #define IMG_BG_GROUND			L"res//back.bmp"

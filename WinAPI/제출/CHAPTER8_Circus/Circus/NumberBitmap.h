@@ -9,7 +9,7 @@ private:
 
 public:
 	// Number를 x, y위치에 multiply배의 크기로 그린다.
-	void draw(int number, int x, int y, float multiply, UINT digits);
+	void draw(UINT number, int x, int y, float multiply, UINT digits);
 	NumberBitmap();
 	~NumberBitmap();
 };

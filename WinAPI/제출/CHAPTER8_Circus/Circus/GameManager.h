@@ -52,7 +52,10 @@ private:
 	void gamePlay();
 	void gameOver();
 	void gameClear();
-	void draw();	
+	void draw();
+
+	int loadScore();
+	bool saveScore(int score);
 public:
 	void initResource(HWND hWnd);
 	void update();
