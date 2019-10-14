@@ -146,9 +146,13 @@ void GameManager::gamePlay()
 	{
 		m_Player.setState(PLAYER_STATE_IDLE);
 	}
-	if (GetKeyState(VK_SPACE) & 0x8000)
+	if (GetKeyState(VK_SPACE) & 0x8000 || GetKeyState(VK_UP) & 0x8000)
 	{
 		m_Player.setState(PLAYER_STATE_JUMP);
+	}
+	if (GetKeyState(VK_ESCAPE) & 0x8000)
+	{
+		m_eState = GAME_INTRO;
 	}
 
 	// 카메라 위치 보정
