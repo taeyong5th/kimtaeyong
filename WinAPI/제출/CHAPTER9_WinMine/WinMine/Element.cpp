@@ -54,36 +54,39 @@ void Element::open()
 void Element::draw()
 {
 	//m_MapDraw.DrawPoint(getShape(), m_ix, m_iy);
+	int width = BitmapManager::GetInstance()->getBitmap(IMG_BLOCK)->getWidth();
+	int height = BitmapManager::GetInstance()->getBitmap(IMG_BLOCK)->getHeight();
+	BitmapManager::GetInstance()->prepare(getShape(), m_ix * width, m_iy * height);
 }
 
-std::string Element::getShape()
+LPCWSTR Element::getShape()
 {
-	if (m_bFlag) return "££";
-	if (!m_bIsOpen) return "¡á";
+	if (m_bFlag) return IMG_FLAG;
+	if (!m_bIsOpen) return IMG_BLOCK;
 
 	switch (m_iData)
 	{
 	case MINE:
-		return "¡Ú";
+		return IMG_MINE;
 	case 0:
-		return "  ";// "£°";
+		return IMG_BLOCK_0;
 	case 1:
-		return "£±";
+		return IMG_BLOCK_1;
 	case 2:
-		return "£²";
+		return IMG_BLOCK_2;
 	case 3:
-		return "£³";
+		return IMG_BLOCK_3;
 	case 4:
-		return "£´";
+		return IMG_BLOCK_4;
 	case 5:
-		return "£µ";
+		return IMG_BLOCK_5;
 	case 6:
-		return "£¶";
+		return IMG_BLOCK_6;
 	case 7:
-		return "£·";
+		return IMG_BLOCK_7;
 	case 8:
-		return "£¸";
+		return IMG_BLOCK_8;
 	default:
-		return "¡á";
+		return IMG_BLOCK;
 	}
 }

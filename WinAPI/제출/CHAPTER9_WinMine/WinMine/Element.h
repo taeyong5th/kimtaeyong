@@ -13,12 +13,13 @@ public:
 	bool isOpen();
 	void open();
 	void draw();
-	std::string getShape(); // 그려질 모양을 반환한다.
+	
 private:
 	int m_ix;
 	int m_iy;
 	int m_iData; // -1이면 지뢰 0 이상이면 지뢰 개수
 	bool m_bIsOpen; // 해당 위치를 오픈했는지
 	bool m_bFlag; // 해당 위치에 flag를 꽂았는지
-		
+	
+	LPCWSTR getShape(); // 그려질 모양을 반환한다.	
 };

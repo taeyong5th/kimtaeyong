@@ -1,9 +1,7 @@
 #include "GameManager.h"
 
 GameManager::GameManager()
-{
-	std::string cmd = "mode con cols=" + std::to_string(WIDTH * 2 + 1) + " lines=" + std::to_string(HEIGHT + 5);
-	system(cmd.c_str());
+{	
 	srand(time(NULL));
 
 	// 커서 설정
@@ -45,15 +43,6 @@ GameManager::GameManager()
 			}
 		}
 	}
-
-	// 맵 그리기
-	for (int i = 0; i < WIDTH; i++)
-	{
-		for (int j = 0; j < HEIGHT; j++)
-		{
-			m_Map[i][j]->draw();
-		}
-	}
 }
 
 GameManager::~GameManager()
@@ -68,66 +57,142 @@ GameManager::~GameManager()
 	}
 }
 
+void GameManager::init(HWND hWnd)
+{
+	m_hWnd = hWnd;
+	HDC hdc = GetDC(hWnd);
+
+	// 비트맵 이미지 로드
+	BitmapManager::GetInstance()->init(hdc, 1000, 1000);
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_0));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_1));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_2));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_3));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_4));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_5));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_6));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_7));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_8));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_MINE));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_FLAG));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BG));
+	
+	ReleaseDC(hWnd, hdc);
+}
+
 void GameManager::start()
 {	
-	char key = '0';	
-	//m_Mapdraw.DrawPoint(m_Cursor.shape, m_Cursor.x, m_Cursor.y);
-	while (true)
+	char key = '0';
+	//m_Map[m_Cursor.x][m_Cursor.y]->draw();
+	
+	BitmapManager::GetInstance()->prepare(IMG_BG, 0, 0);
+	//BitmapManager::GetInstance()->prepare(IMG_BLOCK_0, m_ix + 0, m_iy + 0);
+	//BitmapManager::GetInstance()->prepare(IMG_BLOCK_1, m_ix + 27, m_iy + 27);
+
+
+	// 맵 그리기
+	for (int i = 0; i < WIDTH; i++)
 	{
-		if(true) //if (kbhit())
+		for (int j = 0; j < HEIGHT; j++)
 		{
-			//key = getch();
-			m_Map[m_Cursor.x][m_Cursor.y]->draw();
-			switch (key)
-			{
-			case KEY_LEFT:
-				m_Cursor.x--;
-				break;
-			case KEY_RIGHT:
-				m_Cursor.x++;
-				break;
-			case KEY_DOWN:
-				m_Cursor.y++;
-				break;
-			case KEY_UP:
-				m_Cursor.y--;
-				break;
-			case KEY_ENTER:
-				// 플래그 꽂혀 있으면 무시
-				if (m_Map[m_Cursor.x][m_Cursor.y]->isFlag())
-				{
-					break;
-				}
-				// 지뢰를 선택하면 게임 종료
-				if (m_Map[m_Cursor.x][m_Cursor.y]->getData() == MINE)
-				{
-					//m_Mapdraw.DrawMidText("G A M E O V E R", WIDTH, HEIGHT / 2);
-					Sleep(1000);
-					return;
-				}
-				// 해당 위치를 연다.
-				openMine(m_Cursor.x, m_Cursor.y);
-				// 이기면 게임 종료
-				if (isWin())
-				{
-					//m_Mapdraw.DrawMidText("Y O U W I N", WIDTH, HEIGHT / 2);
-					Sleep(1000);
-					return;
-				}
-				break;
-			case KEY_FLAG:
-				// 플래그를 설정하고 다시 그린다.
-				m_Map[m_Cursor.x][m_Cursor.y]->setFlag();
-				m_Map[m_Cursor.x][m_Cursor.y]->draw();
-				break;
-			}
-			// 커서가 범위 밖으로 나가면 위치를 보정하고 커서를 그린다.
-			adjustCursorPosition();
-			//m_Mapdraw.DrawPoint(m_Cursor.shape, m_Cursor.x, m_Cursor.y);
+			m_Map[i][j]->draw();
 		}
 	}
 
+	// 실제 화면에 그린다.
+	HDC hdc = GetDC(m_hWnd);
+	BitmapManager::GetInstance()->draw(hdc, 0, 0);
+	ReleaseDC(m_hWnd, hdc);
+	
+	//클릭
+	POINT pt;
+	int x, y;
+	if (GetKeyState(VK_LBUTTON) & 0x8000)
+	{
+		//마우스 포인트의 좌표를 가져온다.
+		GetCursorPos(&pt);
+		//스크린상의 좌표에서 Client상의 좌표로 바꿔 준다.
+		ScreenToClient(m_hWnd, &pt);
+
+		x = pt.x / 26;
+		y = pt.y / 26;
+		// 플래그 꽂혀 있으면 무시
+		if (!m_Map[x][y]->isFlag())
+		{
+			// 지뢰를 선택하면 게임 종료
+			if (m_Map[x][y]->getData() == MINE)
+			{
+
+			}
+			// 해당 위치를 연다.
+			openMine(x, y);
+			// 이기면 게임 종료
+			if (isWin())
+			{
+
+			}
+		}	
+	}
+	else if (GetKeyState(VK_RBUTTON) & 0x8000)
+	{
+		//마우스 포인트의 좌표를 가져온다.
+		GetCursorPos(&pt);
+		//스크린상의 좌표에서 Client상의 좌표로 바꿔 준다.
+		ScreenToClient(m_hWnd, &pt);
+
+		m_Map[pt.x / 26][pt.y / 26]->setFlag();
+	}
+
+	switch (key)
+	{
+	case KEY_LEFT:
+		m_Cursor.x--;
+		break;
+	case KEY_RIGHT:
+		m_Cursor.x++;
+		break;
+	case KEY_DOWN:
+		m_Cursor.y++;
+		break;
+	case KEY_UP:
+		m_Cursor.y--;
+		break;
+	case KEY_ENTER:
+		// 플래그 꽂혀 있으면 무시
+		if (m_Map[m_Cursor.x][m_Cursor.y]->isFlag())
+		{
+			break;
+		}
+		// 지뢰를 선택하면 게임 종료
+		if (m_Map[m_Cursor.x][m_Cursor.y]->getData() == MINE)
+		{
+			//m_Mapdraw.DrawMidText("G A M E O V E R", WIDTH, HEIGHT / 2);
+			Sleep(1000);
+			return;
+		}
+		// 해당 위치를 연다.
+		openMine(m_Cursor.x, m_Cursor.y);
+		// 이기면 게임 종료
+		if (isWin())
+		{
+			//m_Mapdraw.DrawMidText("Y O U W I N", WIDTH, HEIGHT / 2);
+			Sleep(1000);
+			return;
+		}
+		break;
+	case KEY_FLAG:
+		// 플래그를 설정하고 다시 그린다.
+		m_Map[m_Cursor.x][m_Cursor.y]->setFlag();
+		m_Map[m_Cursor.x][m_Cursor.y]->draw();
+		break;
+	}
+	// 커서가 범위 밖으로 나가면 위치를 보정하고 커서를 그린다.
+	adjustCursorPosition();
+	//m_Mapdraw.DrawPoint(m_Cursor.shape, m_Cursor.x, m_Cursor.y);
+
 }
+
 
 void GameManager::adjustCursorPosition()
 {
@@ -169,7 +234,7 @@ void GameManager::openMine(int i, int j)
 	
 	if (m_Map[i][j]->getData() == MINE)
 	{
-		//m_Map[i][j]->open();
+		m_Map[i][j]->open();
 		return;
 	}
 	else if (m_Map[i][j]->getData() == 0)
@@ -185,7 +250,6 @@ void GameManager::openMine(int i, int j)
 		m_Map[i][j]->open();
 		return;
 	}
-	
 }
 
 bool GameManager::isWin()

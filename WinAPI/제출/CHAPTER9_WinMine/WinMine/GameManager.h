@@ -15,7 +15,11 @@ public:
 	GameManager();
 	~GameManager();
 	void start();
+	void init(HWND hWnd);
 private:
+	const int m_ix = 43;
+	const int m_iy = 45;
+	HWND m_hWnd;
 	//MapDraw m_Mapdraw;
 	Element* m_Map[WIDTH][HEIGHT];
 	Cursor m_Cursor;
