@@ -1,6 +1,6 @@
-#include "Element.h"
+#include "Block.h"
 
-Element::Element(int x, int y)
+Block::Block(int x, int y)
 {
 	m_ix = x;
 	m_iy = y;
@@ -9,22 +9,22 @@ Element::Element(int x, int y)
 	m_bFlag = false;
 }
 
-Element::~Element()
+Block::~Block()
 {
 }
 
-int Element::getData()
+int Block::getData()
 {
 	return m_iData;
 }
 
-void Element::setData(int data)
+void Block::setData(int data)
 {
 	if (data < MINE || data > 8) return;
 	m_iData = data;
 }
 
-bool Element::setFlag()
+bool Block::setFlag()
 {
 	if (!m_bIsOpen) 
 		m_bFlag = !m_bFlag;
@@ -32,34 +32,33 @@ bool Element::setFlag()
 	return m_bFlag;
 }
 
-bool Element::isFlag()
+bool Block::isFlag()
 {
 	return m_bFlag;
 }
 
-bool Element::isOpen()
+bool Block::isOpen()
 {
 	return m_bIsOpen;
 }
 
-void Element::open()
+void Block::open()
 {
 	// flag가 꽂혀있거나 이미 오픈 되었으면 return
 	if (m_bFlag || m_bIsOpen) return;
 
 	m_bIsOpen = true;
-	draw();
 }
 
-void Element::draw(int top, int left)
+void Block::draw(int top, int left)
 {
 	//m_MapDraw.DrawPoint(getShape(), m_ix, m_iy);
 	int width = BitmapManager::GetInstance()->getBitmap(IMG_BLOCK)->getWidth();
 	int height = BitmapManager::GetInstance()->getBitmap(IMG_BLOCK)->getHeight();
-	BitmapManager::GetInstance()->prepare(getShape(), top+ m_ix * width, left + m_iy * height);
+	BitmapManager::GetInstance()->prepare(getShape(), top + m_ix * width, left + m_iy * height);
 }
 
-LPCWSTR Element::getShape()
+LPCWSTR Block::getShape()
 {
 	if (m_bFlag) return IMG_FLAG;
 	if (!m_bIsOpen) return IMG_BLOCK;

@@ -10,10 +10,10 @@
 #include "BitmapManager.h"
 
 #define MINE -1
-#define MINE_COUNT 25
-
-#define MAP_WIDTH_MAX 20
-#define MAP_HEIGHT_MAX 20
+#define MAP_WIDTH_MIN 15
+#define MAP_HEIGHT_MIN 15
+#define MAP_WIDTH_MAX 30
+#define MAP_HEIGHT_MAX 30
 
 /* 이미지 리소스 */
 #define IMG_BLOCK			 L"res//block.bmp"

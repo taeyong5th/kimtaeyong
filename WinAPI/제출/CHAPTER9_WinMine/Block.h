@@ -1,11 +1,11 @@
 #pragma once
 #include "GlobalDefine.h"
 
-class Element
+class Block
 {
 public:
-	Element(int x, int y);
-	~Element();
+	Block(int x, int y);
+	~Block();
 	int getData();
 	void setData(int data);
 	bool setFlag(); // flag를 꽂는다. 이미 꽂혀있으면 flag를 해제한다.
