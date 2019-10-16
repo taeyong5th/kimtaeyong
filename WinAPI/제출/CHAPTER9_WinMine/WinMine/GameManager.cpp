@@ -3,53 +3,21 @@
 GameManager::GameManager()
 {	
 	srand(time(NULL));
-
-	// 커서 설정
-	m_Cursor.x = WIDTH / 2;
-	m_Cursor.y = HEIGHT / 2;
-	m_Cursor.shape = "♤";
-
-	// 지뢰 맵 초기화
-	for (int i = 0; i < WIDTH; i++)
+	for (int i = 0; i < MAP_WIDTH_MAX; i++)
 	{
-		for (int j = 0; j < HEIGHT; j++)
+		for (int j = 0; j < MAP_HEIGHT_MAX; j++)
 		{
-			m_Map[i][j] = new Element(i, j);
+			m_Map[i][j] = nullptr;
 		}
 	}
-
-	// 지뢰 만들기
-	m_iMineCount = 0;
-	while (m_iMineCount < MINE_COUNT)
-	{
-		int x = rand() % WIDTH;
-		int y = rand() % HEIGHT;
-		if (m_Map[x][y]->getData() != MINE)
-		{
-			m_Map[x][y]->setData(MINE);
-			m_iMineCount++;
-		}
-	}
-		
-	// 지뢰 개수 세기
-	for (int i = 0; i < WIDTH; i++)
-	{
-		for (int j = 0; j < HEIGHT; j++)
-		{			
-			if (m_Map[i][j]->getData() != MINE)
-			{
-				int count = countMine(i, j);
-				m_Map[i][j]->setData(count);
-			}
-		}
-	}
+	init(MAP_WIDTH_MAX, MAP_HEIGHT_MAX);
 }
 
 GameManager::~GameManager()
 {
-	for (int i = 0; i < WIDTH; i++)
+	for (int i = 0; i < m_iRowCount; i++)
 	{
-		for (int j = 0; j < HEIGHT; j++)
+		for (int j = 0; j < m_iColCount; j++)
 		{
 			if(m_Map[i][j] != NULL)
 				delete m_Map[i][j];
@@ -57,7 +25,7 @@ GameManager::~GameManager()
 	}
 }
 
-void GameManager::init(HWND hWnd)
+void GameManager::initResource(HWND hWnd)
 {
 	m_hWnd = hWnd;
 	HDC hdc = GetDC(hWnd);
@@ -83,123 +51,131 @@ void GameManager::init(HWND hWnd)
 
 void GameManager::start()
 {	
-	char key = '0';
-	//m_Map[m_Cursor.x][m_Cursor.y]->draw();
+
 	
-	BitmapManager::GetInstance()->prepare(IMG_BG, 0, 0);
-	//BitmapManager::GetInstance()->prepare(IMG_BLOCK_0, m_ix + 0, m_iy + 0);
-	//BitmapManager::GetInstance()->prepare(IMG_BLOCK_1, m_ix + 27, m_iy + 27);
 
+	//클릭
+	POINT pt;
+	int x, y;
+	//마우스 포인트의 좌표를 가져온다.
+	GetCursorPos(&pt);
+	ScreenToClient(m_hWnd, &pt);
+	x = (pt.x - m_iLeft) / 26;
+	y = (pt.y - m_iTop) / 26;	
 
-	// 맵 그리기
-	for (int i = 0; i < WIDTH; i++)
+	// x, y가 지뢰찾기 배열의 범위안이면
+	if (isValidRange(x, y))
 	{
-		for (int j = 0; j < HEIGHT; j++)
+		if (GetKeyState(VK_LBUTTON) & 0x8000)
 		{
-			m_Map[i][j]->draw();
+			// 플래그 꽂혀 있으면 무시
+			if (!m_Map[x][y]->isFlag())
+			{
+				// 해당 위치를 연다.
+				openMine(x, y);
+			}
+
+			// 지뢰를 선택하면 게임 종료
+			if (m_Map[x][y]->getData() == MINE)
+			{
+				MessageBox(m_hWnd, L"Game Over", L"Game Over", MB_OK);
+			}
+		}
+		else if (GetKeyState(VK_RBUTTON) & 0x8000)
+		{
+			m_Map[x][y]->setFlag();
 		}
 	}
+	
+	// 배경 그리기
+	BitmapManager::GetInstance()->prepare(IMG_BG, 0, 0);
+	// 맵 그리기
+	for (int i = 0; i < m_iRowCount; i++)
+	{
+		for (int j = 0; j < m_iColCount; j++)
+		{
+			m_Map[i][j]->draw(m_iTop, m_iLeft);
+		}
+	}
+
+	// 게임시간 계산
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
+	m_dwPrevTime = m_dwCurTime;
+	m_fGameTime += m_fDeltaTime;
 
 	// 실제 화면에 그린다.
 	HDC hdc = GetDC(m_hWnd);
 	BitmapManager::GetInstance()->draw(hdc, 0, 0);
+	// 텍스트 출력
+	static TCHAR tempstr[128];
+	wsprintf(tempstr, TEXT("%d"), (int)m_fGameTime);
+	TextOut(hdc, 500, 500, tempstr, lstrlen(tempstr));
 	ReleaseDC(m_hWnd, hdc);
-	
-	//클릭
-	POINT pt;
-	int x, y;
-	if (GetKeyState(VK_LBUTTON) & 0x8000)
+
+	// 이기면 게임 종료
+	if (isWin())
 	{
-		//마우스 포인트의 좌표를 가져온다.
-		GetCursorPos(&pt);
-		//스크린상의 좌표에서 Client상의 좌표로 바꿔 준다.
-		ScreenToClient(m_hWnd, &pt);
-
-		x = pt.x / 26;
-		y = pt.y / 26;
-		// 플래그 꽂혀 있으면 무시
-		if (!m_Map[x][y]->isFlag())
-		{
-			// 지뢰를 선택하면 게임 종료
-			if (m_Map[x][y]->getData() == MINE)
-			{
-
-			}
-			// 해당 위치를 연다.
-			openMine(x, y);
-			// 이기면 게임 종료
-			if (isWin())
-			{
-
-			}
-		}	
+		MessageBox(m_hWnd, L"Game Clear", L"Game Clear", MB_OK);
 	}
-	else if (GetKeyState(VK_RBUTTON) & 0x8000)
-	{
-		//마우스 포인트의 좌표를 가져온다.
-		GetCursorPos(&pt);
-		//스크린상의 좌표에서 Client상의 좌표로 바꿔 준다.
-		ScreenToClient(m_hWnd, &pt);
-
-		m_Map[pt.x / 26][pt.y / 26]->setFlag();
-	}
-
-	switch (key)
-	{
-	case KEY_LEFT:
-		m_Cursor.x--;
-		break;
-	case KEY_RIGHT:
-		m_Cursor.x++;
-		break;
-	case KEY_DOWN:
-		m_Cursor.y++;
-		break;
-	case KEY_UP:
-		m_Cursor.y--;
-		break;
-	case KEY_ENTER:
-		// 플래그 꽂혀 있으면 무시
-		if (m_Map[m_Cursor.x][m_Cursor.y]->isFlag())
-		{
-			break;
-		}
-		// 지뢰를 선택하면 게임 종료
-		if (m_Map[m_Cursor.x][m_Cursor.y]->getData() == MINE)
-		{
-			//m_Mapdraw.DrawMidText("G A M E O V E R", WIDTH, HEIGHT / 2);
-			Sleep(1000);
-			return;
-		}
-		// 해당 위치를 연다.
-		openMine(m_Cursor.x, m_Cursor.y);
-		// 이기면 게임 종료
-		if (isWin())
-		{
-			//m_Mapdraw.DrawMidText("Y O U W I N", WIDTH, HEIGHT / 2);
-			Sleep(1000);
-			return;
-		}
-		break;
-	case KEY_FLAG:
-		// 플래그를 설정하고 다시 그린다.
-		m_Map[m_Cursor.x][m_Cursor.y]->setFlag();
-		m_Map[m_Cursor.x][m_Cursor.y]->draw();
-		break;
-	}
-	// 커서가 범위 밖으로 나가면 위치를 보정하고 커서를 그린다.
-	adjustCursorPosition();
-	//m_Mapdraw.DrawPoint(m_Cursor.shape, m_Cursor.x, m_Cursor.y);
-
 }
 
-
-void GameManager::adjustCursorPosition()
+void GameManager::init(int rowCount, int colCount)
 {
-	if (m_Cursor.x < 0) m_Cursor.x = 0;
-	if (m_Cursor.x > WIDTH - 1) m_Cursor.x = WIDTH - 1;
-	if (m_Cursor.y < 0) m_Cursor.y = 0;
-	if (m_Cursor.y > HEIGHT - 1) m_Cursor.y = HEIGHT - 1;
+	m_iRowCount = rowCount < MAP_WIDTH_MAX ? rowCount : MAP_WIDTH_MAX;
+	m_iColCount = colCount < MAP_HEIGHT_MAX ? colCount : MAP_HEIGHT_MAX;
+
+	// 지뢰 맵 초기화
+	for (int i = 0; i < MAP_WIDTH_MAX; i++)
+	{
+		for (int j = 0; j < MAP_HEIGHT_MAX; j++)
+		{
+			if (m_Map[i][j] != nullptr)
+			{
+				delete m_Map[i][j];
+				m_Map[i][j] = nullptr;
+			}				
+		}
+	}
+	for (int i = 0; i < m_iRowCount; i++)
+	{
+		for (int j = 0; j < m_iColCount; j++)
+		{
+			m_Map[i][j] = new Element(i, j);
+		}
+	}
+
+	m_iMineMax = MINE_COUNT;
+	// 지뢰 만들기
+	m_iMineCount = 0;
+	while (m_iMineCount < m_iMineMax)
+	{
+		int x = rand() % m_iRowCount;
+		int y = rand() % m_iColCount;
+		if (m_Map[x][y]->getData() != MINE)
+		{
+			m_Map[x][y]->setData(MINE);
+			m_iMineCount++;
+		}
+	}
+
+	// 지뢰 개수 세기
+	for (int i = 0; i < m_iRowCount; i++)
+	{
+		for (int j = 0; j < m_iColCount; j++)
+		{
+			if (m_Map[i][j]->getData() != MINE)
+			{
+				int count = countMine(i, j);
+				m_Map[i][j]->setData(count);
+			}
+		}
+	}
+
+	m_dwPrevTime = GetTickCount();
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = 0.0f;
+	m_fGameTime = 0.0f;
 }
 
 int GameManager::countMine(int i, int j)
@@ -215,7 +191,7 @@ int GameManager::countMine(int i, int j)
 	{
 		for (int y = col_start; y < col_end; y++)
 		{
-			if (x < 0 || x > WIDTH - 1 || y < 0 || y > HEIGHT - 1) continue;
+			if (x < 0 || x > m_iRowCount - 1 || y < 0 || y > m_iColCount - 1) continue;
 			if (m_Map[x][y]->getData() == MINE)
 			{
 				count++;
@@ -228,7 +204,7 @@ int GameManager::countMine(int i, int j)
 void GameManager::openMine(int i, int j)
 {
 	// 범위 벗어나거나 이미 열려있으면 종료
-	if (i < 0 || i >= WIDTH || j < 0 || j >= HEIGHT) return;	
+	if (i < 0 || i >= m_iRowCount || j < 0 || j >= m_iColCount) return;	
 	if (m_Map[i][j]->isOpen() == true) return;
 
 	
@@ -255,9 +231,9 @@ void GameManager::openMine(int i, int j)
 bool GameManager::isWin()
 {
 	int count = 0;
-	for (int i = 0; i < WIDTH; i++)
+	for (int i = 0; i < m_iRowCount; i++)
 	{
-		for (int j = 0; j < HEIGHT; j++)
+		for (int j = 0; j < m_iColCount; j++)
 		{
 			if (m_Map[i][j]->isOpen() && m_Map[i][j]->getData() != MINE)
 			{
@@ -267,8 +243,17 @@ bool GameManager::isWin()
 	}
 
 	// 지뢰를 제외하고 전부 열었으면 승리
-	if (count + m_iMineCount == WIDTH * HEIGHT)
+	if (count + m_iMineCount == m_iRowCount * m_iColCount)
 		return true;
 	else
 		return false;
+}
+
+bool GameManager::isValidRange(int x, int y)
+{
+	if (x < 0) return false;
+	if (x >= m_iRowCount) return false; 
+	if (y < 0) return false;	
+	if (y >= m_iRowCount) return false;
+	return true;
 }

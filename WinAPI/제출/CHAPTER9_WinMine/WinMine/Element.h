@@ -12,7 +12,7 @@ public:
 	bool isFlag(); // flag가 꽂혀있는지 검사한다.
 	bool isOpen();
 	void open();
-	void draw();
+	void draw(int top = 0, int left = 0);
 	
 private:
 	int m_ix;

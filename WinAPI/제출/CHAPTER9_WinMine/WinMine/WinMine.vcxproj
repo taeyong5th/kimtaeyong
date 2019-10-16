@@ -157,7 +157,11 @@
     <ClInclude Include="Element.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GlobalDefine.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Singleton.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WinMine.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

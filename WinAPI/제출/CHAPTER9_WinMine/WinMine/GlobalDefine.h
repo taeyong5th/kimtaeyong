@@ -9,11 +9,11 @@
 #include <time.h>
 #include "BitmapManager.h"
 
-#define WIDTH 20
-#define HEIGHT 16
-
 #define MINE -1
 #define MINE_COUNT 25
+
+#define MAP_WIDTH_MAX 20
+#define MAP_HEIGHT_MAX 20
 
 /* 이미지 리소스 */
 #define IMG_BLOCK			 L"res//block.bmp"
@@ -30,13 +30,3 @@
 #define IMG_MINE			 L"res//mine.bmp"
 #define IMG_BG				 L"res//back.bmp"
 
-enum KEY
-{
-	KEY_LEFT = 'a',
-	KEY_RIGHT = 'd',
-	KEY_UP = 'w',
-	KEY_DOWN = 's',
-	KEY_ESC = 27,
-	KEY_ENTER = 13,
-	KEY_FLAG = '.'
-};

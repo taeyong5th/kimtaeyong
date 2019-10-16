@@ -51,12 +51,12 @@ void Element::open()
 	draw();
 }
 
-void Element::draw()
+void Element::draw(int top, int left)
 {
 	//m_MapDraw.DrawPoint(getShape(), m_ix, m_iy);
 	int width = BitmapManager::GetInstance()->getBitmap(IMG_BLOCK)->getWidth();
 	int height = BitmapManager::GetInstance()->getBitmap(IMG_BLOCK)->getHeight();
-	BitmapManager::GetInstance()->prepare(getShape(), m_ix * width, m_iy * height);
+	BitmapManager::GetInstance()->prepare(getShape(), top+ m_ix * width, left + m_iy * height);
 }
 
 LPCWSTR Element::getShape()
