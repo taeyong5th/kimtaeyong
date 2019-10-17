@@ -2,7 +2,7 @@
 #include "resource.h"
 #include "GameManager.h"
 
-BOOL CALLBACK SettingsDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = TEXT("MineSweeper");
@@ -91,7 +91,7 @@ int charToInt(const TCHAR* str)
 	return n;
 }
 
-BOOL CALLBACK SettingsDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK SettingsDlgProc(HWND hDlg, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	HWND hRadio;
 	HWND hEditRow, hEditCol, hEditMineCount;

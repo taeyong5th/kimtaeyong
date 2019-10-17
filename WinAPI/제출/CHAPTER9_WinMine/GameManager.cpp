@@ -112,7 +112,11 @@ void GameManager::start()
 		}
 		else if (GetKeyState(VK_RBUTTON) & 0x8000)
 		{
-			m_Map[x][y]->setFlag();
+			bool flag = m_Map[x][y]->setFlag();
+			if (flag == true)
+			{
+				m_iFlagCount++;
+			}
 			m_bClickable = false;
 		}		
 	}
@@ -157,7 +161,7 @@ void GameManager::start()
 	static TCHAR tempstr[128];
 	wsprintf(tempstr, TEXT("%d"), (int)m_fGameTime);
 	TextOut(hdc, 135, bgRealHeight - 30, tempstr, lstrlen(tempstr));
-	wsprintf(tempstr, TEXT("%d"), m_iMineCount);
+	wsprintf(tempstr, TEXT("%d"), m_iMineCount - m_iFlagCount);
 	TextOut(hdc, bgRealWidth - 155, bgRealHeight - 30, tempstr, lstrlen(tempstr));
 	ReleaseDC(m_hWnd, hdc);
 
@@ -262,6 +266,7 @@ void GameManager::init(GAME_LEVEL gameLevel, int col, int row, int mineCount)
 	m_fGameTime = 0.0f;
 	m_fClickTime = 0.0f;
 	m_bClickable = true;
+	m_iFlagCount = 0;
 }
 
 int GameManager::countMine(int i, int j)

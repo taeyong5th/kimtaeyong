@@ -32,6 +32,7 @@ private:
 	const int m_iLeft = 43;
 	HWND m_hWnd;
 	Block* m_Map[MAP_WIDTH_MAX][MAP_HEIGHT_MAX];
+	int m_iFlagCount;
 	int m_iMineCount;
 	int m_iMineMax; 
 	bool m_bClickable; // 연속 클릭 방지 타이머
