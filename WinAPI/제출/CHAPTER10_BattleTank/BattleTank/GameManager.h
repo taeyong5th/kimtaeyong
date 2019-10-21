@@ -3,6 +3,7 @@
 #include "Block.h"
 #include "Player.h"
 #include "Bullet.h"
+#include <vector>
 
 enum GAME_STATE
 {
@@ -30,13 +31,15 @@ private:
 	HWND m_hWnd;
 	Block* m_Map[MAP_WIDTH][MAP_HEIGHT];
 	Player m_Player;
-	Player m_Enemies[6];
+	std::vector<Player> m_aEnemies;
+	int m_iEnemyCreaetedCount; // 적 생성 횟수
+
+	//Player m_aEnemies[ENEMY_MAX];
 	int m_iBlockWidth;
 	int m_iBlockHeight;
 
 	int m_iPlayerX, m_iPlayerY;
 	int m_iStage; // 현재 스테이지
-	int m_iEnemyCount; // 적이 몇명인지
 		
 	//타임체크용
 	DWORD m_dwPrevTime;
@@ -49,6 +52,8 @@ private:
 	void gameOver();
 	void gameClear();
 	void draw();
+
+	void createEnemy();
 	bool isValidRange(int x, int y); // x, y 값이 Map 배열 범위 내인지 검사
 };
 

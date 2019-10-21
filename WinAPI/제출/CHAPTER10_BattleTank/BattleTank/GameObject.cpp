@@ -1,6 +1,12 @@
 #include "GameObject.h"
 
 
+void GameObject::setPos(int x, int y)
+{
+	m_ix = x;
+	m_iy = y;
+}
+
 void GameObject::setTeam(TEAM team)
 {
 	m_eTeam = team;

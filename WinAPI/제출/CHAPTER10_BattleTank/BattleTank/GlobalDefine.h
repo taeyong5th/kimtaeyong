@@ -16,6 +16,7 @@
 #define WINDOW_HEIGHT 700
 
 #define PLAYER_SPEED 100
+#define ENEMY_MAX 6
 
 /* 이미지 리소스 */
 #define IMG_BG				 L"res//back.bmp"
@@ -76,13 +77,13 @@
 
 enum MOVE_STATE
 {
-	MOVE_STATE_IDLE,
+	MOVE_STATE_IDLE,	
 	MOVE_STATE_LEFT,
 	MOVE_STATE_DOWN,
 	MOVE_STATE_RIGHT,
 	MOVE_STATE_UP,
 	MOVE_STATE_EXPLOSION,
-	MOVE_STATE_DIE
+	MOVE_STATE_DIE	
 };
 
 enum TEAM

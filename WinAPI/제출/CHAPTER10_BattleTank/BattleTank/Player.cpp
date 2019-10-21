@@ -14,6 +14,7 @@ void Player::init(int x, int y, RECT mapRect)
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER_TANK_D0)->getHeight() * multifly;
 
 	m_eState = MOVE_STATE_IDLE;
+	m_bAutoMode = false;
 
 	m_iAnimIndex = 7;
 
@@ -22,6 +23,7 @@ void Player::init(int x, int y, RECT mapRect)
 	m_dwPrevTime = m_dwCurTime;
 	m_fAnimTick = 0.0f;
 	m_fBulletTime = 0.0f;
+	m_fAutoMoveTick = 0.0f;
 
 	m_BulletManager.clear();
 }
@@ -39,18 +41,66 @@ void Player::draw()
 	m_BulletManager.draw();
 }
 
-void Player::update(int& x, int& y, Block* map[][MAP_HEIGHT])
+POINT Player::update(Block* map[][MAP_HEIGHT])
 {
-	m_ix = x;
-	m_iy = y;
-
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 
 	m_fAnimTick += m_fDeltaTime;
 	m_fBulletTime += m_fDeltaTime;
+	m_fAutoMoveTick += m_fDeltaTime;
 
+	// 자동으로 움직인다.
+	if (m_bAutoMode)
+	{
+		switch (m_eState)
+		{
+		case MOVE_STATE_DOWN:
+			m_iy += PLAYER_SPEED * m_fDeltaTime;
+			break;
+		case MOVE_STATE_LEFT:
+			m_ix -= PLAYER_SPEED * m_fDeltaTime;
+			break;
+		case MOVE_STATE_UP:
+			m_iy -= PLAYER_SPEED * m_fDeltaTime;
+			break;
+		case MOVE_STATE_RIGHT:
+			m_ix += PLAYER_SPEED * m_fDeltaTime;
+			break;
+		}
+		// 1초마다 행동전환
+		int test[] = { 0, 1, 2, 3, 4, 4, 4, 4, 4 };
+		if (m_fAutoMoveTick > 1.0f)
+		{
+			switch (test[t])
+			{
+			case 0:
+				m_ix -= PLAYER_SPEED * m_fDeltaTime;
+				m_eState = MOVE_STATE_LEFT;
+				break;
+			case 1:
+				m_ix += PLAYER_SPEED * m_fDeltaTime;
+				m_eState = MOVE_STATE_RIGHT;
+				break;
+			case 2:
+				m_iy -= PLAYER_SPEED * m_fDeltaTime;
+				m_eState = MOVE_STATE_UP;
+				break;
+			case 3:
+				m_iy += PLAYER_SPEED * m_fDeltaTime;
+				m_eState = MOVE_STATE_DOWN;
+				break;
+			case 4:
+				shootBullet();
+				t = rand() % 9;
+				break;
+			}
+			t = rand() % 9;
+			m_fAutoMoveTick = 0.0f;
+		}
+	}
+	
 	if (m_fAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
 	{
 		switch (m_eState)
@@ -74,13 +124,6 @@ void Player::update(int& x, int& y, Block* map[][MAP_HEIGHT])
 		m_fAnimTick = 0.0f;
 	}
 
-
-	// 맵 밖으로 나가지 않도록 한다.
-	m_ix = m_ix < m_MapRect.left ? m_MapRect.left : m_ix;
-	m_iy = m_iy < m_MapRect.top ? m_MapRect.top : m_iy;
-	m_ix = m_ix < m_MapRect.right - m_iWidth ? m_ix : m_MapRect.right - m_iWidth;
-	m_iy = m_iy < m_MapRect.bottom - m_iHeight ? m_iy : m_MapRect.bottom - m_iHeight;
-
 	// 블럭과의 충돌을 검사하고 위치를 보정한다.
 	RECT rect;
 	for (int i = 0; i < MAP_WIDTH; i++)
@@ -94,16 +137,16 @@ void Player::update(int& x, int& y, Block* map[][MAP_HEIGHT])
 				case MOVE_STATE_IDLE:
 					break;	
 				case MOVE_STATE_LEFT:
-					x = rect.right;
+					m_ix = rect.right;
 					break;
 				case MOVE_STATE_RIGHT:
-					x = rect.left - m_iWidth;
+					m_ix = rect.left - m_iWidth;
 					break;
 				case MOVE_STATE_UP:
-					y = rect.bottom;
+					m_iy = rect.bottom;
 					break;
 				case MOVE_STATE_DOWN:
-					y = rect.top - m_iHeight;
+					m_iy = rect.top - m_iHeight;
 					break;
 				default:
 					break;
@@ -111,9 +154,17 @@ void Player::update(int& x, int& y, Block* map[][MAP_HEIGHT])
 			}
 		}
 	}
+	// 맵 밖으로 나가지 않도록 한다.
+	m_ix = m_ix < m_MapRect.left ? m_MapRect.left : m_ix;
+	m_iy = m_iy < m_MapRect.top ? m_MapRect.top : m_iy;
+	m_ix = m_ix < m_MapRect.right - m_iWidth ? m_ix : m_MapRect.right - m_iWidth;
+	m_iy = m_iy < m_MapRect.bottom - m_iHeight ? m_iy : m_MapRect.bottom - m_iHeight;
 
 	// 총알 위치를 업데이트한다.
 	m_BulletManager.update(map);
+	
+	POINT p = {m_ix, m_iy};
+	return p;
 }
 
 void Player::setState(MOVE_STATE state)
@@ -136,6 +187,12 @@ RECT Player::getRect()
 	return rect;
 }
 
+bool Player::setAutoMode(bool autoMode)
+{
+	m_bAutoMode = autoMode;
+	return m_bAutoMode;
+}
+
 
 void Player::shootBullet()
 {
@@ -146,6 +203,7 @@ void Player::shootBullet()
 		RECT rect = getRect();
 		bullet.init((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2, m_MapRect);
 		bullet.setState(m_eState);
+		bullet.setTeam(m_eTeam);
 		m_BulletManager.add(bullet);
 	}
 }
@@ -169,6 +227,7 @@ Player::Player()
 	m_aAnimations[13] = IMG_ENEMY_TANK_R1;
 	m_aAnimations[14] = IMG_ENEMY_TANK_U0;
 	m_aAnimations[15] = IMG_ENEMY_TANK_U1;
+	srand(time(NULL));
 }
 
 Player::~Player()

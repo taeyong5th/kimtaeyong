@@ -11,7 +11,8 @@ protected:
 	int m_iWidth, m_iHeight;
 	RECT m_MapRect;
 
-public:	
+public:
+	void setPos(int x, int y);
 	void setTeam(TEAM team);
 	TEAM getTeam();
 	GameObject();

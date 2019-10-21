@@ -160,12 +160,15 @@ void GameManager::initGame()
 	m_MapRect.bottom = m_iBlockHeight * m_iColCount + 40;
 	m_MapRect.right = m_iBlockWidth * m_iRowCount + 39;
 
+	m_iStage = 1;
+
 	// 플레이어 초기화
 	m_Player.init(0, 0, m_MapRect);
 	m_Player.setTeam(TEAM_ALLY);
-
-	m_iEnemyCount = 6;
-	m_iStage = 1;
+	
+	// 적 정보 초기화
+	m_iEnemyCreaetedCount = 0;
+	m_aEnemies.clear();
 
 	m_dwPrevTime = GetTickCount();
 	m_dwCurTime = GetTickCount();
@@ -181,17 +184,21 @@ void GameManager::gameIntro()
 	{
 		initGame();
 		loadStage();
-		for (int i = 0; i < m_iRowCount; i++)
+
+		int i, j;
+		while (true)
 		{
-			for (int j = 0; j < m_iColCount; j++)
+			i = rand() % m_iRowCount;
+			j = rand() % m_iColCount;
+			if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
 			{
-				if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
-				{
-					m_iPlayerX = i * m_iBlockWidth + m_MapRect.left;
-					m_iPlayerY = j * m_iBlockHeight + m_MapRect.top;
-				}
+				m_iPlayerX = i * m_iBlockWidth + m_MapRect.left;
+				m_iPlayerY = j * m_iBlockHeight + m_MapRect.top;
+				m_Player.init(m_iPlayerX, m_iPlayerY, m_MapRect);
+				break;
 			}
 		}
+
 		m_eState = GAME_PLAY;
 	}
 }
@@ -229,73 +236,20 @@ void GameManager::gamePlay()
 		//m_Player.setState(PLAYER_STATE_IDLE);
 	}
 
-	//static int test[] = { 0, 1, 2, 3, 4, 4, 4, 4, 4 };
-	//static int t = 2;
-	//switch (test[t])
-	//{
-	//case 0:
-	//	m_iPlayerX -= PLAYER_SPEED * m_fDeltaTime;
-	//	m_Player.setState(MOVE_STATE_LEFT);
-	//	break;
-	//case 1:
-	//	m_iPlayerX += PLAYER_SPEED * m_fDeltaTime;
-	//	m_Player.setState(MOVE_STATE_RIGHT);
-	//	break;
-	//case 2:
-	//	m_iPlayerY -= PLAYER_SPEED * m_fDeltaTime;
-	//	m_Player.setState(MOVE_STATE_UP);
-	//	break;
-	//case 3:
-	//	m_iPlayerY += PLAYER_SPEED * m_fDeltaTime;
-	//	m_Player.setState(MOVE_STATE_DOWN);
-	//	break;
-	//case 4:
-	//	m_Player.shootBullet();
-	//	t = rand() % 9;
-	//	break;
-	//}
-
-	//// 적을 생성한다.
-	//if (m_fEnemyGenTime > 1.0f)
-	//{
-	//	m_fEnemyGenTime = 0.0f;
-	//	t = rand() % 9;
-	//	m_Player.shootBullet();
-	//}
-
-	m_Player.update(m_iPlayerX, m_iPlayerY, m_Map);
-
-	// 블럭과의 충돌을 검사하고 위치를 보정한다.
-	for (int i = 0; i < m_iRowCount; i++)
+	// 2초마다 적을 생성한다.
+	if (m_fEnemyGenTime > 2.0f)
 	{
-		for (int j = 0; j < m_iColCount; j++)
-		{
-			RECT rect;
-			// 플레이어와 충돌시 위치 보정
-			if (IntersectRect(&rect, &m_Map[i][j]->getRect(), &m_Player.getRect()))
-			{
-				switch (m_Player.getState())
-				{
-				case MOVE_STATE_IDLE:
-					break;	
-				case MOVE_STATE_LEFT:
-					m_iPlayerX = rect.right;
-					break;
-				case MOVE_STATE_RIGHT:
-					m_iPlayerX = rect.left - m_iBlockWidth;
-					break;
-				case MOVE_STATE_UP:
-					m_iPlayerY = rect.bottom;
-					break;
-				case MOVE_STATE_DOWN:
-					m_iPlayerY = rect.top - m_iBlockHeight;
-					break;
-				default:
-					break;
-				}
-				m_Player.update(m_iPlayerX, m_iPlayerY, m_Map);
-			}
-		}
+		m_fEnemyGenTime = 0.0f;
+		createEnemy();
+	}
+
+	m_Player.setPos(m_iPlayerX, m_iPlayerY);
+	POINT p = m_Player.update(m_Map);
+	m_iPlayerX = p.x;
+	m_iPlayerY = p.y;
+	for (int i = 0; i < m_aEnemies.size(); ++i)
+	{
+		m_aEnemies[i].update(m_Map);
 	}
 
 	// 스페이스를 누르면 총알을 발사한다.
@@ -354,22 +308,48 @@ void GameManager::draw()
 	// 플레이어 그리기
 	m_Player.draw();
 	
-	
+	for (int i = 0; i < m_aEnemies.size(); ++i)
+	{
+		m_aEnemies[i].draw();
+	}
+
+	// UI 그리기
+	int enemyCount = (ENEMY_MAX - m_iEnemyCreaetedCount);
+	for (int i = 0; i < enemyCount; ++i)
+	{
+		BitmapManager::GetInstance()->prepare(IMG_ICON_ENEMY, bgRealWidth - 20, 10 + 15 * i);
+	}
+
 	// 실제 화면에 그린다.
 	HDC hdc = GetDC(m_hWnd);
 	BitmapManager::GetInstance()->draw(hdc, 0, 0);
-
-	// 맵 그리기
-	/*for (int i = 0; i < m_iRowCount; i++)
-	{
-		for (int j = 0; j < m_iColCount; j++)
-		{
-			RECT rect = m_Map[i][j]->getRect();
-			FillRect(hdc, &rect, nullptr);
-
-		}
-	}*/
 	ReleaseDC(m_hWnd, hdc);
+}
+
+void GameManager::createEnemy()
+{
+	if (m_iEnemyCreaetedCount < ENEMY_MAX)
+	{
+		int i, j, x, y;
+		while (true)
+		{
+			i = rand() % m_iRowCount;
+			j = rand() % m_iColCount;
+			if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
+			{
+				x = i * m_iBlockWidth + m_MapRect.left;
+				y = j * m_iBlockHeight + m_MapRect.top;
+				Player p;
+				p.init(x, y, m_MapRect);
+				p.setTeam(TEAM_ENEMY);
+				p.setState(MOVE_STATE_DOWN);
+				p.setAutoMode(true);
+				m_aEnemies.push_back(p);
+				m_iEnemyCreaetedCount++;
+				break;
+			}
+		}
+	}
 }
 
 bool GameManager::isValidRange(int x, int y)
