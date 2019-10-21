@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>소스</Filter>
+    </ClCompile>
+    <ClCompile Include="BitmapManager.cpp">
+      <Filter>소스</Filter>
+    </ClCompile>
+    <ClCompile Include="GameManager.cpp">
+      <Filter>소스</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>소스</Filter>
+    </ClCompile>
+    <ClCompile Include="Block.cpp">
+      <Filter>소스</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bitmap.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="BitmapManager.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalDefine.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+    <ClInclude Include="Block.h">
+      <Filter>헤더</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="헤더">
+      <UniqueIdentifier>{ad11822e-5d42-419b-aaab-5d46a676dc6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="리소스">
+      <UniqueIdentifier>{036c9120-1fc5-402c-bbab-d20d35fc279d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스">
+      <UniqueIdentifier>{cc928688-cc22-4fac-8cb4-cde54dcdbe74}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MenuDLG.rc">
+      <Filter>리소스</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
