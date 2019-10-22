@@ -6,7 +6,6 @@ class Bullet : public GameObject
 {
 private:
 	friend class BulletManager;
-	MOVE_STATE m_eState;
 
 	LPCWSTR m_aAnimations[5]; // 폭발 애니메이션
 	LPCWSTR m_aBulletImage[4]; //  총알 이미지 방향
@@ -19,15 +18,13 @@ private:
 
 	int m_iAnimIndex = 0;
 	
-	LPCWSTR getShape(); // 그려질 모양을 반환한다.	
+	LPCWSTR getShape() override; // 그려질 모양을 반환한다.	
 public:
 	const float multifly = 1.0f;
-	void init(int x, int y, RECT mapRect);
-	void draw();
+	void init(int x, int y, RECT mapRect) override;
+	void draw() override;
 	void update();
-	void setState(MOVE_STATE state);
-	MOVE_STATE getState();
-	RECT getRect();
+	RECT getRect() override;
 	Bullet();
 	~Bullet();
 };

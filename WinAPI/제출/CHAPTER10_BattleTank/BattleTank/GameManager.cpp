@@ -32,6 +32,7 @@ void GameManager::initResource(HWND hWnd)
 	// 비트맵 이미지 로드
 	BitmapManager::GetInstance()->init(hdc, 860*2, 800*2);
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BG));
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_INTRO));
 	
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_BLANK));
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_BLOCK_A));
@@ -69,6 +70,7 @@ void GameManager::initResource(HWND hWnd)
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_PLAYER_TANK_R0));
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_PLAYER_TANK_R1));
 	
+	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_ITEM));
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_SHIELD_0));
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_SHIELD_1));
 	BitmapManager::GetInstance()->add(new Bitmap(hWnd, IMG_EXPLOSION_0));
@@ -87,9 +89,12 @@ void GameManager::initResource(HWND hWnd)
 	ReleaseDC(hWnd, hdc);
 }
 
-void GameManager::loadStage()
+void GameManager::loadStage(int stageNum)
 {
-	HANDLE hFile = CreateFile(TEXT("stages//1.txt"), GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	// stage 정보를 불러온다
+	static TCHAR tempstr[128];
+	wsprintf(tempstr, TEXT("stages//%d.txt"), stageNum);
+	HANDLE hFile = CreateFile(tempstr, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hFile != INVALID_HANDLE_VALUE)
 	{
 		for (int i = 0; i < m_iRowCount; i++)
@@ -103,6 +108,26 @@ void GameManager::loadStage()
 			}
 		}
 		CloseHandle(hFile);
+	}
+
+	// 불러온 맵에서 플레이어 위치를 랜덤으로 정한다.
+	int i, j, x, y;
+	while (true)
+	{
+		i = rand() % m_iRowCount;
+		j = rand() % m_iColCount;
+		if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
+		{
+			x = i * m_iBlockWidth + m_MapRect.left;
+			y = j * m_iBlockHeight + m_MapRect.top;
+			Tank player;
+			player.init(0, 0, m_MapRect);
+			player.setTeam(TEAM_ALLY);			
+			player.init(x, y, m_MapRect);
+			player.setHP(m_iPlayerHP);
+			m_PlayerTank.add(player);
+			break;
+		}
 	}
 }
 
@@ -160,45 +185,35 @@ void GameManager::initGame()
 	m_MapRect.bottom = m_iBlockHeight * m_iColCount + 40;
 	m_MapRect.right = m_iBlockWidth * m_iRowCount + 39;
 
-	m_iStage = 1;
-
 	// 플레이어 초기화
-	m_Player.init(0, 0, m_MapRect);
-	m_Player.setTeam(TEAM_ALLY);
+	m_PlayerTank.clear();
 	
 	// 적 정보 초기화
 	m_iEnemyCreaetedCount = 0;
-	m_aEnemies.clear();
+	m_EnemyTanks.clear();
+
+	// 아이템 초기화
+	m_item.setPos(-100, -100);
 
 	m_dwPrevTime = GetTickCount();
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = 0.0f;
 	m_fEnemyGenTime = 0.0f;
+	m_fItemGenTime = 0.0f;
+	m_fPauseTime = 0.0f;
+	m_iClearAnimCount = 0;
 }
-
 
 void GameManager::gameIntro()
 {
-	// enter키를 누르면 플레이한다.
-	if (GetKeyState(VK_RETURN) & 0x8000)
+	draw();
+	// space키를 누르면 플레이한다.
+	if (GetKeyState(VK_SPACE) & 0x8000)
 	{
 		initGame();
-		loadStage();
-
-		int i, j;
-		while (true)
-		{
-			i = rand() % m_iRowCount;
-			j = rand() % m_iColCount;
-			if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
-			{
-				m_iPlayerX = i * m_iBlockWidth + m_MapRect.left;
-				m_iPlayerY = j * m_iBlockHeight + m_MapRect.top;
-				m_Player.init(m_iPlayerX, m_iPlayerY, m_MapRect);
-				break;
-			}
-		}
-
+		m_iStageNum = 1;
+		m_iPlayerHP = 5;
+		loadStage(m_iStageNum);
 		m_eState = GAME_PLAY;
 	}
 }
@@ -209,69 +224,135 @@ void GameManager::gamePlay()
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 	m_fEnemyGenTime += m_fDeltaTime;
+	m_fItemGenTime += m_fDeltaTime;
 
 	// 키를 누르면 움직인다.
 	if (GetKeyState(VK_LEFT) & 0x8000)
 	{
-		m_iPlayerX -= PLAYER_SPEED * m_fDeltaTime;
-		m_Player.setState(MOVE_STATE_LEFT);
+		m_PlayerTank.setState(MOVE_STATE_LEFT);
 	}
 	else if (GetKeyState(VK_RIGHT) & 0x8000)
 	{
-		m_iPlayerX += PLAYER_SPEED * m_fDeltaTime;
-		m_Player.setState(MOVE_STATE_RIGHT);
+		m_PlayerTank.setState(MOVE_STATE_RIGHT);
 	}
 	else if (GetKeyState(VK_UP) & 0x8000)
 	{
-		m_iPlayerY -= PLAYER_SPEED * m_fDeltaTime;
-		m_Player.setState(MOVE_STATE_UP);
+		m_PlayerTank.setState(MOVE_STATE_UP);
 	}
 	else if (GetKeyState(VK_DOWN) & 0x8000)
 	{
-		m_iPlayerY += PLAYER_SPEED * m_fDeltaTime;
-		m_Player.setState(MOVE_STATE_DOWN);
+		m_PlayerTank.setState(MOVE_STATE_DOWN);
 	}
 	else
 	{
-		//m_Player.setState(PLAYER_STATE_IDLE);
+		m_PlayerTank.setState(MOVE_STATE_IDLE);
 	}
-
-	// 2초마다 적을 생성한다.
-	if (m_fEnemyGenTime > 2.0f)
-	{
-		m_fEnemyGenTime = 0.0f;
-		createEnemy();
-	}
-
-	m_Player.setPos(m_iPlayerX, m_iPlayerY);
-	POINT p = m_Player.update(m_Map);
-	m_iPlayerX = p.x;
-	m_iPlayerY = p.y;
-	for (int i = 0; i < m_aEnemies.size(); ++i)
-	{
-		m_aEnemies[i].update(m_Map);
-	}
-
 	// 스페이스를 누르면 총알을 발사한다.
 	if (GetKeyState(VK_SPACE) & 0x8000)
 	{
-		m_Player.shootBullet();
+		m_PlayerTank.shootBullet();
 	}
+
+	// 2.2초마다 적을 생성한다.
+	if (m_fEnemyGenTime > 2.2f)
+	{
+		m_fEnemyGenTime = 0.0f;
+		addEnemy();
+	}
+	// 아이템을 생성한다.
+	if (m_fItemGenTime > 9.0f)
+	{
+		m_fItemGenTime = 0.0f;
+		generateItem();		
+	}
+
+	// 아이템 획득시 실드켜기
+	if (m_PlayerTank.size() > 0 && m_PlayerTank.begin()->isCollision(m_item.getRect()))
+	{		
+		m_PlayerTank.begin()->setShield(true);
+		m_item.setPos(-100, -100);
+	}	
+
+	m_PlayerTank.update(m_Map, &m_EnemyTanks);
+	m_EnemyTanks.update(m_Map, &m_PlayerTank);
+
 
 	// 화면을 그린다.
 	draw();
+
+	if (m_EnemyTanks.size() <= 0 && m_iEnemyCreaetedCount == ENEMY_MAX)
+	{
+		m_eState = GAME_CLEAR;
+	}
+	if (m_iPlayerHP <= 0)
+	{
+		m_eState = GAME_OVER;
+	}
 }
 
 void GameManager::gameOver()
 {
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
+	m_dwPrevTime = m_dwCurTime;
+	m_fPauseTime += m_fDeltaTime;
+
+	if (m_fPauseTime > 2.0f)
+	{
+		m_fPauseTime = 0.0f;
+		m_eState = GAME_INTRO;
+	}
 }
 
 void GameManager::gameClear()
 {
+	m_dwCurTime = GetTickCount();
+	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
+	m_dwPrevTime = m_dwCurTime;
+	m_fPauseTime += m_fDeltaTime;
+
+	// 클리어시 벽돌로 화면 채우는 애니메이션
+	if (m_fPauseTime > 0.1f)
+	{
+		m_fPauseTime = 0.0f;
+
+		int i = m_iClearAnimCount;
+		int j = 0;
+		if (m_iClearAnimCount >= m_iRowCount)
+		{
+			i = m_iRowCount - 1;
+			j = m_iClearAnimCount % m_iRowCount;
+		}
+		for ( ; (i >= 0) && (j >= 0) && (i < m_iRowCount) && (j < m_iColCount) ; i--, j++)
+		{
+			m_Map[i][j]->setData(BLOCK_TYPE_A);
+		}
+		m_iClearAnimCount++;
+	}
+
+	draw();
+
+	// 애니메이션이 끝나면 다음 스테이지
+	if (m_iClearAnimCount >= (m_iRowCount + m_iColCount))
+	{
+		m_iStageNum++;
+		if (m_iStageNum >= STAGE_MAX)
+		{
+			MessageBox(m_hWnd, TEXT("Clear!"), TEXT("Game Clear!"), MB_OK);
+			m_eState = GAME_INTRO;
+		}
+		else
+		{
+			initGame();
+			loadStage(m_iStageNum);
+			m_eState = GAME_PLAY;
+		}
+	}
 }
 
 void GameManager::draw()
 {
+	TCHAR stageText[128] = TEXT("");
 	float bgRate[4] = { 0.0f, 0.4f, 0.6f, 1.0f };
 	float multifly = 1.0f;
 	// 배경 그리기
@@ -296,37 +377,72 @@ void GameManager::draw()
 	BitmapManager::GetInstance()->prepare(IMG_BG, bgWidth * bgRate[1] * multifly, (bgRealHeight - bgHeight * (bgRate[3] - bgRate[2])) * multifly, (bgRealWidth - bgWidth * (bgRate[3] - bgRate[2]) - bgWidth * bgRate[1]) / (bgWidth * (bgRate[2] - bgRate[1])) * multifly, multifly, bgRate[1], bgRate[2], bgRate[2], bgRate[3]);
 	BitmapManager::GetInstance()->prepare(IMG_BG, (bgRealWidth - bgWidth * (bgRate[3] - bgRate[2])) * multifly, (bgRealHeight - bgHeight * (bgRate[3] - bgRate[2])) * multifly, multifly, multifly, bgRate[2], bgRate[2], bgRate[3], bgRate[3]);
 
-	// 맵 그리기
-	for (int i = 0; i < m_iRowCount; i++)
+	switch (m_eState)
 	{
-		for (int j = 0; j < m_iColCount; j++)
+	case GAME_INTRO:
+		BitmapManager::GetInstance()->prepare(IMG_INTRO, m_MapRect.left, m_MapRect.top, 1.0f, 1.0f);
+		wsprintf(stageText, TEXT("PRESS SPACEBAR TO START"));
+		break;
+	case GAME_PLAY:
+		// 맵 그리기
+		for (int i = 0; i < m_iRowCount; i++)
 		{
-			m_Map[i][j]->draw();
+			for (int j = 0; j < m_iColCount; j++)
+			{
+				m_Map[i][j]->draw();
+			}
 		}
-	}
+		m_item.draw();
 
-	// 플레이어 그리기
-	m_Player.draw();
+		// 플레이어 그리기
+		m_PlayerTank.draw();
+		m_EnemyTanks.draw();
+
+		// 남은 적 수 그리기
+		for (int i = 0; i < (ENEMY_MAX - m_iEnemyCreaetedCount); ++i)
+		{
+			BitmapManager::GetInstance()->prepare(IMG_ICON_ENEMY, bgRealWidth - 25, 10 + 15 * i);
+		}
+
+		// 남은 HP 그리기
+		if (m_PlayerTank.size() > 0)
+		{
+			m_iPlayerHP = m_PlayerTank.begin()->getHP();
+		}
+		else
+		{
+			m_iPlayerHP = 0;
+		}
+		for (int i = 0; i < m_iPlayerHP; ++i)
+		{
+			BitmapManager::GetInstance()->prepare(IMG_ICON_PLAYER, 10, 10 + 15 * i);
+		}
+		
+		wsprintf(stageText, TEXT("STAGE %d"), m_iStageNum);
+		break;
+	case GAME_OVER:
+		
+		break;
+	case GAME_CLEAR:
+		// 맵 그리기
+		for (int i = 0; i < m_iRowCount; i++)
+		{
+			for (int j = 0; j < m_iColCount; j++)
+			{
+				m_Map[i][j]->draw();
+			}
+		}
+		break;
+	}
 	
-	for (int i = 0; i < m_aEnemies.size(); ++i)
-	{
-		m_aEnemies[i].draw();
-	}
-
-	// UI 그리기
-	int enemyCount = (ENEMY_MAX - m_iEnemyCreaetedCount);
-	for (int i = 0; i < enemyCount; ++i)
-	{
-		BitmapManager::GetInstance()->prepare(IMG_ICON_ENEMY, bgRealWidth - 20, 10 + 15 * i);
-	}
-
 	// 실제 화면에 그린다.
 	HDC hdc = GetDC(m_hWnd);
-	BitmapManager::GetInstance()->draw(hdc, 0, 0);
+	BitmapManager::GetInstance()->draw(hdc, 0, 0);	
+	TextOut(hdc, bgRealWidth / 2 - lstrlen(stageText)*4, bgRealHeight - 35, stageText, lstrlen(stageText));
 	ReleaseDC(m_hWnd, hdc);
 }
 
-void GameManager::createEnemy()
+void GameManager::addEnemy()
 {
 	if (m_iEnemyCreaetedCount < ENEMY_MAX)
 	{
@@ -339,15 +455,34 @@ void GameManager::createEnemy()
 			{
 				x = i * m_iBlockWidth + m_MapRect.left;
 				y = j * m_iBlockHeight + m_MapRect.top;
-				Player p;
+				Tank p;
 				p.init(x, y, m_MapRect);
 				p.setTeam(TEAM_ENEMY);
 				p.setState(MOVE_STATE_DOWN);
 				p.setAutoMode(true);
-				m_aEnemies.push_back(p);
+				m_EnemyTanks.add(p);
 				m_iEnemyCreaetedCount++;
 				break;
 			}
+		}
+	}
+
+}
+
+void GameManager::generateItem()
+{
+	int i, j, x, y;
+	while (true)
+	{
+		i = rand() % m_iRowCount;
+		j = rand() % m_iColCount;
+		if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
+		{
+			x = i * m_iBlockWidth + m_MapRect.left;
+			y = j * m_iBlockHeight + m_MapRect.top;
+
+			m_item.init(x, y, m_MapRect);
+			break;
 		}
 	}
 }

@@ -4,6 +4,8 @@
 #include "Block.h"
 #include <list>
 
+class TankManager;
+
 class BulletManager
 {
 private:
@@ -11,7 +13,7 @@ private:
 
 public:
 	void add(Bullet b);
-	void update(Block* map[][MAP_HEIGHT]);
+	void update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks);
 	void draw();
 	void clear();
 	BulletManager();

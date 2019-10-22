@@ -1,37 +1,49 @@
 #include "BulletManager.h"
+#include "TankManager.h"
 
 void BulletManager::add(Bullet b)
 {
 	m_BulletList.push_back(b);
 }
 
-void BulletManager::update(Block* map[][MAP_HEIGHT])
+void BulletManager::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
 {
 	RECT mapRect;
-	RECT bulletRect;
 	RECT rect;
+	Tank tank;
 	for (auto iter = m_BulletList.begin(); iter != m_BulletList.end();)
 	{
 		iter->update();
 		mapRect = iter->m_MapRect;
-		bulletRect = iter->getRect();
 
+		// 폭발 애니메이션 중이면 검사하지않음
+		if (iter->getState() == MOVE_STATE_EXPLOSION)
+		{
+			++iter;
+			continue;
+		}
 
 		// 블럭과 충돌하면 폭발
 		for (int i = 0; i < MAP_WIDTH; i++)
 		{
 			for (int j = 0; j < MAP_HEIGHT; j++)
 			{
-				if (IntersectRect(&rect, &map[i][j]->getRect(), &bulletRect))
+				if (iter->isCollision(map[i][j]->getRect()))
 				{
 					map[i][j]->Attacked(iter->getState());
-					iter->setState(MOVE_STATE_EXPLOSION);					
+					iter->setState(MOVE_STATE_EXPLOSION);
 				}
 			}
 		}
 
+		// 적 탱크와 충돌하면 폭발
+		if (enemyTanks != nullptr && enemyTanks->isCollision(iter->getRect()))
+		{
+			iter->setState(MOVE_STATE_EXPLOSION);
+		}
+
 		// 맵 범위 밖으로 나가면 die
-		if (!IntersectRect(&rect, &mapRect, &bulletRect))
+		if (! iter->isCollision(mapRect))
 		{
 			iter->setState(MOVE_STATE_DIE);
 		}

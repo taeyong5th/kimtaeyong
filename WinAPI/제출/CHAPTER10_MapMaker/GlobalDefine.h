@@ -13,6 +13,8 @@
 #define MAP_HEIGHT_MIN 13
 #define MAP_WIDTH_MAX 30
 #define MAP_HEIGHT_MAX 30
+#define WINDOW_WIDTH 530
+#define WINDOW_HEIGHT 460
 
 /* 이미지 리소스 */
 #define IMG_BG				 L"res//back.bmp"

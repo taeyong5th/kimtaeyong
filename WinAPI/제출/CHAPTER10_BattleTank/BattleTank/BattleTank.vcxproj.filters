@@ -30,9 +30,6 @@
     <ClCompile Include="Block.cpp">
       <Filter>GameObj</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>GameObj</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObj</Filter>
     </ClCompile>
@@ -43,6 +40,15 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="BulletManager.cpp">
+      <Filter>GameObj</Filter>
+    </ClCompile>
+    <ClCompile Include="Tank.cpp">
+      <Filter>GameObj</Filter>
+    </ClCompile>
+    <ClCompile Include="TankManager.cpp">
+      <Filter>GameObj</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
       <Filter>GameObj</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,9 +71,6 @@
     <ClInclude Include="Block.h">
       <Filter>GameObj</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>GameObj</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
       <Filter>GameObj</Filter>
     </ClInclude>
@@ -75,6 +78,15 @@
       <Filter>GameObj</Filter>
     </ClInclude>
     <ClInclude Include="BulletManager.h">
+      <Filter>GameObj</Filter>
+    </ClInclude>
+    <ClInclude Include="Tank.h">
+      <Filter>GameObj</Filter>
+    </ClInclude>
+    <ClInclude Include="TankManager.h">
+      <Filter>GameObj</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
       <Filter>GameObj</Filter>
     </ClInclude>
   </ItemGroup>

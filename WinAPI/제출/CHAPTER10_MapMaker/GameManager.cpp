@@ -199,13 +199,17 @@ void GameManager::start()
 			m_Map[x][y]->toggleNext();
 			m_bClickable = false;
 			// 텍스트 출력
-			static TCHAR tempstr[128];
-			static TCHAR tempstr2[128];
-			wsprintf(tempstr, TEXT("%d"), x);
-			wsprintf(tempstr2, TEXT("%d"), y);
+			//static TCHAR tempstr[128];
+			//static TCHAR tempstr2[128];
+			//wsprintf(tempstr, TEXT("%d"), x);
+			//wsprintf(tempstr2, TEXT("%d"), y);
 			//MessageBox(m_hWnd, tempstr, tempstr2, MB_OK);
-
 		}		
+		else if (GetKeyState(VK_RBUTTON) & 0x8000)
+		{
+			m_Map[x][y]->toggleNext(-1);
+			m_bClickable = false;
+		}
 	}
 
 	float bgRate[4] = {0.0f, 0.4f, 0.6f, 1.0f};

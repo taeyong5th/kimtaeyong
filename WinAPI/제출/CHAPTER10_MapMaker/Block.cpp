@@ -21,9 +21,9 @@ void Block::setData(BLOCK_TYPE data)
 	m_iData = data;
 }
 
-void Block::toggleNext()
+void Block::toggleNext(int n)
 {
-	m_iData = (BLOCK_TYPE)(((int)m_iData + 1) % (BLOCK_COUNT));
+	m_iData = (BLOCK_TYPE)(((int)m_iData + n + BLOCK_COUNT) % (BLOCK_COUNT));
 }
 
 void Block::draw(int top, int left)

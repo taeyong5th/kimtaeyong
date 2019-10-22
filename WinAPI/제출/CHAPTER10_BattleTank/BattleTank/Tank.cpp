@@ -1,11 +1,12 @@
-#include "Player.h"
+#include "Tank.h"
+#include "TankManager.h"
 
-LPCWSTR Player::getShape()
+LPCWSTR Tank::getShape()
 {
 	return m_aAnimations[m_iAnimIndex];
 }
 
-void Player::init(int x, int y, RECT mapRect)
+void Tank::init(int x, int y, RECT mapRect)
 {
 	m_ix = x;
 	m_iy = y;
@@ -14,7 +15,9 @@ void Player::init(int x, int y, RECT mapRect)
 	m_iHeight = BitmapManager::GetInstance()->getBitmap(IMG_PLAYER_TANK_D0)->getHeight() * multifly;
 
 	m_eState = MOVE_STATE_IDLE;
+	m_ePrevState = MOVE_STATE_UP;
 	m_bAutoMode = false;
+	m_bShieldOn = false;
 
 	m_iAnimIndex = 7;
 
@@ -22,14 +25,21 @@ void Player::init(int x, int y, RECT mapRect)
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 	m_fAnimTick = 0.0f;
-	m_fBulletTime = 0.0f;
+	m_fBulletTick = 0.0f;
 	m_fAutoMoveTick = 0.0f;
-
+	m_fShieldTick = 0.0f;
+	m_fShieldAnimTick = 0.0f;
+	m_iHP = 1;
 	m_BulletManager.clear();
 }
 
-void Player::draw()
-{	
+void Tank::draw()
+{	// 실드를 그린다
+	if (m_bShieldOn)
+	{
+		BitmapManager::GetInstance()->prepare(m_aShieldAnims[m_iShiledAnimIndex], m_ix, m_iy, multifly, multifly);
+	}
+	// 탱크를 그린다
 	if (m_eTeam == TEAM_ALLY)
 	{
 		BitmapManager::GetInstance()->prepare(m_aAnimations[m_iAnimIndex], m_ix, m_iy, multifly, multifly);
@@ -38,70 +48,77 @@ void Player::draw()
 	{
 		BitmapManager::GetInstance()->prepare(m_aAnimations[m_iAnimIndex + 8], m_ix, m_iy, multifly, multifly);
 	}	
+	// 총알을 그린다.
 	m_BulletManager.draw();
 }
 
-POINT Player::update(Block* map[][MAP_HEIGHT])
+POINT Tank::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
 {
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
 	m_dwPrevTime = m_dwCurTime;
 
 	m_fAnimTick += m_fDeltaTime;
-	m_fBulletTime += m_fDeltaTime;
+	m_fBulletTick += m_fDeltaTime;
+	m_fShieldAnimTick += m_fDeltaTime;
 	m_fAutoMoveTick += m_fDeltaTime;
+	if (m_bShieldOn)
+	{
+		m_fShieldTick += m_fDeltaTime;
+	}
+
 
 	// 자동으로 움직인다.
 	if (m_bAutoMode)
 	{
-		switch (m_eState)
+		if (m_fAutoMoveTick > 0.6f)
 		{
-		case MOVE_STATE_DOWN:
-			m_iy += PLAYER_SPEED * m_fDeltaTime;
-			break;
-		case MOVE_STATE_LEFT:
-			m_ix -= PLAYER_SPEED * m_fDeltaTime;
-			break;
-		case MOVE_STATE_UP:
-			m_iy -= PLAYER_SPEED * m_fDeltaTime;
-			break;
-		case MOVE_STATE_RIGHT:
-			m_ix += PLAYER_SPEED * m_fDeltaTime;
-			break;
-		}
-		// 1초마다 행동전환
-		int test[] = { 0, 1, 2, 3, 4, 4, 4, 4, 4 };
-		if (m_fAutoMoveTick > 1.0f)
-		{
-			switch (test[t])
+			switch (m_aAutoMode[m_iAutoIndex])
 			{
 			case 0:
-				m_ix -= PLAYER_SPEED * m_fDeltaTime;
 				m_eState = MOVE_STATE_LEFT;
 				break;
 			case 1:
-				m_ix += PLAYER_SPEED * m_fDeltaTime;
 				m_eState = MOVE_STATE_RIGHT;
 				break;
 			case 2:
-				m_iy -= PLAYER_SPEED * m_fDeltaTime;
 				m_eState = MOVE_STATE_UP;
 				break;
 			case 3:
-				m_iy += PLAYER_SPEED * m_fDeltaTime;
 				m_eState = MOVE_STATE_DOWN;
 				break;
 			case 4:
+			default:
 				shootBullet();
-				t = rand() % 9;
+				m_iAutoIndex = rand() % 9;
 				break;
 			}
-			t = rand() % 9;
+			m_iAutoIndex = rand() % 9;
 			m_fAutoMoveTick = 0.0f;
 		}
 	}
-	
-	if (m_fAnimTick > 0.15f) // 0.15초마다 그릴 이미지 변경
+
+	switch (m_eState)
+	{
+	case MOVE_STATE_DOWN:
+		m_iy += PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	case MOVE_STATE_LEFT:
+		m_ix -= PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	case MOVE_STATE_UP:
+		m_iy -= PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	case MOVE_STATE_RIGHT:
+		m_ix += PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	}
+
+	if (m_fAnimTick > 0.25f) // 0.15초마다 그릴 이미지 변경
 	{
 		switch (m_eState)
 		{
@@ -122,6 +139,17 @@ POINT Player::update(Block* map[][MAP_HEIGHT])
 			break;
 		}
 		m_fAnimTick = 0.0f;
+	}
+	// 쉴드 이미지 애니메이션
+	if (m_fShieldAnimTick > 0.15f)
+	{
+		m_iShiledAnimIndex = ++m_iShiledAnimIndex % 2;
+	}
+	// 실드 지속 시간 4초 후 실드꺼짐
+	if (m_fShieldTick > 4.0f)
+	{
+		m_bShieldOn = false;
+		m_fShieldTick = 0.0f;
 	}
 
 	// 블럭과의 충돌을 검사하고 위치를 보정한다.
@@ -161,23 +189,13 @@ POINT Player::update(Block* map[][MAP_HEIGHT])
 	m_iy = m_iy < m_MapRect.bottom - m_iHeight ? m_iy : m_MapRect.bottom - m_iHeight;
 
 	// 총알 위치를 업데이트한다.
-	m_BulletManager.update(map);
+	m_BulletManager.update(map, enemyTanks);
 	
 	POINT p = {m_ix, m_iy};
 	return p;
 }
 
-void Player::setState(MOVE_STATE state)
-{
-	m_eState = state;
-}
-
-MOVE_STATE Player::getState()
-{
-	return m_eState;
-}
-
-RECT Player::getRect()
+RECT Tank::getRect()
 {
 	RECT rect;
 	rect.top = m_iy + 3;
@@ -187,28 +205,49 @@ RECT Player::getRect()
 	return rect;
 }
 
-bool Player::setAutoMode(bool autoMode)
+bool Tank::setAutoMode(bool autoMode)
 {
 	m_bAutoMode = autoMode;
 	return m_bAutoMode;
 }
 
-
-void Player::shootBullet()
+bool Tank::setShield(bool shieldOn)
 {
-	if (m_fBulletTime > 0.25f)
+	m_bShieldOn = shieldOn;
+	return m_bShieldOn;
+}
+
+int Tank::getHP()
+{
+	return m_iHP;
+}
+
+void Tank::setHP(int hp)
+{
+	if (m_bShieldOn) return;
+	hp = hp < 0 ? 0 : hp;
+	m_iHP = hp;
+	if (m_iHP == 0)
+		m_eState = MOVE_STATE_DIE;
+}
+
+
+void Tank::shootBullet()
+{
+	m_fBulletTick += m_fDeltaTime;
+	if (m_fBulletTick > 0.45f)
 	{
-		m_fBulletTime = 0.0f;
+		m_fBulletTick = 0.0f;
 		Bullet bullet;
 		RECT rect = getRect();
 		bullet.init((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2, m_MapRect);
-		bullet.setState(m_eState);
+		bullet.setState(m_ePrevState);
 		bullet.setTeam(m_eTeam);
 		m_BulletManager.add(bullet);
 	}
 }
 
-Player::Player()
+Tank::Tank()
 {
 	m_aAnimations[0] = IMG_PLAYER_TANK_L0;
 	m_aAnimations[1] = IMG_PLAYER_TANK_L1;
@@ -227,9 +266,17 @@ Player::Player()
 	m_aAnimations[13] = IMG_ENEMY_TANK_R1;
 	m_aAnimations[14] = IMG_ENEMY_TANK_U0;
 	m_aAnimations[15] = IMG_ENEMY_TANK_U1;
-	srand(time(NULL));
+	
+	m_aShieldAnims[0] = IMG_SHIELD_0;
+	m_aShieldAnims[1] = IMG_SHIELD_1;
+
+
+	for (int i = 0; i < 9; ++i)
+	{
+		m_aAutoMode[i] = i;
+	}
 }
 
-Player::~Player()
+Tank::~Tank()
 {
 }

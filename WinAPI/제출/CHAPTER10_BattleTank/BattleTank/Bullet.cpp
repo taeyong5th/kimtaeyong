@@ -101,17 +101,6 @@ void Bullet::update()
 	}
 }
 
-void Bullet::setState(MOVE_STATE state)
-{
-	// die 상태에서는 변경 불가
-	if (m_eState == MOVE_STATE_DIE) return;
-	m_eState = state;
-}
-
-MOVE_STATE Bullet::getState()
-{
-	return m_eState;
-}
 
 RECT Bullet::getRect()
 {

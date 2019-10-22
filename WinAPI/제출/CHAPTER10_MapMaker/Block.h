@@ -29,7 +29,7 @@ public:
 	~Block();
 	BLOCK_TYPE getData();
 	void setData(BLOCK_TYPE data);
-	void toggleNext();
+	void toggleNext(int n = 1);
 	void draw(int top = 0, int left = 0);	
 	
 private:

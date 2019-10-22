@@ -4,6 +4,7 @@
 #include <string>
 #include <conio.h>
 #include <iomanip>
+#include <vector>
 #include <Windows.h>
 #include <stdlib.h>
 #include <time.h>
@@ -12,14 +13,16 @@
 
 #define MAP_WIDTH 13
 #define MAP_HEIGHT 13
-#define WINDOW_WIDTH 700
-#define WINDOW_HEIGHT 700
+#define WINDOW_WIDTH 520
+#define WINDOW_HEIGHT 440
 
 #define PLAYER_SPEED 100
 #define ENEMY_MAX 6
+#define STAGE_MAX 5
 
 /* 이미지 리소스 */
-#define IMG_BG				 L"res//back.bmp"
+#define IMG_BG						 TEXT("res//back.bmp")
+#define IMG_INTRO					 TEXT("res//intro.bmp")
 
 #define IMG_BLOCK_BLANK				 TEXT("res//block_blank.bmp")
 #define IMG_BLOCK_A					 TEXT("res//block00.bmp")
@@ -56,6 +59,7 @@
 #define IMG_PLAYER_TANK_R0			 TEXT("res//tank_right_00.bmp")
 #define IMG_PLAYER_TANK_R1			 TEXT("res//tank_right_01.bmp")
 
+#define IMG_ITEM					 TEXT("res//item.bmp")
 #define IMG_SHIELD_0				 TEXT("res//shield_00.bmp")
 #define IMG_SHIELD_1				 TEXT("res//shield_01.bmp")
 
