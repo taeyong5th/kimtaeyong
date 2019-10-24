@@ -135,6 +135,32 @@ void Block::Attacked(MOVE_STATE from)
 	}
 }
 
+bool Block::movable()
+{
+	switch (m_iData)
+	{
+	case BLOCK_TYPE_BLANK:
+	case BLOCK_TYPE_GRAY:
+	case BLOCK_TYPE_FOREST:
+	case BLOCK_TYPE_WATER:
+	case BLOCK_TYPE_MARK:
+	case BLOCK_TYPE_FLAG:
+		return true;
+	case BLOCK_TYPE_A:
+	case BLOCK_TYPE_U:
+	case BLOCK_TYPE_L:
+	case BLOCK_TYPE_D:
+	case BLOCK_TYPE_R:	
+	case BLOCK_TYPE_A_HARD:
+	case BLOCK_TYPE_U_HARD:
+	case BLOCK_TYPE_L_HARD:
+	case BLOCK_TYPE_D_HARD:
+	case BLOCK_TYPE_R_HARD:
+	default:
+		return false;
+	}
+}
+
 LPCWSTR Block::getShape()
 {
 	switch (m_iData)

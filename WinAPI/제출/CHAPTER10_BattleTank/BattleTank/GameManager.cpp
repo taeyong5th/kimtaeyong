@@ -116,6 +116,8 @@ void GameManager::loadStage(int stageNum)
 	{
 		i = rand() % m_iRowCount;
 		j = rand() % m_iColCount;
+		//i = 3;
+		//j = 4;
 		if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
 		{
 			x = i * m_iBlockWidth + m_MapRect.left;
@@ -451,6 +453,8 @@ void GameManager::addEnemy()
 		{
 			i = rand() % m_iRowCount;
 			j = rand() % m_iColCount;
+			//i = 8;
+			//j = 3;			
 			if (m_Map[i][j]->getData() == BLOCK_TYPE_BLANK)
 			{
 				x = i * m_iBlockWidth + m_MapRect.left;
@@ -458,8 +462,13 @@ void GameManager::addEnemy()
 				Tank p;
 				p.init(x, y, m_MapRect);
 				p.setTeam(TEAM_ENEMY);
-				p.setState(MOVE_STATE_DOWN);
+				//p.setState(MOVE_STATE_DOWN);
 				p.setAutoMode(true);
+				// 세마리째 부터는 추적모드 on
+				if (m_iEnemyCreaetedCount > 2)
+				{
+					p.setHoming(true);
+				}	
 				m_EnemyTanks.add(p);
 				m_iEnemyCreaetedCount++;
 				break;

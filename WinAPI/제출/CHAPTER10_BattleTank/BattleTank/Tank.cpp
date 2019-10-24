@@ -1,5 +1,6 @@
 #include "Tank.h"
 #include "TankManager.h"
+#include "Astar.h"
 
 LPCWSTR Tank::getShape()
 {
@@ -18,6 +19,7 @@ void Tank::init(int x, int y, RECT mapRect)
 	m_ePrevState = MOVE_STATE_UP;
 	m_bAutoMode = false;
 	m_bShieldOn = false;
+	m_bHoming = false;
 
 	m_iAnimIndex = 7;
 
@@ -42,7 +44,10 @@ void Tank::draw()
 	// 탱크를 그린다
 	if (m_eTeam == TEAM_ALLY)
 	{
+		int x1 = (getRect().left - m_MapRect.left   ) / m_iWidth;
+		int y1 = (getRect().top - m_MapRect.top ) / m_iHeight;
 		BitmapManager::GetInstance()->prepare(m_aAnimations[m_iAnimIndex], m_ix, m_iy, multifly, multifly);
+		//BitmapManager::GetInstance()->prepare(m_aAnimations[m_iAnimIndex], x1 * m_iWidth + m_MapRect.left, y1 * m_iHeight + m_MapRect.top, multifly, multifly);
 	}
 	else
 	{
@@ -52,7 +57,7 @@ void Tank::draw()
 	m_BulletManager.draw();
 }
 
-POINT Tank::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
+POINT Tank::update(Block* a_map[][MAP_HEIGHT], TankManager* enemyTanks)
 {
 	m_dwCurTime = GetTickCount();
 	m_fDeltaTime = (m_dwCurTime - m_dwPrevTime) / 1000.0f;
@@ -66,10 +71,14 @@ POINT Tank::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
 	{
 		m_fShieldTick += m_fDeltaTime;
 	}
+	for (int i = 0; i < MAP_WIDTH; ++i)
+		for (int j = 0; j < MAP_HEIGHT; ++j)
+			if (a_map[i][j]->movable())
+				a_map[i][j]->setData(BLOCK_TYPE_BLANK);
+			
 
-
-	// 자동으로 움직인다.
-	if (m_bAutoMode)
+	// 자동으로 움직이지만 적 추적은 안 할때
+	if (m_bAutoMode && !m_bHoming)
 	{
 		if (m_fAutoMoveTick > 0.6f)
 		{
@@ -97,28 +106,134 @@ POINT Tank::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
 			m_fAutoMoveTick = 0.0f;
 		}
 	}
-
-	switch (m_eState)
+	// 자동으로 적을 추적하며 움직일 때
+	else if (m_bAutoMode && m_bHoming && enemyTanks->size() > 0)
 	{
-	case MOVE_STATE_DOWN:
-		m_iy += PLAYER_SPEED * m_fDeltaTime;
-		m_ePrevState = m_eState;
-		break;
-	case MOVE_STATE_LEFT:
-		m_ix -= PLAYER_SPEED * m_fDeltaTime;
-		m_ePrevState = m_eState;
-		break;
-	case MOVE_STATE_UP:
-		m_iy -= PLAYER_SPEED * m_fDeltaTime;
-		m_ePrevState = m_eState;
-		break;
-	case MOVE_STATE_RIGHT:
-		m_ix += PLAYER_SPEED * m_fDeltaTime;
-		m_ePrevState = m_eState;
-		break;
-	}
+		int x1 = (m_ix - m_MapRect.left) / m_iWidth;
+		int y1 = (m_iy - m_MapRect.top) / m_iHeight;
+		int x2 = (enemyTanks->begin()->getRect().left - m_MapRect.left) / m_iWidth;
+		int y2 = (enemyTanks->begin()->getRect().top - m_MapRect.top) / m_iHeight;
 
-	if (m_fAnimTick > 0.25f) // 0.15초마다 그릴 이미지 변경
+		POINT start = {x1, y1};
+		POINT dest = { x2, y2 };
+		AstarNode startNode(PointToKey(start), PointToKey(start), 0, 0);
+	
+		map<int, AstarNode> open_list;
+		map<int, AstarNode> close_list;
+
+		// close list에 시작노드를 넣는다.
+		close_list[PointToKey(start)] = startNode;
+		// open list에 시작노드와 연결된 노드를 넣는다.
+		const int moveX[4] = { 1, -1, 0, 0 };
+		const int moveY[4] = { 0, 0, 1, -1 };
+		for (int i = 0; i < 4; ++i)
+		{
+			POINT p;
+			p.x = start.x + moveX[i];
+			p.y = start.y + moveY[i];
+			// x, y가 배열내 범위이면서 장애물이 아니면
+			if (isValidPoint(p) && (a_map[p.x][p.y]->movable()))
+			{
+				AstarNode node(PointToKey(p), PointToKey(start), 1, calcH(p, dest));
+				open_list[node.key()] = node;
+			}
+		}
+
+		// open list가 비어있으면 종료.(찾지못함)
+		while (open_list.size() > 0) {
+			// open list에서 f값이 가장 작은 노드 (A)를 가져온다.
+			vector<pair<int, AstarNode>> vec(open_list.begin(), open_list.end());
+			sort(vec.begin(), vec.end(), compareAstar);
+			AstarNode A = vec.begin()->second;
+			
+			// (A)를 close list에 넣고
+			open_list.erase(A.key());
+			close_list[A.key()] = A;
+			
+			// (A)가 목적지 노드면 종료.
+			if (A.key() == PointToKey(dest)) break;
+
+			// (A)와 연결된 노드(B)를 open list에 넣는다.
+			for (int i = 0; i < 4; ++i)
+			{
+				POINT p;
+				p.x = keyToPoint(A.key()).x + moveX[i];
+				p.y = keyToPoint(A.key()).y + moveY[i];
+				// x, y가 배열내 범위이면서 장애물이 아니면
+				if (isValidPoint(p) && (a_map[p.x][p.y]->movable()))
+				{
+					AstarNode B(PointToKey(p), A.key(), A.g() + 1, calcH(p, dest));
+					// 연결된 노드(B)가 이미 close list에 있으면 해당 노드는 무시
+					if (close_list.count(B.key()) > 0)
+					{
+						continue;
+					}
+					// 연결된 노드(B)가 이미 open list에 있으면 f값을 비교하여 작은 결과로 업데이트
+					if (open_list.count(B.key()) > 0)
+					{
+						if (B.f() < open_list[B.key()].f())
+						{
+							open_list[B.key()] = B;
+						}
+					}
+					else
+					{
+						open_list[B.key()] = B;
+					}
+				}
+			}
+		}
+
+		int key = PointToKey(dest);
+		int from;
+		while (true)
+		{
+			// 갈수있는 길이 없는경우 80% 확률로 총알쏴서 길뚫
+			if (close_list.count(key) <= 0)
+			{
+				if (rand() % 10 > 1)
+					shootBullet();
+				break;
+			}
+			from = key;			
+			key = close_list[key].from();
+			//a_map[keyToPoint(key).x][keyToPoint(key).y]->setData(BLOCK_TYPE_WATER);
+			if (key == PointToKey(start)) 
+			{
+				if (m_fAutoMoveTick > 0.5f)
+				{
+					m_eState = direction(start, keyToPoint(from));
+					m_fAutoMoveTick = 0.0f;
+					if(rand() % 10 > 4)
+						shootBullet();
+				}
+				//a_map[start.x][start.y]->setData(BLOCK_TYPE_FLAG);
+				//a_map[keyToPoint(from).x][keyToPoint(from).y]->setData(BLOCK_TYPE_FOREST);
+				break;
+			}
+		}
+	}
+	// 키 눌렀을때 이미지 방향전환 처리
+	if (m_ePrevState != m_eState)
+	{
+		switch (m_eState)
+		{
+		case MOVE_STATE_DOWN:
+			m_iAnimIndex = 2;
+			break;
+		case MOVE_STATE_LEFT:
+			m_iAnimIndex = 0;
+			break;
+		case MOVE_STATE_UP:
+			m_iAnimIndex = 6;
+			break;
+		case MOVE_STATE_RIGHT:
+			m_iAnimIndex = 4;
+			break;
+		}
+	}
+	// 탱크 애니메이션 처리
+	if (m_fAnimTick > 0.25f)
 	{
 		switch (m_eState)
 		{
@@ -152,13 +267,35 @@ POINT Tank::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
 		m_fShieldTick = 0.0f;
 	}
 
+
+	// 방향에 따라 움직인다
+	switch (m_eState)
+	{
+	case MOVE_STATE_DOWN:
+		m_iy += PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	case MOVE_STATE_LEFT:
+		m_ix -= PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	case MOVE_STATE_UP:
+		m_iy -= PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	case MOVE_STATE_RIGHT:
+		m_ix += PLAYER_SPEED * m_fDeltaTime;
+		m_ePrevState = m_eState;
+		break;
+	}
+	
 	// 블럭과의 충돌을 검사하고 위치를 보정한다.
 	RECT rect;
 	for (int i = 0; i < MAP_WIDTH; i++)
 	{
 		for (int j = 0; j < MAP_HEIGHT; j++)
 		{
-			if (IntersectRect(&rect, &map[i][j]->getRect(), &getRect()))
+			if (IntersectRect(&rect, &a_map[i][j]->getRect(), &getRect()))
 			{
 				switch (m_eState)
 				{
@@ -189,9 +326,17 @@ POINT Tank::update(Block* map[][MAP_HEIGHT], TankManager* enemyTanks)
 	m_iy = m_iy < m_MapRect.bottom - m_iHeight ? m_iy : m_MapRect.bottom - m_iHeight;
 
 	// 총알 위치를 업데이트한다.
-	m_BulletManager.update(map, enemyTanks);
+	m_BulletManager.update(a_map, enemyTanks);
 	
 	POINT p = {m_ix, m_iy};
+	return p;
+}
+
+POINT Tank::getPOS()
+{
+	POINT p;
+	p.x = m_ix;
+	p.y = m_iy;
 	return p;
 }
 
@@ -209,6 +354,12 @@ bool Tank::setAutoMode(bool autoMode)
 {
 	m_bAutoMode = autoMode;
 	return m_bAutoMode;
+}
+
+bool Tank::setHoming(bool homingMode)
+{
+	m_bHoming = homingMode;
+	return m_bHoming;
 }
 
 bool Tank::setShield(bool shieldOn)

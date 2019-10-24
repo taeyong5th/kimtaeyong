@@ -34,6 +34,7 @@ public:
 	RECT getRect();
 	void init();
 	void Attacked(MOVE_STATE from); // from 방향으로부터 공격을 당함
+	bool movable();
 	
 private:
 	int m_ix;
