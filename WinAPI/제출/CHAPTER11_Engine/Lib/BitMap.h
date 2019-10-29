@@ -43,7 +43,7 @@ namespace JEngine
 		void			init(HDC hdc, string file_name);
 		void			AdjustAnchorPoint(int& x, int& y);
 		void			DrawBitblt(int x, int y);
-		void			Draw(int x, int y);
+		void			Draw(int x, int y, float px = 1.0f, float py = 1.0f, float sx = 0.0f, float sy = 0.0f, float ex = 1.0f, float ey = 1.0f);
 		void			Draw(JEngine::POINT pt);
 		void			DrawBack(HDC hdc);
 		void			SetAnchor(ANCHOR type);

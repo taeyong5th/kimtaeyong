@@ -59,10 +59,17 @@ namespace JEngine
 		BitBlt(ResoucesManager::GetInstance()->GetBackDC(), x, y, m_size.cx, m_size.cy, m_hMemDC, 0, 0, SRCCOPY);
 	}
 
-	void BitMap::Draw(int x, int y)
+	void BitMap::Draw(int x, int y, float px, float py, float sx, float sy, float ex, float ey)
 	{
-		AdjustAnchorPoint(x, y);
-		TransparentBlt(ResoucesManager::GetInstance()->GetBackDC(), x, y, m_size.cx, m_size.cy, m_hMemDC, 0, 0, m_size.cx, m_size.cy, RGB(255, 0, 255));
+		//AdjustAnchorPoint(x, y);
+		//TransparentBlt(ResoucesManager::GetInstance()->GetBackDC(), x, y, m_size.cx, m_size.cy, m_hMemDC, 0, 0, m_size.cx, m_size.cy, RGB(255, 0, 255));
+		x -= px * m_size.cx * m_ptAnchor.x;
+		y -= py * m_size.cy * m_ptAnchor.y;
+		sx = sx >= 0.0f ? sx : 0.0f;
+		sy = sy >= 0.0f ? sy : 0.0f;
+		ex = ex <= 1.0f ? ex : 1.0f;
+		ey = ey <= 1.0f ? ey : 1.0f;
+		TransparentBlt(ResoucesManager::GetInstance()->GetBackDC(), x, y, m_size.cx * (ex - sx) * px, m_size.cy * (ey - sy) * py, m_hMemDC, m_size.cx * sx, m_size.cy * sy, m_size.cx * (ex - sx), m_size.cy * (ey - sy), RGB(255, 0, 255));
 	}
 
 	void BitMap::DrawBack(HDC hdc)

@@ -3,6 +3,7 @@
 
 void Paper::init(PAPER_COLOR color)
 {
+	m_eColor = color;
 	switch (color)
 	{
 	case PAPER_COLOR_RED:
@@ -26,6 +27,11 @@ void Paper::init(PAPER_COLOR color)
 void Paper::draw(int x, int y)
 {
 	m_pBitmap->Draw(x, y);
+}
+
+PAPER_COLOR Paper::getColor()
+{
+	return m_eColor;
 }
 
 Paper::Paper()

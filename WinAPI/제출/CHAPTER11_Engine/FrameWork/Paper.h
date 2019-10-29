@@ -4,6 +4,7 @@
 
 enum PAPER_COLOR
 {
+	PAPER_COLOR_NONE = -1, 
 	PAPER_COLOR_GREEN, 
 	PAPER_COLOR_RED,	
 	PAPER_COLOR_YELLOW,
@@ -21,6 +22,7 @@ private:
 public:
 	void init(PAPER_COLOR color);
 	void draw(int x, int y);
+	PAPER_COLOR getColor();
 	Paper();
 	~Paper();
 };
