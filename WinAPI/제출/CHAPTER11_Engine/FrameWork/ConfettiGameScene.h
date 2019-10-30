@@ -4,11 +4,7 @@
 #include "Paper.h"
 #include "defines.h"
 
-enum GAME_STATE
-{
-	GAME_STATE_PLAY,
-	GAME_STATE_OVER
-};
+
 
 class ConfettiGameScene : public JEngine::Scene
 {

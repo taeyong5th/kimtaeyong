@@ -172,10 +172,7 @@ void ConfettiGameScene::Update(float fETime)
 		break;
 	default:
 		break;
-	}
-
-
-	
+	}	
 }
 
 void ConfettiGameScene::Draw(HDC hdc)
