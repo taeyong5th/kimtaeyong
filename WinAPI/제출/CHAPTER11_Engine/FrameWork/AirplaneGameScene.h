@@ -2,10 +2,15 @@
 #include "GlobalDefine.h"
 #include "JEngine.h"
 #include "defines.h"
+#include "Flight.h"
+#include "BulletManager.h"
+#include "StarManager.h"
 
 class AirplaneGameScene : public JEngine::Scene
 {
 private:
+	Flight m_flight;
+
 	JEngine::BitMap* m_pBack;
 	JEngine::BitMap* m_pTimeBar;
 	JEngine::BitMap* m_pTimeOver;
@@ -15,14 +20,10 @@ private:
 	JEngine::BitMap* m_pFeverBar2;
 	JEngine::BitMap* m_pFeverBar3;
 	JEngine::BitMap* m_pFlight;
-	JEngine::BitMap* m_pBullet;
 	JEngine::BitMap* m_pStar1;
 	JEngine::BitMap* m_pStar2;
 	JEngine::BitMap* m_pStar3;
 
-	JEngine::POINT m_MousePos;
-
-	int x, y;
 	int m_iScore;
 	int m_iFeverScore;
 	const int m_iFeverScoreMax = 1000;
@@ -39,12 +40,13 @@ private:
 	float m_fGameOverTime;
 	const float m_fGameOverLimitTime = 2.0f;
 	float m_fBulletGenTime;
-	const float m_fBulletGenLimitTime = 1.0f;
-	const float m_BulletSpeed = 150.0f;
+	const float m_fBulletGenLimitTime = 0.3f;
+	float m_fStarGenTime;
+	const float m_fStarGenLimitTime = 0.5f;
 	bool m_bFeverDraw;
 	bool m_bFeverMode;
 
-	std::function<bool()> clickEvent;
+	std::function<bool()> clickEvent;	
 
 public:
 	virtual void Init(HWND hWnd);

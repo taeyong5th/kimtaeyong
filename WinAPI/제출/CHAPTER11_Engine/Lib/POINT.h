@@ -73,6 +73,7 @@ namespace JEngine
 
 		bool isCollision(RECT rcOther);
 		bool isPtin(POINT ptOther);
+		bool isPtin(POINTF ptOther);
 		RECT();
 		RECT(int left_, int top_, int right_, int bottom_);
 		~RECT();

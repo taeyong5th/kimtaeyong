@@ -39,6 +39,21 @@
     <ClInclude Include="Paper.h">
       <Filter>GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="Bullet.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="BulletManager.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Flight.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="Star.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="StarManager.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -60,6 +75,21 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Paper.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Bullet.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="BulletManager.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Flight.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Star.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="StarManager.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
   </ItemGroup>

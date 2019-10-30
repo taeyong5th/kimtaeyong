@@ -73,4 +73,11 @@ namespace JEngine
 		else
 			return false;
 	}
+	bool RECT::isPtin(POINTF ptOther)
+	{
+		if (left < ptOther.x && right > ptOther.x && top < ptOther.y && bottom > ptOther.y)
+			return true;
+		else
+			return false;
+	}
 }

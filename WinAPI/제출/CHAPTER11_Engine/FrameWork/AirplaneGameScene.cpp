@@ -24,14 +24,12 @@ void AirplaneGameScene::Init(HWND hWnd)
 	m_pFeverBar3 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//Fever3.bmp");
 
 	m_pFlight = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameFlight.bmp");
-	m_pBullet = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameBullet.bmp");
 	m_pStar1 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameStar1.bmp");
 	m_pStar2 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameStar2.bmp");
 	m_pStar3 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameStar3.bmp");
 
 	m_pTimeOver->SetAnchor(JEngine::ANCHOR_CENTER);
 	m_pFlight->SetAnchor(JEngine::ANCHOR_CENTER);
-	m_pBullet->SetAnchor(JEngine::ANCHOR_CENTER);
 	m_pStar1->SetAnchor(JEngine::ANCHOR_CENTER);
 	m_pStar2->SetAnchor(JEngine::ANCHOR_CENTER);
 	m_pStar3->SetAnchor(JEngine::ANCHOR_CENTER);
@@ -42,13 +40,17 @@ void AirplaneGameScene::Init(HWND hWnd)
 	m_fFeverTime = 0.0f;
 	m_fGameOverTime = 0.0f;
 	m_fFeverAnimTime = 0.0f;
+	m_fBulletGenTime = 0.0f;
+	m_fStarGenTime = 0.0f;
 
 	m_eState = GAME_STATE_PLAY;
-	memset(&m_MousePos, 0, sizeof(m_MousePos));
-	x = 208;
-	y = 354;
 	m_bFeverMode = false;
 	m_bFeverDraw = false;
+
+
+	m_flight.init();
+	BulletManager::GetInstance()->init();
+	StarManager::GetInstance()->init();
 }
 
 bool AirplaneGameScene::Input(float fETime)
@@ -59,46 +61,32 @@ bool AirplaneGameScene::Input(float fETime)
 		JEngine::SceneManager::GetInstance()->LoadScene(SCENE_INDEX_GAME_SELECT);
 	}
 
-	m_MousePos = JEngine::InputManager::GetInstance()->GetMousePoint();
+	// 현재 마우스 위치가 비행기의 위치
+	m_flight.setPos(JEngine::InputManager::GetInstance()->GetMousePoint());
 
 	return false;
 }
 
 void AirplaneGameScene::Update(float fETime)
 {
-	if ((x - m_MousePos.x) != 0)
-	{
-		float theta = abs(atanf(((float)y - (float)m_MousePos.y) / ((float)x - (float)m_MousePos.x)));
-		
-		if (m_MousePos.x > x)
-		{
-			x += fETime * m_BulletSpeed * cosf(theta);
-		}
-		else
-		{
-			x -= fETime * m_BulletSpeed * cosf(theta);
-		}
-		if (m_MousePos.y > y)
-		{
-			y += fETime * m_BulletSpeed * sinf(theta);
-		}
-		else
-		{
-			y -= fETime * m_BulletSpeed * sinf(theta);
-		}		
-	}
-	else
-	{
-		if (m_MousePos.y > y)
-		{
-			y += fETime * m_BulletSpeed;
-		}
-		else
-		{
-			y -= fETime * m_BulletSpeed;
-		}
-	}
 	
+	// 일정시간마다 총알 생성
+	m_fBulletGenTime += fETime;
+	if (m_fBulletGenTime >= m_fBulletGenLimitTime)
+	{
+		BulletManager::GetInstance()->createBullet(m_flight.getPoint());
+		m_fBulletGenTime = 0.0f;
+	}
+	BulletManager::GetInstance()->update(fETime, m_flight);
+
+	// 일정시간마다 별 생성
+	m_fStarGenTime += fETime;
+	if (m_fStarGenTime >= m_fStarGenLimitTime)
+	{		
+		StarManager::GetInstance()->createBullet(m_flight.getPoint());
+		m_fStarGenTime = 0.0f;
+	}
+	StarManager::GetInstance()->update(fETime, m_flight);
 
 	switch (m_eState)
 	{
@@ -173,7 +161,7 @@ void AirplaneGameScene::Draw(HDC hdc)
 	switch (m_eState)
 	{
 	case GAME_STATE_PLAY:
-		m_pFlight->Draw(m_MousePos);
+		m_flight.draw();
 		if (m_bFeverDraw)
 			m_pFeverBack->Draw(0, 0);
 		break;
@@ -184,7 +172,8 @@ void AirplaneGameScene::Draw(HDC hdc)
 	default:
 		break;
 	}
-	m_pBullet->Draw(x, y);
+	BulletManager::GetInstance()->draw();
+	StarManager::GetInstance()->draw();
 }
 
 void AirplaneGameScene::Release()
