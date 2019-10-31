@@ -5,8 +5,21 @@ void Flight::init()
 {
 	m_pBitmap = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameFlight.bmp");	
 	m_pBitmap->SetAnchor(JEngine::ANCHOR_CENTER);
+	m_pExplosion[0] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//explosion1.bmp");
+	m_pExplosion[1] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//explosion2.bmp");
+	m_pExplosion[2] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//explosion3.bmp");
+	for (int i = 0; i < 3; ++i)
+	{
+		m_pExplosion[i]->SetAnchor(JEngine::ANCHOR_CENTER);
+	}
+
 	memset(&m_BodyRect, 0, sizeof(JEngine::RECT));
 	memset(&m_WingRect, 0, sizeof(JEngine::RECT));
+
+	m_bisDie = false;
+	m_iExplosionAnimIndex = 0;
+	m_fExplosionTime = 0.0f;
+	m_iScore = 0;
 }
 
 void Flight::setPos(JEngine::POINT flighitPoint)
@@ -21,8 +34,7 @@ void Flight::setPos(JEngine::POINT flighitPoint)
 	{
 		m_curPoint = flighitPoint;
 	}
-
-
+	
 	m_BodyRect.left = m_curPoint.x - 5;
 	m_BodyRect.right = m_curPoint.x + 5;
 	m_BodyRect.top = m_curPoint.y - 30;
@@ -37,11 +49,32 @@ void Flight::setPos(JEngine::POINT flighitPoint)
 
 void Flight::update(float fETime)
 {
+	if (m_bisDie)
+	{
+		m_fExplosionTime += fETime;
+		if (m_fExplosionTime >= m_fExplosionAnimTick)
+		{
+			m_iExplosionAnimIndex++;
+			m_fExplosionTime = 0.0f;			
+		}
+		if (m_iExplosionAnimIndex > 2)
+		{
+			m_iExplosionAnimIndex = 0;
+			m_bisDie = false;
+		}
+	}
 }
 
 void Flight::draw()
 {
-	m_pBitmap->Draw(m_curPoint);
+	if (m_bisDie)
+	{
+		m_pExplosion[m_iExplosionAnimIndex]->Draw(m_curPoint);
+	}
+	else
+	{
+		m_pBitmap->Draw(m_curPoint);
+	}	
 }
 
 JEngine::POINT Flight::getPoint()
@@ -66,6 +99,22 @@ bool Flight::isCollision(JEngine::POINTF rect)
 	}
 	return false;
 }
+
+void Flight::setDie(bool isDie)
+{
+	m_bisDie = isDie;
+}
+
+void Flight::addScore(int score)
+{
+	m_iScore += score;
+}
+
+int Flight::getScore()
+{
+	return m_iScore;
+}
+
 
 Flight::Flight()
 {

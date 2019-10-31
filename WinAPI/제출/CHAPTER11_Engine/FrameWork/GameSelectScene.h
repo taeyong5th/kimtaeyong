@@ -1,12 +1,15 @@
 #pragma once
 #include "GlobalDefine.h"
 #include "JEngine.h"
+#include "Label.h"
 
 class GameSelectScene : public JEngine::Scene
 {
 private:
 	JEngine::BitMap* m_pBack;
-	
+	int m_iAirplaneScore, m_iConfettiScore;
+	JEngine::Label m_AirplaneScoreLabel;
+	JEngine::Label m_ConfettiScoreLabel;
 	std::function<bool()> clickEvent;
 
 public:

@@ -4,6 +4,7 @@
 #include "UIManager.h"
 #include "ResoucesManager.h"
 #include "defines.h"
+#include "ScoreData.h"
 
 void GameSelectScene::Init(HWND hWnd)
 {
@@ -13,6 +14,12 @@ void GameSelectScene::Init(HWND hWnd)
 
 	m_pBack = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//GameSelect.bmp");
 
+	m_iAirplaneScore = ScoreData::GetInstance()->loadScore(AIRPLANE_BEST_SCORE);
+	m_iConfettiScore = ScoreData::GetInstance()->loadScore(CONFETTI_BEST_SCORE);
+	
+	m_AirplaneScoreLabel.Init(to_string(m_iAirplaneScore), 112, 288, 0);
+	m_ConfettiScoreLabel.Init(to_string(m_iConfettiScore), 112, 205, 0);
+	
 }
 
 bool GameSelectScene::Input(float fETime)
@@ -45,6 +52,8 @@ void GameSelectScene::Update(float fETime)
 void GameSelectScene::Draw(HDC hdc)
 {
 	m_pBack->Draw(0, 0);
+	m_AirplaneScoreLabel.Draw();
+	m_ConfettiScoreLabel.Draw();
 }
 
 void GameSelectScene::Release()

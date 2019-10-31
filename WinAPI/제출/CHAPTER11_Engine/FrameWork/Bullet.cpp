@@ -61,9 +61,9 @@ void Bullet::init(JEngine::POINT flighitPoint)
 void Bullet::draw()
 {
 	m_pBitmap->Draw(m_curPoint.x, m_curPoint.y);
-	JEngine::Label label;
-	label.Init(to_string((int)m_curPoint.x) + ", " + to_string((int)m_curPoint.y), m_curPoint.x, m_curPoint.y, 0);
-	label.Draw();
+	//JEngine::Label label;
+	//label.Init(to_string((int)m_curPoint.x) + ", " + to_string((int)m_curPoint.y), m_curPoint.x, m_curPoint.y, 0);
+	//label.Draw();
 }
 
 void Bullet::update(float fETime)

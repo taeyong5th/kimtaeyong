@@ -7,7 +7,7 @@ class Star
 private:
 	JEngine::BitMap* m_pBitmap;
 	JEngine::POINTF m_curPoint; // 현재 위치 좌표
-	JEngine::POINT m_FlightPoint; // 총알 생성시 비행기의 위치
+	JEngine::POINT m_FlightPoint; // 별 생성시의 비행기의 위치
 	float theta;
 	const float m_StarSpeed = 130.0f;
 	int m_ixDirection, m_iyDirection;

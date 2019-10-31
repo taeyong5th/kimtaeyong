@@ -14,7 +14,7 @@ private:
 
 public:
 	void init();
-	void createBullet(JEngine::POINT flighitPoint);
+	void createStar(JEngine::POINT flighitPoint);
 	void draw();
 	void update(float fETime, Flight& flight);
 

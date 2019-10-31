@@ -3,7 +3,9 @@
 #include "SceneManager.h"
 #include "UIManager.h"
 #include "ResoucesManager.h"
-
+#include "FeverMode.h"
+#include "ScoreUI.h"
+#include "ScoreData.h"
 
 void ConfettiGameScene::Init(HWND hWnd)
 {
@@ -17,11 +19,6 @@ void ConfettiGameScene::Init(HWND hWnd)
 
 	m_pTimeBar = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//ColoredPaperTimeBar.bmp");
 	m_pTimeOver = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//TimeOver.bmp");
-	m_pFeverEffect = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FeverEffect.bmp");
-	m_pFeverBack = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FeverEffect3.bmp");
-	m_pFeverBar1 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//Fever1.bmp");
-	m_pFeverBar2 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//Fever2.bmp");
-	m_pFeverBar3 = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//Fever3.bmp");
 
 	m_pTimeOver->SetAnchor(JEngine::ANCHOR_CENTER);
 
@@ -31,19 +28,18 @@ void ConfettiGameScene::Init(HWND hWnd)
 	}
 
 	m_iScore = 0;
-	m_iFeverScore = 0;
+	m_iScoreBonus = 100;
 	m_fPlayTime = 0.0f;
-	m_fFeverTime = 0.0f;
 	m_fGameOverTime = 0.0f;
-	m_fFeverAnimTime = 0.0f;
 
 	m_eState = GAME_STATE_PLAY;
-	x = 208;
-	y = 354;
-	m_bFeverMode = false;
-	m_bFeverDraw = false;
+	m_iPaperX = 208;
+	m_iPaperY = 354;
 	m_eSelectedColor = PAPER_COLOR_NONE;
 	m_iPaperIdx = rand() % PAPER_COLOR_COUNT;
+
+	FeverMode::GetInstance()->init();
+	ScoreUI::GetInstance()->init();
 }
 
 bool ConfettiGameScene::Input(float fETime)
@@ -74,26 +70,26 @@ bool ConfettiGameScene::Input(float fETime)
 
 			if (m_LastClick.x > 150 && m_LastClick.x < 260 && m_LastClick.y > 201 && m_LastClick.y < 297)
 			{
-				x = 208;
-				y = m_LastClick.y;
+				m_iPaperX = 208;
+				m_iPaperY = m_LastClick.y;
 				m_eSelectedColor = PAPER_COLOR_GREEN;
 			}
 			else if (m_LastClick.x > 263 && m_LastClick.x < 343 && m_LastClick.y > 300 && m_LastClick.y < 400)
 			{
-				x = m_LastClick.x;
-				y = 354;
+				m_iPaperX = m_LastClick.x;
+				m_iPaperY = 354;
 				m_eSelectedColor = PAPER_COLOR_RED;
 			}
 			else if (m_LastClick.x > 155 && m_LastClick.x < 260 && m_LastClick.y > 403 && m_LastClick.y < 500)
 			{
-				x = 208;
-				y = m_LastClick.y;
+				m_iPaperX = 208;
+				m_iPaperY = m_LastClick.y;
 				m_eSelectedColor = PAPER_COLOR_YELLOW;
 			}
 			else if (m_LastClick.x > 70 && m_LastClick.x < 153 && m_LastClick.y > 300 && m_LastClick.y < 400)
 			{
-				x = m_LastClick.x;
-				y = 354;
+				m_iPaperX = m_LastClick.x;
+				m_iPaperY = 354;
 				m_eSelectedColor = PAPER_COLOR_BLUE;
 			}
 		}
@@ -102,20 +98,24 @@ bool ConfettiGameScene::Input(float fETime)
 	{
 		if (isClicked)
 		{
+			// 맞췄을때
 			if (m_eSelectedColor == m_aPapers[m_iPaperIdx].getColor())
 			{
-				m_iFeverScore += 400;
-				if (m_bFeverMode)
-				{
-					m_fFeverTime -= 0.25f;
-				}
+				FeverMode::GetInstance()->addFever(2);
+				m_iScore += m_iScoreBonus;
+				m_iScoreBonus += 100;
+				m_iPaperIdx = rand() % PAPER_COLOR_COUNT;
+			}
+			// 틀렸을때
+			else
+			{
+				m_iScoreBonus = 100;
 			}
 
 			isClicked = false;
 			m_eSelectedColor = PAPER_COLOR_NONE;
-			m_iPaperIdx = rand() % PAPER_COLOR_COUNT;			
-			x = 208;
-			y = 354;
+			m_iPaperX = 208;
+			m_iPaperY = 354;
 		}
 	}
 	return false;
@@ -125,7 +125,7 @@ void ConfettiGameScene::Update(float fETime)
 {
 	switch (m_eState)
 	{
-	case GAME_STATE_PLAY:
+	case GAME_STATE_PLAY:		
 		m_fPlayTime += fETime;
 		// 제한시간 끝나면 게임오버
 		if (m_fPlayTime >= m_fPlayLimitTime)
@@ -133,46 +133,24 @@ void ConfettiGameScene::Update(float fETime)
 			m_fPlayTime = m_fPlayLimitTime;
 			m_eState = GAME_STATE_OVER;
 		}
-
-		// 피버게이지 가득차면 피버모드
-		if (m_iFeverScore >= m_iFeverScoreMax)
-		{
-			m_bFeverMode = true;
-		}
-		// 피버 시간 끝나면 피버 모드 종료
-		if (m_fFeverTime > m_fFeverLimitTime)
-		{
-			m_bFeverMode = false;
-			m_fFeverTime = 0.0f;
-			m_iFeverScore = 0;
-		}
-
-		//  피버 모드 0.3초마다 깜박이는 효과
-		if (m_bFeverMode)
-		{
-			m_fFeverTime += fETime;
-			m_fFeverAnimTime += fETime;
-			if (m_fFeverAnimTime > 0.3f)
-			{
-				m_fFeverAnimTime = 0.0f;
-				m_bFeverDraw = !m_bFeverDraw;
-			}
-		}
-		else
-		{
-			m_bFeverDraw = false;
-		}
+		FeverMode::GetInstance()->update(fETime);
+		ScoreUI::GetInstance()->update(fETime, m_iScore);
 		break;
 	case GAME_STATE_OVER:
 		m_fGameOverTime += fETime;
 		if (m_fGameOverTime >= m_fGameOverLimitTime)
 		{
-			JEngine::SceneManager::GetInstance()->LoadScene(SCENE_INDEX_GAME_SELECT);
+			int bestScore = ScoreData::GetInstance()->loadScore(CONFETTI_BEST_SCORE);
+			if (m_iScore > bestScore)
+			{
+				ScoreData::GetInstance()->saveScore(CONFETTI_BEST_SCORE, m_iScore);
+			}
+			JEngine::SceneManager::GetInstance()->LoadScene(SCENE_INDEX_GAME_SELECT);			
 		}
 		break;
 	default:
 		break;
-	}	
+	}
 }
 
 void ConfettiGameScene::Draw(HDC hdc)
@@ -181,24 +159,13 @@ void ConfettiGameScene::Draw(HDC hdc)
 	m_pBack->Draw(0, 0);
 	m_pTimeBar->Draw(23, 620, m_fPlayTime / m_fPlayLimitTime, 1.0f);
 
-	// 피버모드 게이지 그리기
-	if (m_bFeverMode)
-	{
-		m_pFeverBar1->Draw(20, 51, 1.0f, 1.0f, 0.0f, 0.0f, (m_fFeverLimitTime - m_fFeverTime) / m_fFeverLimitTime, 1.0f);
-	}
-	else
-	{
-		m_pFeverBar1->Draw(20, 51, 1.0f, 1.0f, 0.0f, 0.0f, ((float)m_iFeverScore / (float)m_iFeverScoreMax), 1.0f);
-	}
-
-	
+	FeverMode::GetInstance()->draw();
+	ScoreUI::GetInstance()->draw(180, 20);
 	switch (m_eState)
 	{		
 	case GAME_STATE_PLAY:
 		// 색종이 그리기
-		m_aPapers[m_iPaperIdx].draw(x, y);
-		if (m_bFeverDraw)
-			m_pFeverBack->Draw(0, 0);
+		m_aPapers[m_iPaperIdx].draw(m_iPaperX, m_iPaperY);		
 		break;
 	case GAME_STATE_OVER:
 		// 타임오버 이미지 그리기
@@ -207,7 +174,7 @@ void ConfettiGameScene::Draw(HDC hdc)
 	default:
 		break;
 	}	
-
+	
 }
 
 void ConfettiGameScene::Release()

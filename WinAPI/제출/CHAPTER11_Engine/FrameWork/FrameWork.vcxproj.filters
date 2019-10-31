@@ -13,8 +13,17 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="GameObject">
+    <Filter Include="Game">
       <UniqueIdentifier>{99c3e00b-acc0-4d58-be33-40798372c692}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Flight">
+      <UniqueIdentifier>{f7214674-0ce9-4cde-8ee2-bee105bb2110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Paper">
+      <UniqueIdentifier>{52ceb6f7-cb79-454b-a0c7-852b099b488f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Common">
+      <UniqueIdentifier>{6f5ce8b7-9789-4951-a210-9a5e4791a049}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,23 +45,32 @@
     <ClInclude Include="ConfettiGameScene.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Paper.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
     <ClInclude Include="Bullet.h">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
     </ClInclude>
     <ClInclude Include="BulletManager.h">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
     </ClInclude>
     <ClInclude Include="Flight.h">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
+    </ClInclude>
+    <ClInclude Include="Paper.h">
+      <Filter>Game\Paper</Filter>
     </ClInclude>
     <ClInclude Include="Star.h">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
     </ClInclude>
     <ClInclude Include="StarManager.h">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
+    </ClInclude>
+    <ClInclude Include="FeverMode.h">
+      <Filter>Game\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreUI.h">
+      <Filter>Game\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreData.h">
+      <Filter>Game\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -74,23 +92,32 @@
     <ClCompile Include="ConfettiGameScene.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Paper.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
     <ClCompile Include="Bullet.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
     </ClCompile>
     <ClCompile Include="BulletManager.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
     </ClCompile>
     <ClCompile Include="Flight.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
+    </ClCompile>
+    <ClCompile Include="Paper.cpp">
+      <Filter>Game\Paper</Filter>
     </ClCompile>
     <ClCompile Include="Star.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
     </ClCompile>
     <ClCompile Include="StarManager.cpp">
-      <Filter>GameObject</Filter>
+      <Filter>Game\Flight</Filter>
+    </ClCompile>
+    <ClCompile Include="FeverMode.cpp">
+      <Filter>Game\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreUI.cpp">
+      <Filter>Game\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreData.cpp">
+      <Filter>Game\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

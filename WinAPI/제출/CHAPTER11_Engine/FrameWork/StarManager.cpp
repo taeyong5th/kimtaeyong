@@ -1,14 +1,20 @@
 #include "StarManager.h"
 #include "Flight.h"
 #include "Label.h"
+#include "FeverMode.h"
+#include "ScoreUI.h"
 
 void StarManager::init()
 {
+	for (auto iter = m_Stars.begin(); iter != m_Stars.end(); ++iter)
+	{
+		SAFE_DELETE(*iter);
+	}
 	m_Stars.clear();
 	m_iScore = 100;
 }
 
-void StarManager::createBullet(JEngine::POINT flighitPoint)
+void StarManager::createStar(JEngine::POINT flighitPoint)
 {
 	Star* star = new Star;
 	star->init(flighitPoint);
@@ -21,7 +27,8 @@ void StarManager::draw()
 	{
 		(*iter)->draw();
 		JEngine::Label label;
-		label.Init(to_string(m_iScore), (*iter)->getPoint().x - 10, (*iter)->getPoint().y - 5, 0);
+		string strScore = to_string(m_iScore);
+		label.Init(strScore, (*iter)->getPoint().x - (strScore.size() << 2), (*iter)->getPoint().y - 5, 0);
 		label.Draw();
 	}
 }
@@ -32,15 +39,20 @@ void StarManager::update(float fETime, Flight& flight)
 	{
 		(*iter)->update(fETime);
 
-		// 비행기와 충돌하면 제거
+		// 충돌하면 점수 증가
 		if (flight.isCollision((*iter)->getRECT()))
 		{
+			flight.addScore(m_iScore);
+			ScoreUI::GetInstance()->update(fETime, flight.getScore());
+			FeverMode::GetInstance()->addFever(2);
 			m_iScore += 100;
-			iter = m_Stars.erase(iter);
+			SAFE_DELETE(*iter);
+			iter = m_Stars.erase(iter);			
 		}
 		// 외부로 나가면 제거
 		else if (!(*iter)->isInside())
 		{
+			SAFE_DELETE(*iter);
 			iter = m_Stars.erase(iter);
 		}
 		else
@@ -50,10 +62,17 @@ void StarManager::update(float fETime, Flight& flight)
 	}
 }
 
+
 StarManager::StarManager()
 {
+
 }
 
 StarManager::~StarManager()
 {
+	for (auto iter = m_Stars.begin(); iter != m_Stars.end(); ++iter)
+	{
+		SAFE_DELETE(*iter);
+	}
+	m_Stars.clear();
 }
