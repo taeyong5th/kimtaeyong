@@ -8,6 +8,7 @@ class ConfettiGameScene : public JEngine::Scene
 {
 private:
 	JEngine::BitMap* m_pBack;
+	JEngine::BitMap* m_pStar;
 	JEngine::BitMap* m_pTimeBar;
 	JEngine::BitMap* m_pTimeOver;
 	JEngine::POINT m_FirstClick; // 처음 마우스 누른 위치

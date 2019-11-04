@@ -15,7 +15,8 @@ void ConfettiGameScene::Init(HWND hWnd)
 	JEngine::InputManager::GetInstance()->RegistKeyCode(VK_LBUTTON);
 
 	m_pBack = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//ColoredPaperBack.bmp");
-
+	m_pStar = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//FlightGameStar.bmp");
+	m_pStar->SetAnchor(JEngine::ANCHOR_CENTER);
 
 	m_pTimeBar = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//ColoredPaperTimeBar.bmp");
 	m_pTimeOver = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//TimeOver.bmp");
@@ -102,8 +103,18 @@ bool ConfettiGameScene::Input(float fETime)
 			if (m_eSelectedColor == m_aPapers[m_iPaperIdx].getColor())
 			{
 				FeverMode::GetInstance()->addFever(2);
-				m_iScore += m_iScoreBonus;
-				m_iScoreBonus += 100;
+				// 피버 모드일때 점수처리
+				if (FeverMode::GetInstance()->isFeverMode())
+				{
+					m_iScore += m_iScoreBonus;
+					m_iScoreBonus += 100;
+				}
+				else
+				{
+					m_iScore += 90;
+					m_iScoreBonus = 100;
+				}
+				
 				m_iPaperIdx = rand() % PAPER_COLOR_COUNT;
 			}
 			// 틀렸을때
@@ -161,6 +172,8 @@ void ConfettiGameScene::Draw(HDC hdc)
 
 	FeverMode::GetInstance()->draw();
 	ScoreUI::GetInstance()->draw(180, 20);
+
+
 	switch (m_eState)
 	{		
 	case GAME_STATE_PLAY:
@@ -174,7 +187,16 @@ void ConfettiGameScene::Draw(HDC hdc)
 	default:
 		break;
 	}	
-	
+
+	// 피버 모드일때 별 그리기
+	if (FeverMode::GetInstance()->isFeverMode())
+	{
+		m_pStar->Draw(m_iPaperX, m_iPaperY);
+		JEngine::Label label;
+		string strScore = to_string(m_iScoreBonus);
+		label.Init(strScore, m_iPaperX - (strScore.size() << 2), m_iPaperY - 5, 0);
+		label.Draw();		
+	}
 }
 
 void ConfettiGameScene::Release()
