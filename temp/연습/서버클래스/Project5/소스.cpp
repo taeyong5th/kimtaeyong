@@ -48,6 +48,11 @@ public:
 
 int main(void) {
 
+	char arr[22];
+	//arr = (char*)malloc(sizeof(char) * 65);
+	
+	cout << sizeof(arr) << endl;
+
 	FileDownThread t;
 	t.run();
 

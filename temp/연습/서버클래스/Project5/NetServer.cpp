@@ -1,11 +1,6 @@
 #include "NetServer.h"
 #include <functional>
 
-//unsigned WINAPI HandleClnt(void * arg);
-void SendMsg(char * msg, int len);
-void ErrorHandling(const char * msg);
-
-
 int TY::NetServer::startUp(int MajorVer, int MinorVer)
 {
 	return WSAStartup(MAKEWORD(MajorVer, MinorVer), &wsaData);
@@ -13,9 +8,6 @@ int TY::NetServer::startUp(int MajorVer, int MinorVer)
 
 int TY::NetServer::bind(int portNum)
 {
-	// 임계영역설정
-	hMutex = CreateMutex(NULL, FALSE, NULL);
-
 	hServSock = socket(AF_INET, SOCK_STREAM, 0);
 
 	memset(&servAdr, 0, sizeof(servAdr));
@@ -28,50 +20,63 @@ int TY::NetServer::bind(int portNum)
 
 int TY::NetServer::listen()
 {
-	int errCode = ::listen(hServSock, 5);
+	return ::listen(hServSock, 5);
+}
 
-	while (1)
+SOCKET TY::NetServer::accept()
+{
+	int clntAdrSz = sizeof(clntAdr);
+	SOCKET hClntSock = ::accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
+
+	// accept 후 생성된 클라이언트 소켓을 배열에 담음
+	WaitForSingleObject(hMutex, INFINITE);
+	clntSocks[clntCnt++] = hClntSock;
+	ReleaseMutex(hMutex);
+
+	//hThread = (HANDLE)_beginthreadex(NULL, 0, handleRecv, (void*)&hClntSock, 0, NULL);
+	//cout << "Connected client IP: " << inet_ntoa(clntAdr.sin_addr) << "\n";
+
+	return hClntSock;
+}
+
+int TY::NetServer::recv(SOCKET hClntSock, char msg[BUF_SIZE])
+{
+	int length = ::recv(hClntSock, msg, sizeof(msg), 0);
+	if (length == SOCKET_ERROR)
 	{
-		clntAdrSz = sizeof(clntAdr);
-		hClntSock = accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
+		printf("disconnected");
 
-		// accept 후 생성된 클라이언트 소켓을 배열에 담음
 		WaitForSingleObject(hMutex, INFINITE);
-		clntSocks[clntCnt++] = hClntSock;
+		for (int i = 0; i < clntCnt; i++)   // remove disconnected client
+		{
+			if (hClntSock == clntSocks[i])
+			{
+				while (i++ < clntCnt - 1)
+				{
+					clntSocks[i] = clntSocks[i + 1];
+				}
+				break;
+			}
+		}
+		clntCnt--;
 		ReleaseMutex(hMutex);
-
-		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)this, 0, NULL);
-		//cout << "Connected client IP: " << inet_ntoa(clntAdr.sin_addr) << "\n";
+		closesocket(hClntSock);
 	}
 
-	return errCode;
+	return length;
 }
 
-int TY::NetServer::recv()
+int TY::NetServer::send(SOCKET hClntSock, char msg[BUF_SIZE], int msgSize)
 {
-	return 0;
-}
-
-int TY::NetServer::send()
-{
-	return 0;
-}
-
-
-unsigned __stdcall TY::NetServer::HandleClnt(void * arg)
-{
-	TY::NetServer* p = (TY::NetServer*)arg;
-
-	p->recv();
-
-	return 0;
+	return ::send(hClntSock, msg, msgSize, 0);
 }
 
 TY::NetServer::NetServer()
 {
+	hMutex = CreateMutex(NULL, FALSE, NULL);
 }
 
 TY::NetServer::~NetServer()
 {
+	CloseHandle(hMutex);
 }
-

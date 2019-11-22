@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="OmokNetServer.cpp" />
+    <ClCompile Include="OmokNetServer.h" />
     <ClCompile Include="NetServer.cpp" />
     <ClCompile Include="소스.cpp" />
   </ItemGroup>

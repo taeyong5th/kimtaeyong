@@ -5,7 +5,7 @@
 
 namespace TY
 {
-	#define BUF_SIZE 100
+	#define BUF_SIZE 1024
 	#define MAX_CLNT 256
 
 	class NetServer
@@ -17,9 +17,8 @@ namespace TY
 
 
 		WSADATA wsaData;
-		SOCKET hServSock, hClntSock;
-		SOCKADDR_IN servAdr, clntAdr;
-		int clntAdrSz;
+		SOCKET hServSock;
+		SOCKADDR_IN servAdr, clntAdr;	
 		HANDLE  hThread;
 
 
@@ -27,12 +26,10 @@ namespace TY
 		int startUp(int MajorVer, int MinorVer);
 		int bind(int portNum);
 		int listen();
-		int recv();
-		int send();
-
-
-
-		static unsigned WINAPI HandleClnt(void * arg);
+		SOCKET accept();
+		// 반환값 : -1을 리턴하면 오류, 0보다 크면 받은 데이터의 길이
+		int recv(SOCKET hClntSock, char msg[BUF_SIZE]);
+		int send(SOCKET hClntSock, char msg[BUF_SIZE], int msgSize);
 
 		NetServer();
 		virtual ~NetServer();

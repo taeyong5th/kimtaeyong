@@ -1,12 +1,27 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <windows.h>
-#include <iostream>
-#include <process.h> 
+#include "OmokNetServer.h"
 
-class ServerNet
+OmokServerNet::OmokServerNet()
 {
-	
+
+	/*
 	
 
-};
+
+	while()
+		socket = accept();
+
+		thread(socket) -> 
+		{
+			data = recv(socket);
+			data analyze...
+			send(clientID, data);
+		}
+	
+	*/
+
+
+}
+
+OmokServerNet::~OmokServerNet()
+{
+}

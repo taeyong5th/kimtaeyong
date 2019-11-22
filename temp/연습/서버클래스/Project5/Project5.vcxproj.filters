@@ -18,10 +18,13 @@
     <ClCompile Include="소스.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="OmokNetServer.cpp">
+    <ClCompile Include="NetServer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="OmokNetServer.h">
       <Filter>헤더 파일</Filter>
     </ClCompile>
-    <ClCompile Include="NetServer.cpp">
+    <ClCompile Include="OmokNetServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
