@@ -3,6 +3,7 @@
 #include <iostream>
 #include <process.h> 
 #include <windows.h>
+#include "defines.h"
 
 using namespace std;
 
@@ -10,34 +11,47 @@ using namespace std;
 #define MAX_CLNT 2 // 흑, 백 2명만 접속가능
 
 unsigned WINAPI HandleClnt(void * arg);
-void SendMsg(char * msg, int len);
+void SendMsg(SOCKET* client, char * msg, int len);
+void SendMsgAll(char * msg, int len);
 void ErrorHandling(const char * msg);
 
 int clntCnt = 0;
 SOCKET clntSocks[MAX_CLNT];
 HANDLE hMutex;
 
-struct OmokData
+#define GET_ISCONNECTED	0x01
+#define GET_PLAYERID	0x02
+#define GET_BOARD		0x03
+
+struct OmokRequestData
 {
 	int playerID; // black인지 white인지
 	/*
 			request				response		actionid
-	0x00		
+	0x00
 	0x01 단순 연결 확인			SUCCESS/FAIL	get_isconnected
 	0x02 흑백 색깔 배정 요청	black/white		get_playerID
 	0x03 (x, y)위치에 돌을 놓음	board정보		get_board
 
 	*/
 	int action; // 유저가 어떤 행위를 하는지	
-	int size; 
+	int dataSize;
 	char data[BUF_SIZE];
 };
 
-struct MyPacket
+struct OmokResponseData
 {
-	unsigned int bytelength;
-	unsigned int data[];
+	int action;
+	int dataSize;
+	char data[BUF_SIZE];
 };
+
+struct OmokPoint
+{
+	int x;
+	int y;
+};
+
 
 int main()
 {
@@ -77,20 +91,14 @@ int main()
 		clntAdrSz = sizeof(clntAdr);
 		hClntSock = accept(hServSock, (SOCKADDR*)&clntAdr, &clntAdrSz);
 
-		// 접속가능한 클라이언트 수를 2개로 제한
-		if (clntCnt < MAX_CLNT)
-		{
-			WaitForSingleObject(hMutex, INFINITE);
-			clntSocks[clntCnt++] = hClntSock;
-			ReleaseMutex(hMutex);
+		// accept 후 생성된 클라이언트 소켓을 배열에 담음
+		WaitForSingleObject(hMutex, INFINITE);
+		clntSocks[clntCnt++] = hClntSock;
+		ReleaseMutex(hMutex);
 
-			hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
-		}
-		else
-		{
-			send(hClntSock, "인원이 가득 찼습니다.", sizeof("인원이 가득 찼습니다."), 0);
-			closesocket(hClntSock);
-		}
+		// 각 클라이언트에 대해 thread 생성
+		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)&hClntSock, 0, NULL);
+		WaitForSingleObject(hThread, INFINITE);
 	}
 
 	CloseHandle(hMutex);
@@ -105,15 +113,23 @@ unsigned WINAPI HandleClnt(void * arg)
 	SOCKET hClntSock = *((SOCKET*)arg);
 	int strLen = 0, i;
 	char msg[BUF_SIZE];
-	int st_test;
-
-	while ((strLen = recv(hClntSock, (char*)(&st_test), sizeof(st_test), 0)) != 0)
+	
+	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
 	{
-		// recv 반환값이 -1 이면 연결종료
+		// recv 연결종료		
 		if (strLen == SOCKET_ERROR)
+		{
+			printf("클라이언트 연결이 비정상적으로 종료됨");
 			break;
+		}			
+		else if (strLen == 0)
+		{
+			printf("클라이언트가 정상적으로 종료됨");
+			break;
+		}
 
-		SendMsg((char*)(&st_test), strLen);
+		// msg를 읽고 적절한 응답을 보냄
+		SendMsg((SOCKET*)arg, msg, strLen);
 	}
 	
 	// remove disconnected client
@@ -122,6 +138,7 @@ unsigned WINAPI HandleClnt(void * arg)
 	{
 		if (hClntSock == clntSocks[i])
 		{
+			clntSocks[i] = NULL;
 			while (i++ < clntCnt - 1)
 			{
 				clntSocks[i] = clntSocks[i + 1];
@@ -137,13 +154,70 @@ unsigned WINAPI HandleClnt(void * arg)
 	return 0;
 }
 
-void SendMsg(char * msg, int len)
+void SendMsg(SOCKET * client, char * msg, int len)
 {
+	// 메세지 분석
+	OmokRequestData *data = (OmokRequestData*)msg;
+	switch (data->action)
+	{
+	case GET_ISCONNECTED: // 0x01
+		break;
+	case GET_PLAYERID: // 0x02
+		if (clntSocks[PLAYER_ID_BLACK] == *client)
+		{
+			send(clntSocks[PLAYER_ID_BLACK], msg, len, 0);
+		}
+		else if (clntSocks[PLAYER_ID_WHITE] == *client)
+		{
+			send(clntSocks[PLAYER_ID_WHITE], msg, len, 0);
+		}
+		break;
+	case GET_BOARD: // 0x03
+		break;
+	default:
+		break;
+	}
 
+}
+
+void SendMsgAll(char * msg, int len)   // send to all
+{
+	// 메세지 분석
+	OmokRequestData *data = (OmokRequestData*)msg;
+	switch (data->action)
+	{
+	case GET_ISCONNECTED: // 0x01
+		break;
+	case GET_PLAYERID: // 0x02
+		if (clntCnt == 1)
+		{
+
+		}
+		else if(clntCnt == 2)
+		{
+
+		}
+
+		break;
+	case GET_BOARD: // 0x03
+		break;
+	default:
+		break;
+	}
+
+	int i;
+	WaitForSingleObject(hMutex, INFINITE);
+
+	for (i = 0; i < clntCnt; i++)
+	{
+		send(clntSocks[i], msg, len, 0);
+	}
+
+	ReleaseMutex(hMutex);
 }
 
 void ErrorHandling(const char * msg)
 {
-
-
+	cout << msg << "\n";
+	exit(1);
 }
