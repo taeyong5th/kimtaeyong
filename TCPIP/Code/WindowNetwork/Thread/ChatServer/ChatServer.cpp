@@ -7,7 +7,7 @@ using namespace std;
 #define MAX_CLNT 256
 
 unsigned WINAPI HandleClnt(void * arg);
-void SendMsg(char * msg, int len);
+void SendMsgAll(char * msg, int len);
 void ErrorHandling(const char * msg);
 
 int clntCnt = 0;
@@ -75,7 +75,7 @@ unsigned WINAPI HandleClnt(void * arg)
 
 	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
 	{
-		SendMsg(msg, strLen);
+		SendMsgAll(msg, strLen);
 	}
 
 	WaitForSingleObject(hMutex, INFINITE);
