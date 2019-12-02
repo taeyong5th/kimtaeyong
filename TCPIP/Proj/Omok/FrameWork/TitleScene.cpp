@@ -5,13 +5,15 @@
 #include "ResoucesManager.h"
 
 
-//unsigned WINAPI SendMsg(void* arg);
-//unsigned WINAPI RecvMsg(void* arg);
+unsigned WINAPI SendMsg(void* arg);
+unsigned WINAPI RecvMsg(void* arg);
 
-int TitleScene::m_iAction = OMOK_DO_NOTHING;
+int m_iAction = OMOK_DO_NOTHING;
 
 GAME_STATE m_eState = GAME_STATE_INTRO;
 PLAYER_COLOR m_PlayerColor;
+OmokPoint g_Point;
+int m_aBoard[BOARD_WIDTH][BOARD_HEIGHT];
 
 TitleScene::TitleScene()
 {
@@ -65,7 +67,8 @@ void TitleScene::Init(HWND hWnd)
 	// 네트워크 처리
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 	{
-		//	ErrorHandling("WSAStartup() error!");
+		MessageBox(m_hWnd, TEXT("WSAStartup 실패"), TEXT("접속오류"), MB_OK);
+		exit(-1);
 	}
 
 	hSock = socket(PF_INET, SOCK_STREAM, 0);
@@ -78,8 +81,8 @@ void TitleScene::Init(HWND hWnd)
 	if (ret == SOCKET_ERROR)
 	{
 		MessageBox(m_hWnd, TEXT("서버 연결 실패"), TEXT("접속오류"), MB_OK);
+		exit(-1);
 	}
-
 }
 
 bool TitleScene::Input(float fETime)
@@ -94,11 +97,11 @@ bool TitleScene::Input(float fETime)
 		if (m_BtnStartRect.isPtin(m_iMousePos) && JEngine::InputManager::GetInstance()->isKeyUp(VK_LBUTTON))
 		{
 			hSndThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)& hSock, 0, NULL);
-			hRcvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)& hSock, 0, NULL);				
-			m_iAction = OMOK_PLAYER_COLOR;			
+			hRcvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)& hSock, 0, NULL);
+			m_iAction = OMOK_PLAYER_COLOR;
 		}
 	}
-	else
+	else if(m_eState == GAME_STATE_PLAY)
 	{
 		// 마우스 클릭시 돌 놓기
 		if (JEngine::InputManager::GetInstance()->isKeyUp(VK_LBUTTON))
@@ -110,10 +113,13 @@ bool TitleScene::Input(float fETime)
 				// 비어있는 공간이면 돌 놓음
 				if (m_aBoard[x][y] == PLAYER_NONE)
 				{
-					m_aBoard[x][y] = m_PlayerColor;
+					//m_aBoard[x][y] = m_PlayerColor;
+					g_Point.x = x;
+					g_Point.y = y;
+					g_Point.color = m_PlayerColor;
+					m_iAction = OMOK_PUT_STONE;
 				}
 			}
-
 			//JEngine::SceneManager::GetInstance()->LoadScene(SCENE_INDEX_GAME_SELECT);
 		}
 	}	
@@ -142,15 +148,14 @@ void TitleScene::Draw(HDC hdc)
 		}
 	}
 
-
 	if (m_eState == GAME_STATE_INTRO)
 	{
 		m_pBtnStart->Draw(300, 300);
 	}
-	else if(m_eState == GAME_STATE_PLAY)
+	else
 	{
 		// 놓여질 위치에 가상의 바둑돌을 그린다.
-		if (m_PlayerColor == PLAYER_BLACK || m_PlayerColor == PLAYER_WHITE)
+		if (m_eState == GAME_STATE_PLAY)
 		{
 			m_pStone[m_PlayerColor]->Draw((m_iMousePos.x / m_iBlockWidth) * m_iBlockWidth, (m_iMousePos.y / m_iBlockHeight) * m_iBlockHeight);
 		}
@@ -189,7 +194,7 @@ bool TitleScene::OnClick()
 	return true;
 }
 
-unsigned WINAPI TitleScene::SendMsg(void* arg)
+unsigned WINAPI SendMsg(void* arg)
 {	
 	SOCKET hSock = *((SOCKET*)arg);
 
@@ -201,6 +206,7 @@ unsigned WINAPI TitleScene::SendMsg(void* arg)
 		switch (m_iAction)
 		{
 		case OMOK_PLAYER_COLOR:
+			MessageBox(NULL, TEXT("GET COLOR"), TEXT("caption"), MB_OK);
 			request.action = OMOK_PLAYER_COLOR;
 			request.dataSize = 0;
 			send(hSock, (char*)& request, sizeof(int) + sizeof(int), 0);
@@ -212,13 +218,22 @@ unsigned WINAPI TitleScene::SendMsg(void* arg)
 			memcpy(request.data, &result, sizeof(int));
 			send(hSock, (char*)& request, sizeof(int) + sizeof(int) + request.dataSize, 0);
 			break;
+		case OMOK_PUT_STONE:
+			MessageBox(NULL, TEXT("PUT STONE"), TEXT("caption"), MB_OK);
+			request.action = OMOK_PUT_STONE;
+			request.dataSize = sizeof(g_Point);
+			memcpy(request.data, &g_Point, sizeof(g_Point));
+			send(hSock, (char*)& request, sizeof(int) + sizeof(int) + request.dataSize, 0);
+			break;
 		}
 		m_iAction = OMOK_DO_NOTHING;
 	}
+
+	MessageBox(NULL, TEXT("SEND THREAD END"), TEXT("caption"), MB_OK);
 	return 0;
 }
 
-unsigned __stdcall TitleScene::RecvMsg(void* arg)
+unsigned __stdcall RecvMsg(void* arg)
 {
 
 	int hSock = *((SOCKET*)arg);
@@ -251,13 +266,13 @@ unsigned __stdcall TitleScene::RecvMsg(void* arg)
 			if (*color == PLAYER_BLACK)
 			{
 				MessageBox(NULL, TEXT("블랙"), TEXT("ㅇㅇ"), MB_OK);
-				m_eState = GAME_STATE_WAIT;
+				m_eState = GAME_STATE_WAIT_CONN;
 				m_PlayerColor = PLAYER_BLACK;
 			}
 			else if (*color == PLAYER_WHITE)
 			{
 				MessageBox(NULL, TEXT("화이트"), TEXT("ㅇㅇ"), MB_OK);
-				m_eState = GAME_STATE_WAIT;
+				m_eState = GAME_STATE_WAIT_CONN;
 				m_PlayerColor = PLAYER_WHITE;
 			}
 			break;
@@ -272,13 +287,18 @@ unsigned __stdcall TitleScene::RecvMsg(void* arg)
 
 			}
 			break;
+		case OMOK_PLAY:
+			m_eState = GAME_STATE_PLAY;
+			break;
+		case OMOK_WAIT:
+			m_eState = GAME_STATE_WAIT;
+			break;
 		case OMOK_BOARD_STATE:
 			pointlist = (OmokPoint*)prequest->data;
 			for (int i = 0; i < prequest->dataSize / sizeof(OmokPoint); ++i)
 			{
-			//	cout << pointlist[i].x << ", " << pointlist[i].y << endl;
+				m_aBoard[pointlist[i].x][pointlist[i].y] = pointlist[i].color;
 			}
-
 			break;
 		default:
 			break;

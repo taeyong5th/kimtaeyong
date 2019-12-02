@@ -15,15 +15,18 @@ void SendMsgAll(char* msg, int len);
 void ErrorHandling(const char* msg);
 
 int clntCnt = 0;
-SOCKET clntSocks[MAX_CLNT];
+SOCKET clntSocks[MAX_CLNT] = {NULL, NULL};
 HANDLE hMutex;
 
 OmokPacketData response;
 
 OmokPoint pointList[BOARD_WIDTH * BOARD_HEIGHT];
 int stoneCount = 0;
+int playerTurn = PLAYER_BLACK;
 
-bool players[2] = {false, false};
+bool isReady[2] = {false, false};
+
+int testvalue = 0;
 
 int main()
 {
@@ -73,7 +76,7 @@ int main()
 
 			// 각 클라이언트에 대해 thread 생성
 			hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)& hClntSock, 0, NULL);
-			//WaitForSingleObject(hThread, INFINITE);
+			//WaitForSingleObject(hThread, INFINITE);			
 		}
 		else
 		{
@@ -97,7 +100,7 @@ unsigned WINAPI HandleClnt(void* arg)
 	char msg[BUF_SIZE];
 	OmokPacketData* prequest;
 	OmokPoint* pPoint;
-	int result;	
+	int result;
 
 	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
 	{
@@ -119,49 +122,56 @@ unsigned WINAPI HandleClnt(void* arg)
 		{
 		case OMOK_PLAYER_COLOR:
 			printf("GET PLAYER COLOR\n");
-			if (players[PLAYER_BLACK] == false)
+			if (hClntSock == clntSocks[PLAYER_BLACK])
 			{
 				response.action = OMOK_PLAYER_COLOR;
 				response.dataSize = sizeof(PLAYER_COLOR);
 				PLAYER_COLOR color = PLAYER_BLACK;
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
-				players[PLAYER_BLACK] = true;
+				isReady[PLAYER_BLACK] = true;
+				printf("black\n");
 			}
-			else if (players[PLAYER_WHITE] == false)
+			else if (hClntSock == clntSocks[PLAYER_WHITE])
 			{
 				response.action = OMOK_PLAYER_COLOR;
 				response.dataSize = sizeof(PLAYER_COLOR);
 				PLAYER_COLOR color = PLAYER_WHITE;
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				players[PLAYER_WHITE] = true;
+				isReady[PLAYER_WHITE] = true;
+				printf("white\n");
 			}
 
 			// 인원수가 가득차면 전체에게 게임시작 가능하다고 알림
-			if (clntCnt == MAX_CLNT)
+			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
 			{
-				response.action = OMOK_IS_STARTABLE;
+			/*	response.action = OMOK_IS_STARTABLE;
 				response.dataSize = sizeof(int);
 				result = TRUE;
 				memcpy(&response.data, &result, sizeof(result));
-				SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + sizeof(int));
+				SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + response.dataSize);*/
 
 				// 턴에 따라 한쪽은 대기, 한쪽은 플레이
-				//SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				//SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				response.dataSize = 0; 
+				response.action = OMOK_PLAY;
+				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				response.action = OMOK_PLAY;
+				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				printf("game start\n");
 			}
 			break;
 		case OMOK_IS_STARTABLE:
 		
 			break;
-		case OMOK_BOARD_STATE:
-			printf("GET BOARD INFO\n");
+		case OMOK_PUT_STONE:
+			printf("PUT STONE : ");
 			pPoint = (OmokPoint*)prequest->data;
 			printf("%d, %d\n", pPoint->x, pPoint->y);
 
 			pointList[stoneCount].x = pPoint->x;
 			pointList[stoneCount].y = pPoint->y;
+			pointList[stoneCount].color = pPoint->color;
 			++stoneCount;
 
 			response.action = OMOK_BOARD_STATE;
@@ -169,6 +179,23 @@ unsigned WINAPI HandleClnt(void* arg)
 			memcpy(&response.data, pointList, response.dataSize);
 			SendMsgAll((char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
 
+			// 턴에 따라 한쪽은 대기, 한쪽은 플레이
+			if (hClntSock == clntSocks[PLAYER_BLACK])
+			{
+				response.dataSize = 0;
+				response.action = OMOK_WAIT;
+				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				response.action = OMOK_PLAY;
+				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+			}
+			else
+			{
+				response.dataSize = 0;
+				response.action = OMOK_PLAY;
+				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				response.action = OMOK_WAIT;
+				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+			}			
 			break;
 		default:
 			break;

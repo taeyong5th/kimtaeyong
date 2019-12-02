@@ -33,13 +33,11 @@ private:
 	JEngine::BitMap*	m_pBlock;
 
 	// 오목판의 정보	
-	int m_aBoard[BOARD_WIDTH][BOARD_HEIGHT];
 	JEngine::RECT m_boardRect;
 
 	std::function<bool()> clickEvent;
 
 public:
-	static int m_iAction;
 	virtual void Init(HWND hWnd);
 	virtual bool Input(float fETime);
 	virtual void Update(float fETime);
@@ -47,8 +45,8 @@ public:
 	virtual void Release();
 	bool OnClick();
 
-	static unsigned WINAPI SendMsg(void* arg);
-	static unsigned WINAPI RecvMsg(void* arg);
+	//static unsigned WINAPI SendMsg(void* arg);
+	//static unsigned WINAPI RecvMsg(void* arg);
 
 	void showMessage(string caption, string text);
 	TitleScene();
