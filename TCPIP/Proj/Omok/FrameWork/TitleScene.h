@@ -1,18 +1,29 @@
 #pragma once
+#include <windows.h>
+#include <process.h> 
 #include "JEngine.h"
-#include "defines.h"
+#include "../Server/defines.h"
 
 class TitleScene : public JEngine::Scene
 {
 private:
 
+	WSADATA wsaData;
+	SOCKET hSock;
+	SOCKADDR_IN servAdr;
+	HANDLE hSndThread, hRcvThread;
+
+
 	// 핸들정보
 	HWND m_hWnd;
 		
-	OMOK_PLAYER_ID m_PlayerID;
+	
+	// 버튼 이미지
+	JEngine::BitMap* m_pBtnStart; // 게임 시작 버튼 이미지
+	JEngine::RECT m_BtnStartRect;
 
-	// 바둑돌 정보
-	JEngine::BitMap*	m_pStone[2];	
+	// 바둑돌 이미지
+	JEngine::BitMap*	m_pStone[2];	 // 0 = black, 1 = white
 
 	// 마우스의 현재 위치
 	JEngine::POINT m_iMousePos;
@@ -28,12 +39,16 @@ private:
 	std::function<bool()> clickEvent;
 
 public:
+	static int m_iAction;
 	virtual void Init(HWND hWnd);
 	virtual bool Input(float fETime);
 	virtual void Update(float fETime);
 	virtual void Draw(HDC hdc);
 	virtual void Release();
 	bool OnClick();
+
+	static unsigned WINAPI SendMsg(void* arg);
+	static unsigned WINAPI RecvMsg(void* arg);
 
 	void showMessage(string caption, string text);
 	TitleScene();
