@@ -3,6 +3,7 @@
 #include <process.h> 
 #include "JEngine.h"
 #include "../Server/defines.h"
+#include "Label.h"
 
 class TitleScene : public JEngine::Scene
 {
@@ -13,11 +14,9 @@ private:
 	SOCKADDR_IN servAdr;
 	HANDLE hSndThread, hRcvThread;
 
-
 	// 핸들정보
 	HWND m_hWnd;
-		
-	
+			
 	// 버튼 이미지
 	JEngine::BitMap* m_pBtnStart; // 게임 시작 버튼 이미지
 	JEngine::RECT m_BtnStartRect;
@@ -34,6 +33,10 @@ private:
 
 	// 오목판의 정보	
 	JEngine::RECT m_boardRect;
+
+	// 하단 설명
+	JEngine::BitMap* m_pWhiteBar;
+	JEngine::Label label;	
 
 	std::function<bool()> clickEvent;
 

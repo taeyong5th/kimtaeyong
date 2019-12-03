@@ -100,6 +100,7 @@ unsigned WINAPI HandleClnt(void* arg)
 	char msg[BUF_SIZE];
 	OmokPacketData* prequest;
 	OmokPoint* pPoint;
+	PLAYER_COLOR color;
 	int result;
 
 	while ((strLen = recv(hClntSock, msg, sizeof(msg), 0)) != 0)
@@ -129,7 +130,7 @@ unsigned WINAPI HandleClnt(void* arg)
 				PLAYER_COLOR color = PLAYER_BLACK;
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
-				isReady[PLAYER_BLACK] = true;
+				//isReady[PLAYER_BLACK] = true;
 				printf("black\n");
 			}
 			else if (hClntSock == clntSocks[PLAYER_WHITE])
@@ -139,30 +140,59 @@ unsigned WINAPI HandleClnt(void* arg)
 				PLAYER_COLOR color = PLAYER_WHITE;
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				isReady[PLAYER_WHITE] = true;
+				//isReady[PLAYER_WHITE] = true;
 				printf("white\n");
-			}
-
-			// 인원수가 가득차면 전체에게 게임시작 가능하다고 알림
-			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
-			{
-			/*	response.action = OMOK_IS_STARTABLE;
-				response.dataSize = sizeof(int);
-				result = TRUE;
-				memcpy(&response.data, &result, sizeof(result));
-				SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + response.dataSize);*/
-
-				// 턴에 따라 한쪽은 대기, 한쪽은 플레이
-				response.dataSize = 0; 
-				response.action = OMOK_PLAY;
-				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				response.action = OMOK_PLAY;
-				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				printf("game start\n");
 			}
 			break;
 		case OMOK_IS_STARTABLE:
-		
+			if (hClntSock == clntSocks[PLAYER_BLACK])
+			{
+				isReady[PLAYER_BLACK] = true;
+				printf("black is ready\n");
+			}
+			else if (hClntSock == clntSocks[PLAYER_WHITE])
+			{
+				isReady[PLAYER_WHITE] = true;
+				printf("white is ready\n");
+			}
+
+			// 양쪽다 시작할 준비가 되면 시작가능하다고 알림
+			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
+			{
+				result = TRUE;
+			}
+			else
+			{
+				result = FALSE;
+			}
+			response.action = OMOK_IS_STARTABLE;
+			response.dataSize = sizeof(int);
+			memcpy(&response.data, &result, sizeof(result));
+			SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
+						
+			// 턴에 따라 한쪽은 대기, 한쪽은 플레이 
+			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
+			{
+				// 색상 지정 해줌
+				response.action = OMOK_PLAYER_COLOR;
+				response.dataSize = sizeof(PLAYER_COLOR);
+				color = PLAYER_BLACK;
+				memcpy(&response.data, &color, response.dataSize);
+				SendMsg(&clntSocks[PLAYER_BLACK], (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
+
+				response.action = OMOK_PLAYER_COLOR;
+				response.dataSize = sizeof(PLAYER_COLOR);
+				color = PLAYER_WHITE;
+				memcpy(&response.data, &color, response.dataSize);
+				SendMsg(&clntSocks[PLAYER_WHITE], (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
+
+				response.dataSize = 0;
+				response.action = OMOK_PLAY;
+				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				response.action = OMOK_WAIT;
+				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				printf("game start\n");
+			}
 			break;
 		case OMOK_PUT_STONE:
 			printf("PUT STONE : ");
@@ -211,6 +241,7 @@ unsigned WINAPI HandleClnt(void* arg)
 		if (hClntSock == clntSocks[i])
 		{
 			clntSocks[i] = NULL;
+			isReady[i] = false;
 			while (i++ < clntCnt - 1)
 			{
 				clntSocks[i] = clntSocks[i + 1];

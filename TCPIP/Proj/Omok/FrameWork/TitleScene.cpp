@@ -4,16 +4,16 @@
 #include "UIManager.h"
 #include "ResoucesManager.h"
 
-
 unsigned WINAPI SendMsg(void* arg);
 unsigned WINAPI RecvMsg(void* arg);
 
 int m_iAction = OMOK_DO_NOTHING;
 
-GAME_STATE m_eState = GAME_STATE_INTRO;
-PLAYER_COLOR m_PlayerColor;
-OmokPoint g_Point;
-int m_aBoard[BOARD_WIDTH][BOARD_HEIGHT];
+GAME_STATE g_eState = GAME_STATE_INTRO; // 게임 상태
+PLAYER_COLOR g_PlayerColor; // 유저의 색상(검/흰)
+OmokPoint g_Point; // 마우스로 클릭한 지점의 바둑판 좌표
+int g_aBoard[BOARD_WIDTH][BOARD_HEIGHT]; // 바둑판 배열
+std::string g_strStatus; // 하단에 출력할 게임 상태 텍스트
 
 TitleScene::TitleScene()
 {
@@ -33,36 +33,36 @@ void TitleScene::Init(HWND hWnd)
 	JEngine::InputManager::GetInstance()->RegistKeyCode(VK_LEFT);
 	JEngine::InputManager::GetInstance()->RegistKeyCode(VK_RIGHT);
 	JEngine::InputManager::GetInstance()->RegistKeyCode(VK_LBUTTON);
-
+		
 	//JEngine::UIManager::GetInstance()->AddLabel("sdsdsdsds", 0, 0, 0);
 	//JEngine::UIManager::GetInstance()->AddButton(200, 200, "res//btn_start.bmp", std::bind(&TitleScene::OnClick, this));
 	
-	m_eState = GAME_STATE_INTRO;
-
+	// 비트맵 이미지 초기화
 	m_pBtnStart = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//btn_start.bmp");
 	m_BtnStartRect.Set(300, 300, 300 + m_pBtnStart->GetWidth(), 300 + m_pBtnStart->GetHeight());	
-
 	m_pBlock = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//block00.bmp");
 	m_iBlockWidth = m_pBlock->GetWidth();
 	m_iBlockHeight = m_pBlock->GetHeight();
 	m_boardRect.Set(0, 0, m_iBlockWidth * BOARD_WIDTH, m_iBlockHeight * BOARD_HEIGHT);
-
 	m_pStone[0] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//stone_black.bmp");
 	m_pStone[1] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//stone_white.bmp");
+	m_pWhiteBar = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//whitebar.bmp");
 
+	// 오목판 초기화
 	for (int i = 0; i < BOARD_WIDTH; ++i)
 	{
-		memset(m_aBoard[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
+		memset(g_aBoard[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
 	}
-
 	ZeroMemory(&m_iMousePos, sizeof(m_iMousePos));
-
-	// 현재 플레이어의 돌 색깔
-	m_PlayerColor = PLAYER_NONE;
+	
+	// 게임 초기화
+	g_eState = GAME_STATE_INTRO;
+	g_PlayerColor = PLAYER_NONE;
+	g_strStatus = "상대방을 접속을 기다리는 중...";
 
 	//JEngine::UIManager::GetInstance()->AddButton(10, 20, "OnSelect.bmp", std::bind(&TitleScene::OnClick, this));
 	//m_pTitle->SetAnchor(JEngine::ANCHOR_CENTER);
-
+	
 
 	// 네트워크 처리
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
@@ -83,6 +83,9 @@ void TitleScene::Init(HWND hWnd)
 		MessageBox(m_hWnd, TEXT("서버 연결 실패"), TEXT("접속오류"), MB_OK);
 		exit(-1);
 	}
+
+	hSndThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)& hSock, 0, NULL);
+	hRcvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)& hSock, 0, NULL);
 }
 
 bool TitleScene::Input(float fETime)
@@ -91,17 +94,15 @@ bool TitleScene::Input(float fETime)
 	// 현재 마우스 위치정보를 받는다.
 	m_iMousePos = JEngine::InputManager::GetInstance()->GetMousePoint();
 
-	if (m_eState == GAME_STATE_INTRO)
+	if (g_eState == GAME_STATE_INTRO)
 	{
-		// 시작버튼 클릭하면 서버에 색깔 지정 요청
+		// 시작버튼 클릭하면 서버에 시작 요청
 		if (m_BtnStartRect.isPtin(m_iMousePos) && JEngine::InputManager::GetInstance()->isKeyUp(VK_LBUTTON))
 		{
-			hSndThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)& hSock, 0, NULL);
-			hRcvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)& hSock, 0, NULL);
-			m_iAction = OMOK_PLAYER_COLOR;
+			m_iAction = OMOK_IS_STARTABLE;
 		}
 	}
-	else if(m_eState == GAME_STATE_PLAY)
+	else if(g_eState == GAME_STATE_PLAY)
 	{
 		// 마우스 클릭시 돌 놓기
 		if (JEngine::InputManager::GetInstance()->isKeyUp(VK_LBUTTON))
@@ -111,12 +112,12 @@ bool TitleScene::Input(float fETime)
 				int x = m_iMousePos.x / m_iBlockWidth;
 				int y = m_iMousePos.y / m_iBlockHeight;
 				// 비어있는 공간이면 돌 놓음
-				if (m_aBoard[x][y] == PLAYER_NONE)
+				if (g_aBoard[x][y] == PLAYER_NONE)
 				{
 					//m_aBoard[x][y] = m_PlayerColor;
 					g_Point.x = x;
 					g_Point.y = y;
-					g_Point.color = m_PlayerColor;
+					g_Point.color = g_PlayerColor;
 					m_iAction = OMOK_PUT_STONE;
 				}
 			}
@@ -148,16 +149,16 @@ void TitleScene::Draw(HDC hdc)
 		}
 	}
 
-	if (m_eState == GAME_STATE_INTRO)
+	if (g_eState == GAME_STATE_INTRO)
 	{
 		m_pBtnStart->Draw(300, 300);
 	}
 	else
 	{
 		// 놓여질 위치에 가상의 바둑돌을 그린다.
-		if (m_eState == GAME_STATE_PLAY)
+		if (g_eState == GAME_STATE_PLAY)
 		{
-			m_pStone[m_PlayerColor]->Draw((m_iMousePos.x / m_iBlockWidth) * m_iBlockWidth, (m_iMousePos.y / m_iBlockHeight) * m_iBlockHeight);
+			m_pStone[g_PlayerColor]->Draw((m_iMousePos.x / m_iBlockWidth) * m_iBlockWidth, (m_iMousePos.y / m_iBlockHeight) * m_iBlockHeight);
 		}
 
 		// 이미 놓여진 돌을 전부 그린다.
@@ -166,13 +167,17 @@ void TitleScene::Draw(HDC hdc)
 			for (int j = 0; j < BOARD_HEIGHT; ++j)
 			{
 				// 검은색 또는 흰색돌을 그림
-				if (m_aBoard[i][j] == PLAYER_BLACK || m_aBoard[i][j] == PLAYER_WHITE)
+				if (g_aBoard[i][j] == PLAYER_BLACK || g_aBoard[i][j] == PLAYER_WHITE)
 				{
-					m_pStone[m_aBoard[i][j]]->Draw(i * m_iBlockWidth, j * m_iBlockHeight);
+					m_pStone[g_aBoard[i][j]]->Draw(i * m_iBlockWidth, j * m_iBlockHeight);
 				}
 			}
 		}
 	}
+
+	m_pWhiteBar->Draw(0, 400);
+	label.Init(g_strStatus, 0, 400, 0);
+	label.Draw();
 }
 
 void TitleScene::Release()
@@ -206,10 +211,11 @@ unsigned WINAPI SendMsg(void* arg)
 		switch (m_iAction)
 		{
 		case OMOK_PLAYER_COLOR:
-			MessageBox(NULL, TEXT("GET COLOR"), TEXT("caption"), MB_OK);
+			//MessageBox(NULL, TEXT("GET COLOR"), TEXT("caption"), MB_OK);
 			request.action = OMOK_PLAYER_COLOR;
 			request.dataSize = 0;
 			send(hSock, (char*)& request, sizeof(int) + sizeof(int), 0);
+			m_iAction = OMOK_DO_NOTHING;
 			break;
 		case OMOK_IS_STARTABLE:
 			request.action = OMOK_IS_STARTABLE;
@@ -217,16 +223,19 @@ unsigned WINAPI SendMsg(void* arg)
 			result = FALSE;
 			memcpy(request.data, &result, sizeof(int));
 			send(hSock, (char*)& request, sizeof(int) + sizeof(int) + request.dataSize, 0);
+			g_strStatus = "게임 상대를 찾는 중...";
+			m_iAction = OMOK_DO_NOTHING;
 			break;
 		case OMOK_PUT_STONE:
-			MessageBox(NULL, TEXT("PUT STONE"), TEXT("caption"), MB_OK);
+			//MessageBox(NULL, TEXT("PUT STONE"), TEXT("caption"), MB_OK);
 			request.action = OMOK_PUT_STONE;
 			request.dataSize = sizeof(g_Point);
 			memcpy(request.data, &g_Point, sizeof(g_Point));
 			send(hSock, (char*)& request, sizeof(int) + sizeof(int) + request.dataSize, 0);
+			m_iAction = OMOK_DO_NOTHING;
 			break;
 		}
-		m_iAction = OMOK_DO_NOTHING;
+		
 	}
 
 	MessageBox(NULL, TEXT("SEND THREAD END"), TEXT("caption"), MB_OK);
@@ -235,11 +244,10 @@ unsigned WINAPI SendMsg(void* arg)
 
 unsigned __stdcall RecvMsg(void* arg)
 {
-
 	int hSock = *((SOCKET*)arg);
 	char packet[BUF_SIZE];
 	int dataSize;
-	OmokPacketData* prequest;
+	OmokPacketData* pResponse;
 	PLAYER_COLOR* color;
 	OmokPoint* pointlist;
 	int* isStarted;
@@ -257,30 +265,29 @@ unsigned __stdcall RecvMsg(void* arg)
 			//cout << "정상적인 종료" << endl;
 			return 0;
 		}
-		prequest = (OmokPacketData*)packet;
+		pResponse = (OmokPacketData*)packet;
 
-		switch (prequest->action)
+		switch (pResponse->action)
 		{
 		case OMOK_PLAYER_COLOR:
-			color = (PLAYER_COLOR*)prequest->data;
+			color = (PLAYER_COLOR*)pResponse->data;
 			if (*color == PLAYER_BLACK)
 			{
-				MessageBox(NULL, TEXT("블랙"), TEXT("ㅇㅇ"), MB_OK);
-				m_eState = GAME_STATE_WAIT_CONN;
-				m_PlayerColor = PLAYER_BLACK;
+				g_PlayerColor = PLAYER_BLACK;
+				//MessageBox(NULL, TEXT("블랙"), TEXT("ㅇ"), MB_OK);
 			}
 			else if (*color == PLAYER_WHITE)
 			{
-				MessageBox(NULL, TEXT("화이트"), TEXT("ㅇㅇ"), MB_OK);
-				m_eState = GAME_STATE_WAIT_CONN;
-				m_PlayerColor = PLAYER_WHITE;
+				//g_eState = GAME_STATE_WAIT_CONN;
+				g_PlayerColor = PLAYER_WHITE;
 			}
 			break;
 		case OMOK_IS_STARTABLE:
-			isStarted = (int*)prequest->data;
+			isStarted = (int*)pResponse->data;
 			if (*isStarted == TRUE)
 			{
-
+				g_strStatus = "시작!";
+				m_iAction = OMOK_PLAYER_COLOR;
 			}
 			else
 			{
@@ -288,16 +295,20 @@ unsigned __stdcall RecvMsg(void* arg)
 			}
 			break;
 		case OMOK_PLAY:
-			m_eState = GAME_STATE_PLAY;
+			g_eState = GAME_STATE_PLAY;
+			g_strStatus = "내 차례";
+			//MessageBox(NULL, TEXT("내차례"), TEXT("ㅇ"), MB_OK);
 			break;
 		case OMOK_WAIT:
-			m_eState = GAME_STATE_WAIT;
+			g_strStatus = "상대방 차례";
+			g_eState = GAME_STATE_WAIT;
+			//MessageBox(NULL, TEXT("상대방차례"), TEXT("ㅇ"), MB_OK);
 			break;
 		case OMOK_BOARD_STATE:
-			pointlist = (OmokPoint*)prequest->data;
-			for (int i = 0; i < prequest->dataSize / sizeof(OmokPoint); ++i)
+			pointlist = (OmokPoint*)pResponse->data;
+			for (int i = 0; i < pResponse->dataSize / sizeof(OmokPoint); ++i)
 			{
-				m_aBoard[pointlist[i].x][pointlist[i].y] = pointlist[i].color;
+				g_aBoard[pointlist[i].x][pointlist[i].y] = pointlist[i].color;
 			}
 			break;
 		default:
