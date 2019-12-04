@@ -20,6 +20,7 @@ private:
 	// 버튼 이미지
 	JEngine::BitMap* m_pBtnStart; // 게임 시작 버튼 이미지
 	JEngine::RECT m_BtnStartRect;
+	JEngine::BitMap* m_pCircle; // 
 
 	// 바둑돌 이미지
 	JEngine::BitMap*	m_pStone[2];	 // 0 = black, 1 = white

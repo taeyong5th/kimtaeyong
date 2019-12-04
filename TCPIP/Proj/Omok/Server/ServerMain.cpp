@@ -13,23 +13,33 @@ unsigned WINAPI HandleClnt(void* arg);
 void SendMsg(SOCKET* client, char* msg, int len);
 void SendMsgAll(char* msg, int len);
 void ErrorHandling(const char* msg);
+int checkTurn(SOCKET* socket);
+int isWin(int x, int y, int player);
 
 int clntCnt = 0;
-SOCKET clntSocks[MAX_CLNT] = {NULL, NULL};
+SOCKET clntSocks[MAX_CLNT] = { NULL, NULL };
 HANDLE hMutex;
 
 OmokPacketData response;
 
 OmokPoint pointList[BOARD_WIDTH * BOARD_HEIGHT];
+int board[BOARD_WIDTH][BOARD_HEIGHT];
 int stoneCount = 0;
 int playerTurn = PLAYER_BLACK;
 
-bool isReady[2] = {false, false};
+bool isReady[2] = { false, false };
 
 int testvalue = 0;
 
 int main()
 {
+
+	// 오목판 초기화
+	for (int i = 0; i < BOARD_WIDTH; ++i)
+	{
+		memset(board[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
+	}
+
 	printf("######## SERVER ########\n");
 	WSADATA wsaData;
 	SOCKET hServSock, hClntSock;
@@ -131,7 +141,7 @@ unsigned WINAPI HandleClnt(void* arg)
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
 				//isReady[PLAYER_BLACK] = true;
-				printf("black\n");
+				printf("send color info : black\n");
 			}
 			else if (hClntSock == clntSocks[PLAYER_WHITE])
 			{
@@ -141,10 +151,10 @@ unsigned WINAPI HandleClnt(void* arg)
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
 				//isReady[PLAYER_WHITE] = true;
-				printf("white\n");
+				printf("send color info : white\n");
 			}
 			break;
-		case OMOK_IS_STARTABLE:
+		case OMOK_STARTABLE:
 			if (hClntSock == clntSocks[PLAYER_BLACK])
 			{
 				isReady[PLAYER_BLACK] = true;
@@ -156,20 +166,20 @@ unsigned WINAPI HandleClnt(void* arg)
 				printf("white is ready\n");
 			}
 
-			// 양쪽다 시작할 준비가 되면 시작가능하다고 알림
-			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
-			{
-				result = TRUE;
-			}
-			else
-			{
-				result = FALSE;
-			}
-			response.action = OMOK_IS_STARTABLE;
-			response.dataSize = sizeof(int);
-			memcpy(&response.data, &result, sizeof(result));
-			SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
-						
+			//// 양쪽다 시작할 준비가 되면 시작가능하다고 알림
+			//if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
+			//{
+			//	result = TRUE;
+			//}
+			//else
+			//{
+			//	result = FALSE;
+			//}
+			//response.action = OMOK_IS_STARTABLE;
+			//response.dataSize = sizeof(int);
+			//memcpy(&response.data, &result, sizeof(result));
+			//SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
+
 			// 턴에 따라 한쪽은 대기, 한쪽은 플레이 
 			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
 			{
@@ -194,6 +204,13 @@ unsigned WINAPI HandleClnt(void* arg)
 				printf("game start\n");
 			}
 			break;
+		case OMOK_IS_MYTURN:
+			result = checkTurn(&hClntSock);
+			response.action = OMOK_STARTABLE;
+			response.dataSize = sizeof(int);
+			memcpy(&response.data, &result, sizeof(result));
+			SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
+			break;
 		case OMOK_PUT_STONE:
 			printf("PUT STONE : ");
 			pPoint = (OmokPoint*)prequest->data;
@@ -204,28 +221,47 @@ unsigned WINAPI HandleClnt(void* arg)
 			pointList[stoneCount].color = pPoint->color;
 			++stoneCount;
 
+			board[pPoint->x][pPoint->y] = pPoint->color;
+
 			response.action = OMOK_BOARD_STATE;
 			response.dataSize = sizeof(OmokPoint) * stoneCount;
 			memcpy(&response.data, pointList, response.dataSize);
 			SendMsgAll((char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
 
-			// 턴에 따라 한쪽은 대기, 한쪽은 플레이
-			if (hClntSock == clntSocks[PLAYER_BLACK])
+			result = isWin(pPoint->x, pPoint->y, pPoint->color);
+			if (result == FALSE)
 			{
-				response.dataSize = 0;
-				response.action = OMOK_WAIT;
-				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				response.action = OMOK_PLAY;
-				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				// 턴에 따라 한쪽은 대기, 한쪽은 플레이
+				if (hClntSock == clntSocks[PLAYER_BLACK])
+				{
+					response.dataSize = 0;
+					response.action = OMOK_WAIT;
+					SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+					response.action = OMOK_PLAY;
+					SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				}
+				else
+				{
+					response.dataSize = 0;
+					response.action = OMOK_PLAY;
+					SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+					response.action = OMOK_WAIT;
+					SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+				}
 			}
 			else
 			{
-				response.dataSize = 0;
-				response.action = OMOK_PLAY;
-				SendMsg(&clntSocks[PLAYER_BLACK], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				response.action = OMOK_WAIT;
-				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-			}			
+				response.dataSize = sizeof(int);
+				response.action = OMOK_IS_WIN;
+
+				result = true;
+				memcpy(&response.data, &result, sizeof(result));
+				SendMsg(&clntSocks[pPoint->color], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+
+				result = false;
+				memcpy(&response.data, &result, sizeof(result));
+				SendMsg(&clntSocks[(pPoint->color + 1) % 2], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+			}
 			break;
 		default:
 			break;
@@ -279,4 +315,108 @@ void ErrorHandling(const char* msg)
 {
 	cout << msg << "\n";
 	exit(1);
+}
+
+int checkTurn(SOCKET* socket)
+{
+	if (playerTurn == PLAYER_BLACK && *socket == clntSocks[PLAYER_BLACK])
+	{
+		return TRUE;
+	}
+	else if (playerTurn == PLAYER_WHITE && *socket == clntSocks[PLAYER_WHITE])
+	{
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+int isWin(int x, int y, int player)
+{
+	int count = 1;
+	// (x, y)에서 가로 체크
+	for (int i = x - 1; i >= 0; --i)
+	{
+		if (player == board[i][y])
+		{
+			++count;
+		}
+		else
+		{
+			break;
+		}
+	}
+	for (int i = x + 1; i < BOARD_WIDTH; ++i)
+	{
+		if (player == board[i][y])
+		{
+			++count;
+		}
+		else
+		{
+			break;
+		}
+	}
+	if (count == 3)
+		return TRUE;
+
+	// 세로 체크
+	count = 1;
+	for (int i = y - 1; i >= 0; --i)
+	{
+		if (player == board[x][i])
+			++count;
+		else
+			break;
+	}
+	for (int i = y + 1; i < BOARD_HEIGHT; ++i)
+	{
+		if (player == board[x][i])
+			++count;
+		else
+			break;
+	}
+	if (count == 3)
+		return TRUE;
+
+	// 대각선 체크
+	count = 1;
+	for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; --i, --j)
+	{
+		if (player == board[i][j])
+			++count;
+		else
+			break;
+	}
+	for (int i = x + 1, j = y + 1; i < BOARD_WIDTH && j < BOARD_HEIGHT; ++i, ++j)
+	{
+		if (player == board[i][j])
+			++count;
+		else
+			break;
+	}
+	if (count == 3)
+		return TRUE;
+
+	// 대각선 체크 2
+	count = 1;
+	for (int i = x - 1, j = y + 1; i >= 0 && j < BOARD_HEIGHT; --i, ++j)
+	{
+		if (player == board[i][j])
+			++count;
+		else
+			break;
+	}
+	for (int i = x + 1, j = y - 1; i < BOARD_WIDTH && j >= 0; ++i, --j)
+	{
+		if (player == board[i][j])
+			++count;
+		else
+			break;
+	}
+	if (count == 3)
+		return TRUE;
+
+
+	return FALSE;
 }
