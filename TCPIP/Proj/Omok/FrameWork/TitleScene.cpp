@@ -39,7 +39,7 @@ void TitleScene::Init(HWND hWnd)
 	
 	// 비트맵 이미지 초기화
 	m_pBtnStart = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//btn_start.bmp");
-	m_BtnStartRect.Set(300, 300, 300 + m_pBtnStart->GetWidth(), 300 + m_pBtnStart->GetHeight());	
+	m_BtnStartRect.Set(150, 200, 150 + m_pBtnStart->GetWidth(), 200 + m_pBtnStart->GetHeight());	
 	m_pBlock = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//block00.bmp");
 	m_iBlockWidth = m_pBlock->GetWidth();
 	m_iBlockHeight = m_pBlock->GetHeight();
@@ -59,6 +59,7 @@ void TitleScene::Init(HWND hWnd)
 	g_eState = GAME_STATE_INTRO;
 	g_PlayerColor = PLAYER_NONE;
 	g_strStatus = "서버에 접속됨";
+	m_fGameOverTime = 0.0f;
 
 	//JEngine::UIManager::GetInstance()->AddButton(10, 20, "OnSelect.bmp", std::bind(&TitleScene::OnClick, this));
 	//m_pTitle->SetAnchor(JEngine::ANCHOR_CENTER);
@@ -135,7 +136,24 @@ bool TitleScene::Input(float fETime)
 
 void TitleScene::Update(float fETime)
 {
-	
+	if (g_eState == GAME_STATE_OVER)
+	{
+		m_fGameOverTime += fETime;
+	}
+	if (m_fGameOverTime > 2.0f)
+	{
+		m_fGameOverTime = 0.0f;
+		// 오목판 초기화
+		for (int i = 0; i < BOARD_WIDTH; ++i)
+		{
+			memset(g_aBoard[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
+		}
+
+		// 게임 초기화
+		g_eState = GAME_STATE_INTRO;
+		g_PlayerColor = PLAYER_NONE;
+		g_strStatus = "서버에 접속됨";
+	}
 }
 
 void TitleScene::Draw(HDC hdc)
@@ -151,7 +169,7 @@ void TitleScene::Draw(HDC hdc)
 
 	if (g_eState == GAME_STATE_INTRO)
 	{
-		m_pBtnStart->Draw(300, 300);
+		m_pBtnStart->Draw(150, 200);
 	}
 	// 놓여질 위치에 가상의 바둑돌을 그린다.
 	else if (g_eState == GAME_STATE_PLAY)
@@ -265,11 +283,15 @@ unsigned __stdcall RecvMsg(void* arg)
 		if (dataSize == -1)
 		{
 			//cout << "소켓 에러 종료" << endl;
+			MessageBox(NULL, TEXT("서버와의 연결이 끊김."), TEXT("서버오류"), MB_OK);
+			exit(-1);
 			return -1;
 		}
 		else if (dataSize == 0)
 		{
 			//cout << "정상적인 종료" << endl;
+			//exit(0);
+			g_strStatus = "서버 인원이 가득찼습니다.";
 			return 0;
 		}
 		pResponse = (OmokPacketData*)packet;
@@ -300,6 +322,10 @@ unsigned __stdcall RecvMsg(void* arg)
 			{
 				g_strStatus = "상대방을 찾는 중...";
 			}
+			break;
+		case OMOK_PLAYER_FULL:
+			g_eState = GAME_STATE_INTRO;
+			g_strStatus = "서버 인원이 가득 찼습니다.";
 			break;
 	/*	case OMOK_IS_MYTURN:
 			result = (int*)pResponse->data;
@@ -341,6 +367,11 @@ unsigned __stdcall RecvMsg(void* arg)
 			{
 				g_strStatus = "패배";
 			}			
+			g_eState = GAME_STATE_OVER;
+
+			break;
+		case OMOK_DISCONNECTED:
+			g_strStatus = "상대방과의 연결이 끊어졌습니다.";
 			g_eState = GAME_STATE_OVER;
 			break;
 		default:

@@ -69,7 +69,7 @@ int main()
 	// listen
 	if (listen(hServSock, SOMAXCONN) == SOCKET_ERROR)
 	{
-		ErrorHandling("listen() error");
+		ErrorHandling("listen() error");		
 	}
 
 	while (1)
@@ -78,11 +78,13 @@ int main()
 		hClntSock = accept(hServSock, (SOCKADDR*)& clntAdr, &clntAdrSz);
 
 		if (clntCnt < MAX_CLNT)
-		{
+		{			
 			// accept 후 생성된 클라이언트 소켓을 배열에 담음
 			WaitForSingleObject(hMutex, INFINITE);
 			clntSocks[clntCnt++] = hClntSock;
 			ReleaseMutex(hMutex);
+
+			printf("connected socket %d\n", hClntSock);
 
 			// 각 클라이언트에 대해 thread 생성
 			hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)& hClntSock, 0, NULL);
@@ -91,7 +93,9 @@ int main()
 		else
 		{
 			printf("!!");
-			send(hClntSock, "full", strlen("full"), 0);
+			//response.action = OMOK_PLAYER_FULL;
+			//response.dataSize = 0;
+			//SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
 			closesocket(hClntSock);
 		}
 	}
@@ -118,14 +122,15 @@ unsigned WINAPI HandleClnt(void* arg)
 		// recv 연결종료		
 		if (strLen == SOCKET_ERROR)
 		{
-			printf("클라이언트 연결이 비정상적으로 종료됨");
+			printf("클라이언트 연결이 비정상적으로 종료됨\n");
 			break;
 		}
 		else if (strLen == 0)
 		{
-			printf("클라이언트가 정상적으로 종료됨");
+			printf("클라이언트가 정상적으로 종료됨\n");
 			break;
 		}
+
 		//printf("%d byte 받음\n", strLen);
 		// msg를 읽고 적절한 응답을 보냄
 		prequest = (OmokPacketData*)msg;
@@ -151,34 +156,21 @@ unsigned WINAPI HandleClnt(void* arg)
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
 				//isReady[PLAYER_WHITE] = true;
-				printf("send color info : white\n");
+				printf("send color info : white %d\n");
 			}
 			break;
 		case OMOK_STARTABLE:
+			printf("ready request : ");
 			if (hClntSock == clntSocks[PLAYER_BLACK])
 			{
 				isReady[PLAYER_BLACK] = true;
-				printf("black is ready\n");
+				printf("black is ready %d %d\n", hClntSock, clntSocks[0]);
 			}
 			else if (hClntSock == clntSocks[PLAYER_WHITE])
 			{
 				isReady[PLAYER_WHITE] = true;
-				printf("white is ready\n");
+				printf("white is ready %d %d\n", hClntSock, clntSocks[1]);
 			}
-
-			//// 양쪽다 시작할 준비가 되면 시작가능하다고 알림
-			//if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
-			//{
-			//	result = TRUE;
-			//}
-			//else
-			//{
-			//	result = FALSE;
-			//}
-			//response.action = OMOK_IS_STARTABLE;
-			//response.dataSize = sizeof(int);
-			//memcpy(&response.data, &result, sizeof(result));
-			//SendMsgAll((char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
 
 			// 턴에 따라 한쪽은 대기, 한쪽은 플레이 
 			if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
@@ -261,6 +253,16 @@ unsigned WINAPI HandleClnt(void* arg)
 				result = false;
 				memcpy(&response.data, &result, sizeof(result));
 				SendMsg(&clntSocks[(pPoint->color + 1) % 2], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+
+				// 오목판 초기화
+				for (int i = 0; i < BOARD_WIDTH; ++i)
+				{
+					memset(board[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
+				}
+				stoneCount = 0;
+				playerTurn = PLAYER_BLACK;
+				isReady[PLAYER_BLACK] = false;
+				isReady[PLAYER_WHITE] = false;
 			}
 			break;
 		default:
@@ -270,17 +272,39 @@ unsigned WINAPI HandleClnt(void* arg)
 		//SendMsg((SOCKET*)arg, msg, strLen);
 	}
 
+
+	if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
+	{
+		printf("연결 끊김으로 인한 초기화\n");
+		response.dataSize = 0;
+		response.action = OMOK_DISCONNECTED;
+		SendMsgAll((char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
+		// 오목판 초기화
+		for (int i = 0; i < BOARD_WIDTH; ++i)
+		{
+			memset(board[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
+		}
+		stoneCount = 0;
+		playerTurn = PLAYER_BLACK;
+		isReady[PLAYER_BLACK] = false;
+		isReady[PLAYER_WHITE] = false;
+	}
+
 	// remove disconnected client
 	WaitForSingleObject(hMutex, INFINITE);
 	for (i = 0; i < clntCnt; i++)
 	{
 		if (hClntSock == clntSocks[i])
 		{
-			clntSocks[i] = NULL;
+			//printf("[%d] %d 가 나갔음\n", i, clntSocks[i]);
+			//clntSocks[i] = NULL;
 			isReady[i] = false;
-			while (i++ < clntCnt - 1)
+			while (i < clntCnt - 1)
 			{
 				clntSocks[i] = clntSocks[i + 1];
+				isReady[i] = isReady[i + 1];
+				i++;
+				printf("연결 끊김으로 인해 WHITE -> BLACK 변경\n");
 			}
 			break;
 		}
@@ -289,7 +313,7 @@ unsigned WINAPI HandleClnt(void* arg)
 	ReleaseMutex(hMutex);
 
 	closesocket(hClntSock);
-	printf("Socket Count = %d \n", clntCnt);
+	//printf("Socket Count = %d \n", clntCnt);
 	return 0;
 }
 
@@ -334,6 +358,7 @@ int checkTurn(SOCKET* socket)
 int isWin(int x, int y, int player)
 {
 	int count = 1;
+	const int maxCount = 2;
 	// (x, y)에서 가로 체크
 	for (int i = x - 1; i >= 0; --i)
 	{
@@ -357,7 +382,7 @@ int isWin(int x, int y, int player)
 			break;
 		}
 	}
-	if (count == 3)
+	if (count == maxCount)
 		return TRUE;
 
 	// 세로 체크
@@ -376,7 +401,7 @@ int isWin(int x, int y, int player)
 		else
 			break;
 	}
-	if (count == 3)
+	if (count == maxCount)
 		return TRUE;
 
 	// 대각선 체크
@@ -395,7 +420,7 @@ int isWin(int x, int y, int player)
 		else
 			break;
 	}
-	if (count == 3)
+	if (count == maxCount)
 		return TRUE;
 
 	// 대각선 체크 2
@@ -414,7 +439,7 @@ int isWin(int x, int y, int player)
 		else
 			break;
 	}
-	if (count == 3)
+	if (count == maxCount)
 		return TRUE;
 
 

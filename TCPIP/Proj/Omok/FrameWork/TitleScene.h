@@ -41,6 +41,9 @@ private:
 
 	std::function<bool()> clickEvent;
 
+	//
+	float m_fGameOverTime;	
+
 public:
 	virtual void Init(HWND hWnd);
 	virtual bool Input(float fETime);
