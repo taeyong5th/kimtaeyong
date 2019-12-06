@@ -27,23 +27,14 @@ enum PLAYER_COLOR
 #define OMOK_WAIT				0x05
 #define OMOK_PLAY				0x06
 #define OMOK_PUT_STONE			0x07
-#define OMOK_IS_MYTURN			0x08
+//#define OMOK_IS_MYTURN			0x08
 #define OMOK_DISCONNECTED		0x09
-#define OMOK_PLAYER_FULL		0x10
+//#define OMOK_PLAYER_FULL		0x10
 
 #define BUF_SIZE 2048
 
 struct OmokPacketData
 {
-	//int playerID; // black인지 white인지
-	/*
-			request				response		actionid
-	0x00
-	0x01 단순 연결 확인			SUCCESS/FAIL	get_isconnected
-	0x02 흑백 색깔 배정 요청	black/white		get_playerID
-	0x03 (x, y)위치에 돌을 놓음	board정보		get_board
-
-	*/
 	int action; // 유저가 어떤 행위를 하는지
 	int dataSize; // -1 이면 실패
 	char data[BUF_SIZE];

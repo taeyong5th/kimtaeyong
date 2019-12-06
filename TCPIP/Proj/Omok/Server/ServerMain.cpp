@@ -137,7 +137,6 @@ unsigned WINAPI HandleClnt(void* arg)
 		switch (prequest->action)
 		{
 		case OMOK_PLAYER_COLOR:
-			printf("GET PLAYER COLOR\n");
 			if (hClntSock == clntSocks[PLAYER_BLACK])
 			{
 				response.action = OMOK_PLAYER_COLOR;
@@ -145,8 +144,6 @@ unsigned WINAPI HandleClnt(void* arg)
 				PLAYER_COLOR color = PLAYER_BLACK;
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
-				//isReady[PLAYER_BLACK] = true;
-				printf("send color info : black\n");
 			}
 			else if (hClntSock == clntSocks[PLAYER_WHITE])
 			{
@@ -155,21 +152,18 @@ unsigned WINAPI HandleClnt(void* arg)
 				PLAYER_COLOR color = PLAYER_WHITE;
 				memcpy(&response.data, &color, response.dataSize);
 				SendMsg(&hClntSock, (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
-				//isReady[PLAYER_WHITE] = true;
-				printf("send color info : white %d\n");
 			}
 			break;
 		case OMOK_STARTABLE:
-			printf("ready request : ");
 			if (hClntSock == clntSocks[PLAYER_BLACK])
 			{
 				isReady[PLAYER_BLACK] = true;
-				printf("black is ready %d %d\n", hClntSock, clntSocks[0]);
+				printf("black is ready : %d \n", hClntSock);
 			}
 			else if (hClntSock == clntSocks[PLAYER_WHITE])
 			{
 				isReady[PLAYER_WHITE] = true;
-				printf("white is ready %d %d\n", hClntSock, clntSocks[1]);
+				printf("white is ready : %d \n", hClntSock);
 			}
 
 			// 턴에 따라 한쪽은 대기, 한쪽은 플레이 
@@ -195,13 +189,6 @@ unsigned WINAPI HandleClnt(void* arg)
 				SendMsg(&clntSocks[PLAYER_WHITE], (char*)& response, sizeof(int) + sizeof(int) + response.dataSize);
 				printf("game start\n");
 			}
-			break;
-		case OMOK_IS_MYTURN:
-			result = checkTurn(&hClntSock);
-			response.action = OMOK_STARTABLE;
-			response.dataSize = sizeof(int);
-			memcpy(&response.data, &result, sizeof(result));
-			SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
 			break;
 		case OMOK_PUT_STONE:
 			printf("PUT STONE : ");
@@ -263,6 +250,15 @@ unsigned WINAPI HandleClnt(void* arg)
 				playerTurn = PLAYER_BLACK;
 				isReady[PLAYER_BLACK] = false;
 				isReady[PLAYER_WHITE] = false;
+
+				if (hClntSock == clntSocks[PLAYER_BLACK])
+				{
+					printf("흑의 승리\n");
+				}
+				else
+				{
+					printf("백의 승리\n");
+				}
 			}
 			break;
 		default:
@@ -272,7 +268,7 @@ unsigned WINAPI HandleClnt(void* arg)
 		//SendMsg((SOCKET*)arg, msg, strLen);
 	}
 
-
+	// 게임 진행중에 한쪽 연결이 끊기면 초기화
 	if (isReady[PLAYER_BLACK] && isReady[PLAYER_WHITE])
 	{
 		printf("연결 끊김으로 인한 초기화\n");
@@ -304,7 +300,6 @@ unsigned WINAPI HandleClnt(void* arg)
 				clntSocks[i] = clntSocks[i + 1];
 				isReady[i] = isReady[i + 1];
 				i++;
-				printf("연결 끊김으로 인해 WHITE -> BLACK 변경\n");
 			}
 			break;
 		}
