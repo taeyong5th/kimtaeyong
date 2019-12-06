@@ -13,8 +13,7 @@ unsigned WINAPI HandleClnt(void* arg);
 void SendMsg(SOCKET* client, char* msg, int len);
 void SendMsgAll(char* msg, int len);
 void ErrorHandling(const char* msg);
-int checkTurn(SOCKET* socket);
-int isWin(int x, int y, int player);
+int isWin(int x, int y, int color);
 
 int clntCnt = 0;
 SOCKET clntSocks[MAX_CLNT] = { NULL, NULL };
@@ -25,8 +24,6 @@ OmokPacketData response;
 OmokPoint pointList[BOARD_WIDTH * BOARD_HEIGHT];
 int board[BOARD_WIDTH][BOARD_HEIGHT];
 int stoneCount = 0;
-int playerTurn = PLAYER_BLACK;
-
 bool isReady[2] = { false, false };
 
 int testvalue = 0;
@@ -41,6 +38,7 @@ int main()
 	}
 
 	printf("######## SERVER ########\n");
+	printf("##### 빠른 체크를 위해 3목으로 설정함 ####\n");
 	WSADATA wsaData;
 	SOCKET hServSock, hClntSock;
 	SOCKADDR_IN servAdr, clntAdr;
@@ -88,14 +86,10 @@ int main()
 
 			// 각 클라이언트에 대해 thread 생성
 			hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClnt, (void*)& hClntSock, 0, NULL);
-			//WaitForSingleObject(hThread, INFINITE);			
 		}
 		else
 		{
-			printf("!!");
-			//response.action = OMOK_PLAYER_FULL;
-			//response.dataSize = 0;
-			//SendMsg(&hClntSock, (char*)&response, sizeof(int) + sizeof(int) + response.dataSize);
+			printf("추가 접속 시도한 클라이언트 연결 종료\n");
 			closesocket(hClntSock);
 		}
 	}
@@ -247,7 +241,6 @@ unsigned WINAPI HandleClnt(void* arg)
 					memset(board[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
 				}
 				stoneCount = 0;
-				playerTurn = PLAYER_BLACK;
 				isReady[PLAYER_BLACK] = false;
 				isReady[PLAYER_WHITE] = false;
 
@@ -281,7 +274,6 @@ unsigned WINAPI HandleClnt(void* arg)
 			memset(board[i], PLAYER_NONE, sizeof(int) * BOARD_HEIGHT);
 		}
 		stoneCount = 0;
-		playerTurn = PLAYER_BLACK;
 		isReady[PLAYER_BLACK] = false;
 		isReady[PLAYER_WHITE] = false;
 	}
@@ -336,28 +328,14 @@ void ErrorHandling(const char* msg)
 	exit(1);
 }
 
-int checkTurn(SOCKET* socket)
-{
-	if (playerTurn == PLAYER_BLACK && *socket == clntSocks[PLAYER_BLACK])
-	{
-		return TRUE;
-	}
-	else if (playerTurn == PLAYER_WHITE && *socket == clntSocks[PLAYER_WHITE])
-	{
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-int isWin(int x, int y, int player)
+int isWin(int x, int y, int color)
 {
 	int count = 1;
-	const int maxCount = 2;
+	const int maxCount = 3;
 	// (x, y)에서 가로 체크
 	for (int i = x - 1; i >= 0; --i)
 	{
-		if (player == board[i][y])
+		if (color == board[i][y])
 		{
 			++count;
 		}
@@ -368,7 +346,7 @@ int isWin(int x, int y, int player)
 	}
 	for (int i = x + 1; i < BOARD_WIDTH; ++i)
 	{
-		if (player == board[i][y])
+		if (color == board[i][y])
 		{
 			++count;
 		}
@@ -384,14 +362,14 @@ int isWin(int x, int y, int player)
 	count = 1;
 	for (int i = y - 1; i >= 0; --i)
 	{
-		if (player == board[x][i])
+		if (color == board[x][i])
 			++count;
 		else
 			break;
 	}
 	for (int i = y + 1; i < BOARD_HEIGHT; ++i)
 	{
-		if (player == board[x][i])
+		if (color == board[x][i])
 			++count;
 		else
 			break;
@@ -403,14 +381,14 @@ int isWin(int x, int y, int player)
 	count = 1;
 	for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; --i, --j)
 	{
-		if (player == board[i][j])
+		if (color == board[i][j])
 			++count;
 		else
 			break;
 	}
 	for (int i = x + 1, j = y + 1; i < BOARD_WIDTH && j < BOARD_HEIGHT; ++i, ++j)
 	{
-		if (player == board[i][j])
+		if (color == board[i][j])
 			++count;
 		else
 			break;
@@ -422,14 +400,14 @@ int isWin(int x, int y, int player)
 	count = 1;
 	for (int i = x - 1, j = y + 1; i >= 0 && j < BOARD_HEIGHT; --i, ++j)
 	{
-		if (player == board[i][j])
+		if (color == board[i][j])
 			++count;
 		else
 			break;
 	}
 	for (int i = x + 1, j = y - 1; i < BOARD_WIDTH && j >= 0; ++i, --j)
 	{
-		if (player == board[i][j])
+		if (color == board[i][j])
 			++count;
 		else
 			break;

@@ -132,7 +132,7 @@ void OmokScene::Update(float fETime)
 	{
 		m_fGameOverTime += fETime;		
 	}
-	if (m_fGameOverTime > 4.0f)
+	if (m_fGameOverTime > 3.0f)
 	{
 		m_fGameOverTime = 0.0f;
 		// 오목판 초기화
@@ -185,8 +185,8 @@ void OmokScene::Draw(HDC hdc)
 
 	// 하단 정보 표시
 	m_pWhiteBar->Draw(0, 400);
-	label.Init(g_strStatus, 0, 400, 0);
-	label.Draw();
+	m_label.Init(g_strStatus, 0, 400, 0);
+	m_label.Draw();
 }
 
 void OmokScene::Release()

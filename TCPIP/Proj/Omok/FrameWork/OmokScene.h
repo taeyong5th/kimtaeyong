@@ -37,11 +37,9 @@ private:
 
 	// 하단 설명
 	JEngine::BitMap* m_pWhiteBar;
-	JEngine::Label label;	
+	JEngine::Label m_label;	
 
-	std::function<bool()> clickEvent;
-
-	//
+	// 게임 종료후 재시작 대기시간
 	float m_fGameOverTime;	
 
 public:
