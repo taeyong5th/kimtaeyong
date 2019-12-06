@@ -6,6 +6,8 @@ enum GAME_STATE
 	GAME_STATE_WAIT_CONN, // 상대방 접속을 기다리는중
 	GAME_STATE_PLAY, // 내가 플레이하는 중(내턴)
 	GAME_STATE_WAIT, // 상대방 돌 놓기 기다리는 중(상대턴)	
+	GAME_STATE_VICTORY,
+	GAME_STATE_DEFEAT,
 	GAME_STATE_OVER // 게임이 종료됨
 };
 

@@ -44,6 +44,8 @@ void OmokScene::Init(HWND hWnd)
 	m_pStone[0] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//stone_black.bmp");
 	m_pStone[1] = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//stone_white.bmp");
 	m_pWhiteBar = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//whitebar.bmp");
+	m_pVictory = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//victory.bmp");
+	m_pDefeat = JEngine::ResoucesManager::GetInstance()->GetBitmap("res//defeat.bmp");
 
 	// 오목판 초기화
 	for (int i = 0; i < BOARD_WIDTH; ++i)
@@ -128,10 +130,20 @@ bool OmokScene::Input(float fETime)
 
 void OmokScene::Update(float fETime)
 {
-	if (g_eState == GAME_STATE_OVER)
+	if (g_eState == GAME_STATE_OVER || g_eState == GAME_STATE_VICTORY || g_eState == GAME_STATE_DEFEAT)
 	{
-		m_fGameOverTime += fETime;		
+		m_fGameOverTime += fETime;
 	}
+
+	if (g_eState == GAME_STATE_VICTORY)
+	{
+		m_pVictory->Draw(100, 100);
+	}
+	else if (g_eState == GAME_STATE_DEFEAT)
+	{
+		m_pDefeat->Draw(100, 100);
+	}
+
 	if (m_fGameOverTime > 3.0f)
 	{
 		m_fGameOverTime = 0.0f;
@@ -308,12 +320,13 @@ unsigned __stdcall RecvMsg(void* arg)
 			if (*result == TRUE)
 			{
 				g_strStatus = "승리";
+				g_eState = GAME_STATE_VICTORY;
 			}
 			else
 			{
 				g_strStatus = "패배";
-			}			
-			g_eState = GAME_STATE_OVER;
+				g_eState = GAME_STATE_DEFEAT;
+			}
 
 			break;
 		case OMOK_DISCONNECTED:

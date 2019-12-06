@@ -25,6 +25,10 @@ private:
 	// 바둑돌 이미지
 	JEngine::BitMap*	m_pStone[2];	 // 0 = black, 1 = white
 
+	// 승패 이미지
+	JEngine::BitMap* m_pVictory;
+	JEngine::BitMap* m_pDefeat;
+
 	// 마우스의 현재 위치
 	JEngine::POINT m_iMousePos;
 
