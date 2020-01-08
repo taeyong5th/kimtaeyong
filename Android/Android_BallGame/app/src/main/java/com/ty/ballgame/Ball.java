@@ -1,9 +1,7 @@
 package com.ty.ballgame;
 
 import android.graphics.Canvas;
-import android.graphics.PointF;
 import android.graphics.RectF;
-import android.util.Log;
 
 public class Ball {
 
@@ -73,6 +71,11 @@ public class Ball {
     }
 
     void update(float eTime){
+        if(GameView.m_GameManager.isScreenOut(this)){
+            GameView.m_GameManager.setGameState(GameManager.GAMESTATE_OVERFLASH);
+            return;
+        }
+
         // when ball is jumping
         if(m_bIsJumping){
             m_fX += eTime * m_fSpeed * 1.4f;
@@ -106,7 +109,6 @@ public class Ball {
                 m_fSpeed = box.getSpeed();
                 m_fX += eTime * m_fSpeed;
             }
-
         }
 
         if(GameView.m_GameManager.isScrolling() && m_fY > 275.0f){

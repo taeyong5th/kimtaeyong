@@ -98,7 +98,7 @@ public class BitmapManager {
             iCount++;
         }
         if (bBest) {
-            DrawBitmap(canvas, 14, (float) ((x - (iCount * 19)) - 32), (float) y);
+            DrawBitmap(canvas, cImageIndexNew, (float) ((x - (iCount * 19)) - 32), (float) y);
         }
     }
 
@@ -164,7 +164,7 @@ public class BitmapManager {
                 break;
             case cImageIndexJumpNavi2 :
                 iLeft = 422;
-                iTop = 404;//WalletConstants.ERROR_CODE_INVALID_PARAMETERS;
+                iTop = 404;
                 iWidth = 82;
                 iHeight = 59;
                 break;
@@ -272,7 +272,7 @@ public class BitmapManager {
                 break;
             case cImageIndexReadyGo /*27*/:
                 iLeft = 230;
-                iTop = 404;//WalletConstants.ERROR_CODE_INVALID_PARAMETERS;
+                iTop = 404;
                 iWidth = 190;
                 iHeight = 82;
                 break;
@@ -344,7 +344,7 @@ public class BitmapManager {
                 break;
             case cImageIndexTitle /*39*/:
                 iLeft = 2;
-                iTop = 406;//WalletConstants.ERROR_CODE_INVALID_PARAMETERS;
+                iTop = 406;
                 iWidth = 226;
                 iHeight = 60;
                 break;

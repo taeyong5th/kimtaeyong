@@ -3,11 +3,8 @@ package com.ty.ballgame;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
-
-import androidx.core.view.MotionEventCompat;
 
 import java.util.ArrayList;
 
@@ -23,7 +20,7 @@ public class GameManager {
     private float m_fTime;
     private int m_iFingerImageIndex = BitmapManager.cImageIndexJumpNavi1;
 
-    private int gameState = GAMESTATE_INTRO;
+    private int m_iGameState = GAMESTATE_INTRO;
     private Ball m_ball;
     private ArrayList<Box> m_boxList;
 
@@ -38,10 +35,10 @@ public class GameManager {
 
     private int m_iScore = 0;
     private int m_iBestScore = 0;
-
+    private boolean m_bBestScore = false;
 
     GameManager() {
-        gameState = GAMESTATE_TITLE;
+        m_iGameState = GAMESTATE_TITLE;
         m_boxList = new ArrayList<>();
         m_ball = new Ball();
         m_WhitePaint.setColor(Color.WHITE);
@@ -50,6 +47,7 @@ public class GameManager {
 
     private void init(){
         m_iScore = 0;
+        m_bBestScore = false;
         m_lastBoxDirection = 1;
         m_bScroll = false;
         m_fTime = 0.0f;
@@ -74,21 +72,21 @@ public class GameManager {
     }
 
     void touchDown(float x, float y){
-        if(gameState == GAMESTATE_READY){
+        if(m_iGameState == GAMESTATE_READY){
             setGameState(GAMESTATE_PLAY);
-        } else if(gameState == GAMESTATE_TITLE){
+        } else if(m_iGameState == GAMESTATE_TITLE){
             setGameState(GAMESTATE_READY);
-        } else if(gameState == GAMESTATE_PLAY){
+        } else if(m_iGameState == GAMESTATE_PLAY){
             m_ball.jump();
         }
     }
 
     void touchUp(float x, float y){
-        if(gameState == GAMESTATE_OVER){
+        if(m_iGameState == GAMESTATE_OVER){
             RectF rcPlay = new RectF(33.0f, 292.0f, 116.0f, 332.0f);
             if (rcPlay.contains(x, y)) {
                 init();
-                gameState = GAMESTATE_READY;
+                m_iGameState = GAMESTATE_READY;
             }
         }
     }
@@ -112,13 +110,21 @@ public class GameManager {
         m_iScore++;
         if(m_iScore > m_iBestScore){
             m_iBestScore = m_iScore;
+            m_bBestScore = true;
         }
     }
 
+    boolean isScreenOut(Ball ball){
+        if(ball.getX() < 0.0f || ball.getX() + 25.0f > BitmapManager.cResScreenWidth){
+            return true;
+        }
+        return false;
+    }
+
     void setGameState(int state){
-        gameState = state;
+        m_iGameState = state;
         m_fTime = 0.0f;
-        switch (gameState){
+        switch (m_iGameState){
             case GAMESTATE_OVERFLASH:
                 m_ball.setState(Ball.BALLSTATE_DIE);
                 break;
@@ -179,7 +185,7 @@ public class GameManager {
 
     void draw(Canvas canvas){
         BitmapManager.DrawBitmap(canvas, BitmapManager.cImageIndexBack, 0, 0);
-        switch (gameState){
+        switch (m_iGameState){
             case GAMESTATE_TITLE:
                 BitmapManager.DrawBitmap(canvas, BitmapManager.cImageIndexTitle, 6.0f, 107.0f);
                 BitmapManager.DrawBitmap(canvas, BitmapManager.cImageIndexTTS, 32.0f, 226.0f);
@@ -212,7 +218,7 @@ public class GameManager {
                 BitmapManager.DrawBitmap(canvas, BitmapManager.cImageIndexGameOver, 32.0f, 72.0f);
                 BitmapManager.DrawBitmap(canvas, 25, 34.0f, 293.0f);
                 BitmapManager.DrawBitmap(canvas, 26, 122.0f, 293.0f);
-                BitmapManager.DrawBitmapSmallNumber(canvas, m_iScore, 172, 222, false);
+                BitmapManager.DrawBitmapSmallNumber(canvas, m_iScore, 172, 222, m_bBestScore);
                 BitmapManager.DrawBitmapSmallNumber(canvas, m_iBestScore, 172, 256, false);
                 break;
         }
@@ -220,7 +226,7 @@ public class GameManager {
 
     void update(float fTime) {
         m_fTime += fTime;
-        switch (gameState){
+        switch (m_iGameState){
             case GAMESTATE_INTRO:
                 break;
             case GAMESTATE_TITLE:
