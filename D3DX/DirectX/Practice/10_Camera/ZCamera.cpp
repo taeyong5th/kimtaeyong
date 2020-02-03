@@ -78,7 +78,6 @@ D3DXMATRIXA16* ZCamera::MoveTo(D3DXVECTOR3* pv)
 
 D3DXMATRIXA16 * ZCamera::RotateLocalX(float angle)
 {
-
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationAxis(&matRot, &m_vCross, angle);
 
@@ -89,7 +88,7 @@ D3DXMATRIXA16 * ZCamera::RotateLocalX(float angle)
 	D3DXVECTOR3 vNewUp;
 	D3DXVec3TransformCoord(&vNewUp, &m_vUp, &matRot);
 
-	return SetView(&m_vEye, &vNewDst, &vNewUp);
+	return SetView(&m_vEye, &vNewDst, &m_vUp);
 	
 }
 

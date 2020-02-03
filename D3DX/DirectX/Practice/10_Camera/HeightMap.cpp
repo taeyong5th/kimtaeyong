@@ -384,7 +384,7 @@ void ProcessKey(void)
 		{
 			g_pCamera->RotateLocalZ(-distGap);
 			distValue -= distGap;
-		}	
+		}
 	}
 
 }
